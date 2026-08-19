@@ -426,6 +426,99 @@ Deploy `app/llms.txt/route.ts` returning markdown summaries formatted specifical
 - Build book & format editor
 - **Accounts needed:** Admin user credentials (email + password for first admin)
 
+#### 8.1 Image Management System (R2-backed)
+
+**Goal:** Upload, replace, and delete images without code deploys. Use Cloudflare R2 for storage.
+
+**Backend Setup:**
+1. Create a new R2 bucket named `everrisepress-images`.
+2. Enable public read access on the bucket.
+3. Add the bucket binding to `wrangler.jsonc`:
+   ```json
+   {
+     "binding": "IMAGES_BUCKET",
+     "bucket_name": "everrisepress-images"
+   }
+   ```
+4. Run `npm run cf-typegen` to regenerate `cloudflare-env.d.ts`.
+5. Create `lib/r2.ts` with helper functions:
+   - `uploadImage(file: File, path: string): Promise<string>` — uploads to R2, returns public URL.
+   - `deleteImage(path: string): Promise<void>` — removes from R2.
+   - `listImages(prefix?: string): Promise<string[]>` — lists all images or by folder.
+6. Build API route `POST /api/admin/images/upload`:
+   - Accept `multipart/form-data` with `file` and `folder` fields.
+   - Validate auth (admin only).
+   - Generate unique filename: `{folder}/{timestamp}-{originalname}`.
+   - Call `uploadImage()`.
+   - Return `{ url, path }` in JSON response.
+7. Build API route `DELETE /api/admin/images/[path]`:
+   - Validate auth.
+   - Call `deleteImage()`.
+   - Return `{ success: true }`.
+
+**Admin UI Components:**
+1. Create `components/admin/ImageUploader.tsx`:
+   - Drag-and-drop zone for file selection.
+   - Preview thumbnail before upload.
+   - Upload button triggers `POST /api/admin/images/upload`.
+   - Shows progress bar during upload.
+   - Displays public URL after success.
+2. Create `components/admin/ImageGallery.tsx`:
+   - Grid view of all uploaded images.
+   - Filter by folder (books, authors, misc).
+   - Click image to copy URL to clipboard.
+   - Delete button with confirmation modal.
+3. Create `components/admin/ImageField.tsx`:
+   - Reusable form field for any image input.
+   - Shows current image preview if URL exists.
+   - "Change Image" button opens `ImageUploader` modal.
+   - "Remove" button clears the field.
+   - Stores the public URL as the field value.
+
+**Integration with Book/Author Forms:**
+1. Update book editor form (`/admin/books/[id]`):
+   - Replace `coverImageUrl` text input with `<ImageField />`.
+   - Label: "Book Cover Image".
+   - Folder: `books`.
+2. Update author editor form (`/admin/authors/[id]`):
+   - Replace `avatarUrl` text input with `<ImageField />`.
+   - Label: "Author Photo".
+   - Folder: `authors`.
+3. On form save, the image URL is already in state. No extra logic needed.
+
+**Migration from `public/` images:**
+1. Upload existing `public/images/books/*` to R2 under `books/` prefix.
+2. Upload existing `public/images/authors/*` to R2 under `authors/` prefix.
+3. Update D1 records:
+   ```sql
+   UPDATE books SET cover_image_url = 'https://pub-xxx.r2.dev/books/cover.webp' WHERE slug = 'how-to-have-a-financial-heart-attack';
+   UPDATE authors SET avatar_url = 'https://pub-xxx.r2.dev/authors/lamont-mcleod.jpg' WHERE slug = 'lamont-mcleod';
+   ```
+4. Delete old files from `public/images/`.
+5. Remove `public/images/` from git tracking.
+
+**Usage Workflow:**
+1. Admin logs in to `/admin`.
+2. Navigates to Books > Edit "How To Have a Financial Heart Attack".
+3. Sees current cover image preview.
+4. Clicks "Change Image".
+5. Drags new `.webp` file into uploader.
+6. Uploads automatically.
+7. New URL populates the form field.
+8. Admin clicks "Save".
+9. Book page now shows new cover. No deploy needed.
+
+**Security:**
+- All `/api/admin/*` routes require auth middleware.
+- Validate file type: only allow `image/jpeg`, `image/png`, `image/webp`, `image/svg+xml`.
+- Max file size: 5MB.
+- Sanitize filenames: remove special chars, lowercase, replace spaces with hyphens.
+
+**Cost:**
+- R2 storage: $0.015/GB/month.
+- R2 operations: $0.36/million writes, $0.18/million reads.
+- Estimated monthly cost for 100 images: ~$0.05.
+
 ### Milestone 9: SEO, GEO & Analytics
 - Build `lib/schema.ts` — JSON-LD generator for all page types
 - Build `app/sitemap.ts` and `app/robots.ts`
