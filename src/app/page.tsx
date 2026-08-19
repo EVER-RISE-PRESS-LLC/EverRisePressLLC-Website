@@ -141,6 +141,7 @@ export default async function Home() {
                     src={book.coverImageUrl}
                     alt={`${book.title} cover`}
                     fill
+                    sizes="(max-width: 768px) 16rem, 20rem"
                     className="object-cover"
                     priority
                   />

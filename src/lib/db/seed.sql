@@ -30,7 +30,7 @@ Most financial disasters aren''t sudden; they are built through years of muscle 
 McLeod exposes the invisible cage of the job-hopping hustle and the dangerous belief that money is infinite as long as Friday is coming. Through the wisdom of his mentor, Craig, he reveals a sobering truth: every dollar wasted today is a day of freedom lost tomorrow.
 
 This book is a visceral wake-up call for anyone building their life on the sand of living for the weekend. It is time to stop the cycle of heart-racing stress and start building a foundation that can actually withstand life.',
-  '/images/books/financial-heart-attack-cover.jpg',
+  '/images/books/financial-heart-attack-cover.webp',
   'The Penny Candy Foundation',
   '<p>IT all started in my childhood. Receiving a weekly allowance, a whopping 10 bucks a week for chores: keeping my room clean, washing dishes, even though my legs would burn from standing in place so long, or at least that was the excuse that I''d tell my parents. Cleaning my bathroom. I didn''t mind wiping the mirrors, wiping the sink, sweeping, and even cleaning the tub. But the amount of time it took to convince myself to clean my toilet seemed to take an act of Congress. The amount of Ajax and Scrubbing Bubbles I used to clean the inside and outside of the bowl seemed to disappear. I would wear that toilet wire handle scrubber out. I would imagine that I was sword fighting. Yes, I had a big imagination. The amount of chemicals floating around, I''m surprised I never fainted.</p>
 

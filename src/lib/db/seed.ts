@@ -62,7 +62,7 @@ This book is a visceral wake-up call for anyone building their life on the sand 
       title: "How To Have a Financial Heart Attack",
       subtitle: "A New Standard for Wealth and Responsibility",
       synopsis,
-      coverImageUrl: "/images/books/financial-heart-attack-cover.jpg",
+      coverImageUrl: "/images/books/financial-heart-attack-cover.webp",
       chapterOneTitle: "The Penny Candy Foundation",
       chapterOneBody,
       authorId: author.id,

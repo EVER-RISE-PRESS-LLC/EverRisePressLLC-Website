@@ -17,6 +17,9 @@ const karla = Karla({
 export const metadata: Metadata = {
   title: "EverRise Press | Your Financial Heart Attack Is Already in Progress",
   description: "You're not losing money. You're practicing poverty until you're an expert. Independent publishing that diagnoses the patterns keeping you broke.",
+  appleWebApp: {
+    title: "Ever Rise",
+  },
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
