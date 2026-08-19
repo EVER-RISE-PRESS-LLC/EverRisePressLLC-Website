@@ -348,3 +348,185 @@ Deploy `app/llms.txt/route.ts` returning markdown summaries formatted specifical
   - **Session Replay:** UX debugging of the gated reader flow and multi-retailer modal.
   - **Cohort Segmentation:** Groups users by behavior (e.g., "read chapter 1 but didn't buy", "arrived via podcast X") for retargeting and analysis.
   - **Feature Flags:** A/B testing for landing page variants, CTA copy, and reader modal designs.
+
+---
+
+## 8. Build Milestones
+
+### Milestone 1: Project Scaffold & Infrastructure
+- Initialize Next.js 16+ (App Router, TypeScript, Tailwind CSS)
+- Set up Cloudflare Pages project + wrangler config
+- Set up Cloudflare D1 database + Drizzle ORM
+- Configure environment variables structure (`.env.local`, `.env.production`)
+- **Accounts needed:** Cloudflare account
+- **Info needed:** Desired domain name (e.g., `everisepress.com`)
+
+### Milestone 2: Database & Seed Data
+- Run Prisma/Drizzle schema migrations (all models from Section 3)
+- Seed Author record for Lamont McLeod
+- Seed first Book record with Chapter 1 content
+- Seed BookFormat records (eBook, Paperback, Hardcover) with retailer URLs
+- **Info needed:**
+  - Lamont McLeod bio text, title, social links (Twitter, LinkedIn, website)
+  - Author avatar/headshot image
+  - Book title, subtitle, synopsis, cover image
+  - Chapter 1 title and full body text (Markdown or HTML)
+  - ISBN numbers per format
+  - Retail prices per format
+  - Purchase URLs (Amazon, Draft2Digital/Books2Read, IngramSpark/Bookshop.org)
+
+### Milestone 3: Publisher Homepage & Author Page
+- Build `/` — Hero section, featured book, catalog grid, author intro
+- Build `/authors/[slug]` — Full bio page with book list
+- Responsive design, LCP-optimized images
+- **Info needed:**
+  - Publisher tagline / hero headline
+  - Any brand colors or logo files (check `Logo-and-images/`)
+  - Social profile URLs for `sameAs` schema
+
+### Milestone 4: Book Landing Page & Multi-Retailer Modal
+- Build `/books/[slug]` — High-conversion book page with synopsis, cover, CTAs
+- Build `MultiRetailerModal.tsx` — Format/vendor selector (Amazon, B&N, Kobo, Bookshop.org)
+- JSON-LD Book schema injection
+- **Info needed:** All retailer purchase URLs and pricing (from Milestone 2)
+
+### Milestone 5: Gated Chapter 1 Reader & Lead Capture
+- Build `GatedReaderModal.tsx` — Email capture gate
+- Build `ChapterViewer.tsx` — Distraction-free reading interface
+- Build `/books/[slug]/preview` route
+- Integrate Cloudflare Turnstile for bot protection
+- Build `POST /api/lead` endpoint (Turnstile verify → DB insert → JWT cookie)
+- **Accounts needed:**
+  - Cloudflare Turnstile site key + secret key (created in Cloudflare dashboard)
+
+### Milestone 6: Mailchimp Integration & Email Nurture
+- Build `lib/mailchimp.ts` — Mailchimp Marketing API v3.0 helper
+- Wire lead API to push subscribers with tags (`[book-slug, "chapter-one-lead", partner-slug]`)
+- Build `/api/webhooks/mailchimp` for unsubscribe/update sync
+- **Accounts needed:**
+  - Mailchimp account with an audience list created
+  - Mailchimp API key
+  - Mailchimp Audience ID
+  - Mailchimp server prefix (e.g., `us21`)
+- **Info needed:** Desired email tags/segments strategy
+
+### Milestone 7: Podcast Referral Engine
+- Build `/refer/[code]/route.ts` — Edge redirect with cookie attribution
+- Build referral click logging to database
+- Build `middleware.ts` — Cookie attribution & admin route protection
+- **Info needed:**
+  - List of initial podcast partner names and contact emails
+  - Vanity slugs for each partner (e.g., `growth-mindset-podcast`)
+
+### Milestone 8: Admin Dashboard
+- Build `/admin` layout with auth guard
+- Build admin KPI dashboard (clicks, leads, conversion rates)
+- Build referral partner management (create/edit/deactivate partners)
+- Build leads table with CSV export and Mailchimp sync status
+- Build book & format editor
+- **Accounts needed:** Admin user credentials (email + password for first admin)
+
+### Milestone 9: SEO, GEO & Analytics
+- Build `lib/schema.ts` — JSON-LD generator for all page types
+- Build `app/sitemap.ts` and `app/robots.ts`
+- Build `app/llms.txt/route.ts` — GEO plain text index
+- Build `app/api/og/route.tsx` — Dynamic OpenGraph card generator
+- Integrate PostHog analytics provider
+- Integrate GA4 / GTM snippet
+- **Accounts needed:**
+  - PostHog project (API key + host URL)
+  - Google Analytics 4 property ID
+  - Google Tag Manager container ID
+- **Info needed:** Meta Pixel ID (if running Meta ads for CAPI)
+
+### Milestone 10: Polish, Privacy & Launch
+- Build `/privacy` page (GDPR / CAN-SPAM compliant)
+- Responsive QA across all pages
+- Performance audit (Lighthouse, Core Web Vitals)
+- SEO audit and schema validation
+- Deploy to production on Cloudflare Pages
+- Connect custom domain + DNS
+- **Info needed:**
+  - Privacy policy text (or use a generator)
+  - Final DNS records to configure
+  - Confirmation of all retailer links being live and correct
+
+---
+
+## 9. Progress Tracking & README Updates
+
+**MANDATORY:** After completing each milestone, the `README.md` file MUST be updated with a progress checklist. This file is monitored by project supervisors and stakeholders.
+
+### Update Process
+1. When a milestone is completed, mark it with `[x]` in the README checklist
+2. Add the completion date next to the milestone name
+3. Include a brief summary of what was delivered
+4. Commit the README update as part of the milestone completion
+
+### README Progress Checklist Template
+
+The `README.md` should contain this section (update as milestones complete):
+
+```markdown
+## Build Progress
+
+- [x] **Milestone 1: Project Scaffold & Infrastructure** (Completed: 2026-08-19)
+  - Next.js 16 + TypeScript + Tailwind CSS
+  - Cloudflare Workers + D1 database + Drizzle ORM
+  - R2 caching bucket configured
+  - Environment variables structure ready
+
+- [ ] **Milestone 2: Database & Seed Data**
+  - Schema migrations applied
+  - Author and book records seeded
+  - Retailer URLs configured
+
+- [ ] **Milestone 3: Publisher Homepage & Author Page**
+  - Homepage with hero section and catalog
+  - Author bio page
+  - Responsive design
+
+- [ ] **Milestone 4: Book Landing Page & Multi-Retailer Modal**
+  - Book detail pages
+  - Format/vendor selector modal
+  - JSON-LD schema injection
+
+- [ ] **Milestone 5: Gated Chapter 1 Reader & Lead Capture**
+  - Email capture gate
+  - Chapter reader interface
+  - Cloudflare Turnstile integration
+  - Lead capture API
+
+- [ ] **Milestone 6: Mailchimp Integration & Email Nurture**
+  - Mailchimp API integration
+  - Automated subscriber tagging
+  - Webhook sync
+
+- [ ] **Milestone 7: Podcast Referral Engine**
+  - Referral redirect system
+  - Cookie attribution
+  - Click tracking
+
+- [ ] **Milestone 8: Admin Dashboard**
+  - KPI dashboard
+  - Partner management
+  - Lead export
+  - Book editor
+
+- [ ] **Milestone 9: SEO, GEO & Analytics**
+  - JSON-LD structured data
+  - Sitemap and robots.txt
+  - PostHog analytics
+  - GA4 integration
+
+- [ ] **Milestone 10: Polish, Privacy & Launch**
+  - Privacy policy page
+  - Performance audit
+  - Production deployment
+  - Custom domain setup
+```
+
+### Current Status
+**Last Updated:** 2026-08-19  
+**Progress:** 1/10 milestones complete  
+**Next:** Milestone 2 - Database & Seed Data (awaiting content from Lamont McLeod)
