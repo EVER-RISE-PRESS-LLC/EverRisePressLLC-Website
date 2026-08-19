@@ -453,7 +453,43 @@ Deploy `app/llms.txt/route.ts` returning markdown summaries formatted specifical
 
 ---
 
-## 9. Progress Tracking & README Updates
+## 9. Brand Voice & Marketing Systems
+
+**Reference Document:** `/BOOK/brand-voice-systems.md`
+
+**Selected Voice:** System 4 — THE WAKE-UP CALL
+
+**Core Philosophy:** "This is your intervention. You didn't ask for it, but you needed it."
+
+**Tone Markers:**
+- Provocative and punchy — Short sentences. Hard truths. No softening.
+- Dark humor — "You're not living paycheck to paycheck. You're living crisis to crisis."
+- Pattern interrupts — Unexpected comparisons, shocking statistics, uncomfortable questions
+- Conversational profanity (light) — "You're fucking this up. Let me show you how."
+
+**Copy Principles:**
+1. Lead with the uncomfortable truth
+2. Use contrast and juxtaposition
+3. Create cognitive dissonance
+4. End with a challenge
+
+**Approved Phrases:**
+- "You're practicing poverty until you're an expert"
+- "Your financial heart attack is already in progress"
+- "Friday is coming. So is the crash."
+- "You don't have a money problem. You have a pattern problem."
+
+**Banned Words:**
+- "Journey" (too soft)
+- "Empowerment" (too generic)
+- "Financial freedom" (overused)
+- "Tips and tricks" (too light)
+
+**Status:** Approved and active for all website copy, email sequences, and ad content.
+
+---
+
+## 10. Progress Tracking & README Updates
 
 **MANDATORY:** After completing each milestone, the `README.md` file MUST be updated with a progress checklist. This file is monitored by project supervisors and stakeholders.
 
@@ -527,6 +563,6 @@ The `README.md` should contain this section (update as milestones complete):
 ```
 
 ### Current Status
-**Last Updated:** 2026-08-19  
-**Progress:** 1/10 milestones complete  
-**Next:** Milestone 2 - Database & Seed Data (awaiting content from Lamont McLeod)
+**Last Updated:** 2026-08-20  
+**Progress:** 4/10 milestones complete  
+**Next:** Milestone 5 - Gated Chapter 1 Reader & Lead Capture

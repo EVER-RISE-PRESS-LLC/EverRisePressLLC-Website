@@ -50,20 +50,32 @@ npm run db:migrate:remote # Apply to remote D1
   - Environment variables structure ready
   - Build verified working
 
-- [ ] **Milestone 2: Database & Seed Data**
-  - Schema migrations applied
-  - Author and book records seeded
-  - Retailer URLs configured
+- [x] **Milestone 2: Database & Seed Data** (Completed: 2026-08-20)
+  - Schema migrations applied to local and remote D1
+  - Author record seeded: Lamont D. McLeod (Founder)
+  - Book record seeded: "How To Have a Financial Heart Attack"
+  - Chapter 1 content extracted from EPUB
+  - eBook format configured: $4.99, ISBN 9781835567173, Draft2Digital
+  - Purchase URL: https://books2read.com/u/4E6eD0
 
-- [ ] **Milestone 3: Publisher Homepage & Author Page**
-  - Homepage with hero section and catalog
-  - Author bio page
-  - Responsive design
+- [x] **Milestone 3: Publisher Homepage & Author Page** (Completed: 2026-08-20)
+  - Homepage with System 4 "Wake-Up Call" voice
+  - Hero section with pattern interrupt headline
+  - Featured book section with CTAs
+  - Author bio page with full System 4 bio
+  - Book landing page with conversion-focused layout
+  - Design system implemented (Ever Rise Gold, Deep Charcoal, Cream Vellum)
+  - Spectral SC + Karla typography
+  - Responsive design across all pages
 
-- [ ] **Milestone 4: Book Landing Page & Multi-Retailer Modal**
-  - Book detail pages
-  - Format/vendor selector modal
-  - JSON-LD schema injection
+- [x] **Milestone 4: Book Landing Page & Multi-Retailer Modal** (Completed: 2026-08-20)
+  - Book detail page with System 4 conversion copy
+  - MultiRetailerModal component — format/vendor selector (scales with new retailers)
+  - JSON-LD Book schema injection on book page
+  - JSON-LD Organization schema on homepage
+  - JSON-LD Person schema on author page
+  - Dynamic metadata (OpenGraph) per book
+  - schema-dts typed structured data
 
 - [ ] **Milestone 5: Gated Chapter 1 Reader & Lead Capture**
   - Email capture gate
@@ -101,6 +113,6 @@ npm run db:migrate:remote # Apply to remote D1
 
 ---
 
-**Last Updated:** 2026-08-19  
-**Progress:** 1/10 milestones complete  
-**Next:** Milestone 2 - Database & Seed Data (awaiting content from Lamont McLeod)
+**Last Updated:** 2026-08-20  
+**Progress:** 4/10 milestones complete  
+**Next:** Milestone 5 - Gated Chapter 1 Reader & Lead Capture

@@ -38,3 +38,6 @@ cloudflare-env.d.ts
 # cloudflare / opennext
 .open-next/
 .wrangler/
+
+# book source files
+/BOOK/
