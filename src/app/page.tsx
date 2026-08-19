@@ -6,7 +6,7 @@ import { eq } from "drizzle-orm";
 import { getWebSiteSchema, getOrganizationSchema } from "@/lib/schema";
 import JsonLd from "@/components/seo/JsonLd";
 
-export const revalidate = 3600;
+export const dynamic = "force-dynamic";
 
 export default async function Home() {
   const db = await getDatabase();

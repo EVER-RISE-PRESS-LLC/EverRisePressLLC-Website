@@ -9,11 +9,7 @@ import { getBookSchema, getOrganizationSchema } from "@/lib/schema";
 import JsonLd from "@/components/seo/JsonLd";
 import MultiRetailerModal from "@/components/marketing/MultiRetailerModal";
 
-export const revalidate = 3600;
-
-export async function generateStaticParams() {
-  return [{ slug: "how-to-have-a-financial-heart-attack" }];
-}
+export const dynamic = "force-dynamic";
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
   const { slug } = await params;

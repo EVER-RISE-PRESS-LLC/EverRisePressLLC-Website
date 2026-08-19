@@ -7,11 +7,7 @@ import { eq } from "drizzle-orm";
 import { getPersonSchema } from "@/lib/schema";
 import JsonLd from "@/components/seo/JsonLd";
 
-export const revalidate = 3600;
-
-export async function generateStaticParams() {
-  return [{ slug: "lamont-mcleod" }];
-}
+export const dynamic = "force-dynamic";
 
 export default async function AuthorPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
