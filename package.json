@@ -18,8 +18,10 @@
     "db:seed": "wrangler d1 execute everrisepress-db --file ./src/lib/db/seed.sql"
   },
   "dependencies": {
+    "@marsidev/react-turnstile": "^1.6.0",
     "@opennextjs/cloudflare": "^1.20.2",
     "drizzle-orm": "^0.45.2",
+    "jose": "^6.2.9",
     "next": "16.3.1",
     "react": "19.2.8",
     "react-dom": "19.2.8",

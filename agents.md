@@ -657,5 +657,5 @@ The `README.md` should contain this section (update as milestones complete):
 
 ### Current Status
 **Last Updated:** 2026-08-20  
-**Progress:** 4/10 milestones complete  
-**Next:** Milestone 5 - Gated Chapter 1 Reader & Lead Capture
+**Progress:** 5/10 milestones complete  
+**Next:** Milestone 6 - Mailchimp Integration & Email Nurture

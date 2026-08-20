@@ -50,7 +50,7 @@ npm run db:migrate:remote # Apply to remote D1
   - Environment variables structure ready
   - Build verified working
 
-- [x] **Milestone 2: Database & Seed Data** (Completed: 2026-08-20)
+- [x] **Milestone 2: Database & Seed Data** (Completed: 2026-08-19)
   - Schema migrations applied to local and remote D1
   - Author record seeded: Lamont D. McLeod (Founder)
   - Book record seeded: "How To Have a Financial Heart Attack"
@@ -58,7 +58,7 @@ npm run db:migrate:remote # Apply to remote D1
   - eBook format configured: $4.99, ISBN 9781835567173, Draft2Digital
   - Purchase URL: https://books2read.com/u/4E6eD0
 
-- [x] **Milestone 3: Publisher Homepage & Author Page** (Completed: 2026-08-20)
+- [x] **Milestone 3: Publisher Homepage & Author Page** (Completed: 2026-08-19)
   - Homepage with System 4 "Wake-Up Call" voice
   - Hero section with pattern interrupt headline
   - Featured book section with CTAs
@@ -77,11 +77,13 @@ npm run db:migrate:remote # Apply to remote D1
   - Dynamic metadata (OpenGraph) per book
   - schema-dts typed structured data
 
-- [ ] **Milestone 5: Gated Chapter 1 Reader & Lead Capture**
-  - Email capture gate
-  - Chapter reader interface
-  - Cloudflare Turnstile integration
-  - Lead capture API
+- [x] **Milestone 5: Gated Chapter 1 Reader & Lead Capture** (Completed: 2026-08-20)
+  - GatedReaderModal component with email capture gate
+  - ChapterViewer component for distraction-free reading
+  - /books/[slug]/preview route with gated access
+  - Cloudflare Turnstile integration for bot protection
+  - POST /api/lead endpoint (Turnstile verify → DB insert → JWT cookie)
+  - 7-day chapter access cookie for returning readers
 
 - [ ] **Milestone 6: Mailchimp Integration & Email Nurture**
   - Mailchimp API integration
@@ -114,5 +116,5 @@ npm run db:migrate:remote # Apply to remote D1
 ---
 
 **Last Updated:** 2026-08-20  
-**Progress:** 4/10 milestones complete  
-**Next:** Milestone 5 - Gated Chapter 1 Reader & Lead Capture
+**Progress:** 5/10 milestones complete  
+**Next:** Milestone 6 - Mailchimp Integration & Email Nurture
