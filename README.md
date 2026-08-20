@@ -113,6 +113,11 @@ npm run db:migrate:remote # Apply to remote D1
   - Production deployment
   - Custom domain setup
 
+### Polish Backlog (found during development)
+
+- [ ] Fix broken icon paths in `src/app/manifest.json` — currently `/src/app/icon.png/web-app-manifest-*.png`, should be `/web-app-manifest-*.png` (files live in `public/`; found 2026-08-21)
+- [x] Worker size limit fix (2026-08-21): archived 1.97 MB `src/app/icon0.svg` (raster PNG wrapped in SVG, inlined into worker bundle) to `Logo-and-images/icon0-archived-favicon.svg` — gzip dropped 3068 KiB → 1245 KiB, first deploy succeeded at `everrisepressllc-website.everrisepressdev.workers.dev`
+
 ---
 
 **Last Updated:** 2026-08-20  

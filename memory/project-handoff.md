@@ -307,6 +307,8 @@ JWT_SECRET=everrisepress-jwt-secret-change-in-production
 - Deploy to production
 - Connect custom domain + DNS
 - Needs: Privacy policy text, DNS records, retailer link confirmation
+- **Known polish item:** `src/app/manifest.json` has broken icon paths — `/src/app/icon.png/web-app-manifest-*.png` should be `/web-app-manifest-*.png` (files live in `public/`). Found 2026-08-21 during worker size fix.
+- **Note (2026-08-21):** First deploy succeeded after archiving `src/app/icon0.svg` (1.97 MB raster-in-SVG favicon) to `Logo-and-images/icon0-archived-favicon.svg`. Worker gzip: 3068 KiB → 1245 KiB (free-plan limit is 3 MiB). Favicons now served by `favicon.ico` + `icon1.png` + `apple-icon.png`. Do NOT put large images in `src/app/` — Next.js inlines file-based metadata into the worker bundle; keep images in `public/` (served as assets, never bundled).
 
 ---
 
