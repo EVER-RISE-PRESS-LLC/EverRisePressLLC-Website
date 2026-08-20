@@ -1,8 +1,6 @@
-import Image from "next/image";
-import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getDatabase } from "@/lib/db/client";
-import { books, authors } from "@/lib/db/schema";
+import { books, authors, bookFormats } from "@/lib/db/schema";
 import { eq } from "drizzle-orm";
 import GatedReaderClient from "./GatedReaderClient";
 
@@ -28,38 +26,23 @@ export default async function BookPreviewPage({ params }: { params: Promise<{ sl
     .limit(1)
     .then((rows) => rows[0]);
 
-  return (
-    <div className="bg-cream text-charcoal min-h-screen">
-      {/* Header */}
-      <header className="bg-charcoal py-6">
-        <div className="max-w-6xl mx-auto px-6 flex justify-between items-center">
-          <Link href="/" className="flex items-center gap-3">
-            <Image
-              src="/images/logo.png"
-              alt="EverRise Press"
-              width={32}
-              height={32}
-            />
-            <span className="text-cream font-heading text-lg">EverRise Press</span>
-          </Link>
-          <Link
-            href={`/books/${book.slug}`}
-            className="text-gold font-sans text-sm uppercase tracking-wider hover:text-gold-hover transition-colors"
-          >
-            Back to Book
-          </Link>
-        </div>
-      </header>
+  const formats = await db
+    .select()
+    .from(bookFormats)
+    .where(eq(bookFormats.bookId, book.id));
 
-      {/* Gated Reader */}
-      <GatedReaderClient
-        bookSlug={book.slug}
-        bookTitle={book.title}
-        chapterTitle={book.chapterOneTitle}
-        chapterBody={book.chapterOneBody}
-        authorName={author?.name || "Unknown"}
-        authorSlug={author?.slug || ""}
-      />
-    </div>
+  return (
+    <GatedReaderClient
+      bookSlug={book.slug}
+      bookTitle={book.title}
+      bookSubtitle={book.subtitle}
+      bookCoverUrl={book.coverImageUrl}
+      chapterTitle={book.chapterOneTitle}
+      chapterBody={book.chapterOneBody}
+      authorName={author?.name || "Unknown"}
+      authorSlug={author?.slug || ""}
+      purchaseUrl={formats[0]?.purchaseUrl || ""}
+      retailPrice={formats[0]?.retailPrice || 0}
+    />
   );
 }
