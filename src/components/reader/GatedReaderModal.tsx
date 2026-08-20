@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useEffect } from "react";
 import TurnstileLeadForm from "@/components/forms/TurnstileLeadForm";
 import ChapterViewer from "./ChapterViewer";
 
@@ -10,7 +10,9 @@ interface GatedReaderModalProps {
   chapterTitle: string;
   chapterBody: string;
   isOpen: boolean;
+  isUnlocked: boolean;
   onClose: () => void;
+  onSuccess: () => void;
 }
 
 export default function GatedReaderModal({
@@ -19,15 +21,15 @@ export default function GatedReaderModal({
   chapterTitle,
   chapterBody,
   isOpen,
+  isUnlocked,
   onClose,
+  onSuccess,
 }: GatedReaderModalProps) {
-  const [isUnlocked, setIsUnlocked] = useState(false);
-
   useEffect(() => {
     if (!isOpen) return;
 
     const handleEscape = (e: KeyboardEvent) => {
-      if (e.key === "Escape") onClose();
+      if (e.key === "Escape" && isUnlocked) onClose();
     };
 
     document.addEventListener("keydown", handleEscape);
@@ -37,13 +39,9 @@ export default function GatedReaderModal({
       document.removeEventListener("keydown", handleEscape);
       document.body.style.overflow = "";
     };
-  }, [isOpen, onClose]);
+  }, [isOpen, isUnlocked, onClose]);
 
   if (!isOpen) return null;
-
-  const handleSuccess = () => {
-    setIsUnlocked(true);
-  };
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
@@ -60,13 +58,15 @@ export default function GatedReaderModal({
               {bookTitle}
             </h2>
           </div>
-          <button
-            onClick={onClose}
-            className="text-charcoal/40 hover:text-charcoal transition-colors text-3xl leading-none p-2"
-            aria-label="Close"
-          >
-            &times;
-          </button>
+          {isUnlocked && (
+            <button
+              onClick={onClose}
+              className="text-charcoal/40 hover:text-charcoal transition-colors text-3xl leading-none p-2"
+              aria-label="Close"
+            >
+              &times;
+            </button>
+          )}
         </div>
 
         {/* Content */}
@@ -85,7 +85,7 @@ export default function GatedReaderModal({
                 </p>
               </div>
 
-              <TurnstileLeadForm bookSlug={bookSlug} onSuccess={handleSuccess} />
+              <TurnstileLeadForm bookSlug={bookSlug} onSuccess={onSuccess} />
             </div>
           )}
         </div>

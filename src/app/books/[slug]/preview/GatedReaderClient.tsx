@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import GatedReaderModal from "@/components/reader/GatedReaderModal";
 
 interface GatedReaderClientProps {
@@ -19,6 +19,18 @@ export default function GatedReaderClient({
   chapterBody,
 }: GatedReaderClientProps) {
   const [isOpen, setIsOpen] = useState(true);
+  const [isUnlocked, setIsUnlocked] = useState(false);
+
+  useEffect(() => {
+    const hasAccess = document.cookie.includes("chapter_access");
+    if (hasAccess) {
+      setIsUnlocked(true);
+    }
+  }, []);
+
+  const handleSuccess = () => {
+    setIsUnlocked(true);
+  };
 
   return (
     <GatedReaderModal
@@ -27,7 +39,9 @@ export default function GatedReaderClient({
       chapterTitle={chapterTitle}
       chapterBody={chapterBody}
       isOpen={isOpen}
+      isUnlocked={isUnlocked}
       onClose={() => setIsOpen(false)}
+      onSuccess={handleSuccess}
     />
   );
 }

@@ -230,6 +230,8 @@ TURNSTILE_SECRET_KEY=0x4AAAAAAEWC4niv4o9W4WWNPXb8WvPAjtE
 JWT_SECRET=everrisepress-jwt-secret-change-in-production
 ```
 
+**Important:** The Turnstile site key is also hardcoded in `src/lib/env.ts` because Next.js with Turbopack doesn't properly inline `NEXT_PUBLIC_*` environment variables during SSR. This is a known issue with the @opennextjs/cloudflare adapter.
+
 **Still needed (commented out in .dev.vars):**
 - Mailchimp: `MAILCHIMP_API_KEY`, `MAILCHIMP_AUDIENCE_ID`, `MAILCHIMP_SERVER_PREFIX`
 - PostHog: `NEXT_PUBLIC_POSTHOG_KEY`, `NEXT_PUBLIC_POSTHOG_HOST`

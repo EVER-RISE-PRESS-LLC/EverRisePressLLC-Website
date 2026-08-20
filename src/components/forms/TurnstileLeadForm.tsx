@@ -2,6 +2,7 @@
 
 import { useState, useCallback } from "react";
 import { Turnstile } from "@marsidev/react-turnstile";
+import { env } from "@/lib/env";
 
 interface TurnstileLeadFormProps {
   bookSlug: string;
@@ -13,6 +14,8 @@ export default function TurnstileLeadForm({ bookSlug, onSuccess }: TurnstileLead
   const [token, setToken] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState("");
+
+  const siteKey = env.NEXT_PUBLIC_TURNSTILE_SITE_KEY;
 
   const handleSubmit = useCallback(
     async (e: React.FormEvent) => {
@@ -38,20 +41,35 @@ export default function TurnstileLeadForm({ bookSlug, onSuccess }: TurnstileLead
           body: JSON.stringify({ email, bookSlug, turnstileToken: token }),
         });
 
-        const data = (await response.json()) as { error?: string };
+        const data = (await response.json()) as { error?: string; success?: boolean };
 
         if (!response.ok) {
           throw new Error(data.error || "Something went wrong.");
         }
 
-        onSuccess();
+        if (data.success) {
+          onSuccess();
+        } else {
+          throw new Error("Verification failed. Try again.");
+        }
       } catch (err) {
+        console.error("Lead capture error:", err);
         setError(err instanceof Error ? err.message : "Something went wrong. Try again.");
         setIsSubmitting(false);
       }
     },
     [email, token, bookSlug, onSuccess]
   );
+
+  if (!siteKey) {
+    return (
+      <div className="text-center p-8">
+        <p className="text-red-600 font-semibold">
+          Verification service unavailable. Please try again later.
+        </p>
+      </div>
+    );
+  }
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
@@ -73,8 +91,9 @@ export default function TurnstileLeadForm({ bookSlug, onSuccess }: TurnstileLead
 
       <div className="flex justify-center">
         <Turnstile
-          siteKey={process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY || ""}
+          siteKey={siteKey}
           onSuccess={setToken}
+          onError={() => setError("Verification failed. Please try again.")}
           options={{
             theme: "light",
             size: "flexible",
