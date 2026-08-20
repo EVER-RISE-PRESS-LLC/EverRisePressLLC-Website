@@ -6,11 +6,7 @@ import { books, authors } from "@/lib/db/schema";
 import { eq } from "drizzle-orm";
 import GatedReaderClient from "./GatedReaderClient";
 
-export const revalidate = 3600;
-
-export async function generateStaticParams() {
-  return [{ slug: "how-to-have-a-financial-heart-attack" }];
-}
+export const dynamic = "force-dynamic";
 
 export default async function BookPreviewPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
