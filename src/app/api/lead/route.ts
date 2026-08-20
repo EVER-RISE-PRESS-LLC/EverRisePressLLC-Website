@@ -27,7 +27,7 @@ export async function POST(request: NextRequest) {
     }
 
     const { env } = await getCloudflareContext({ async: true });
-    const secretKey = env.TURNSTILE_SECRET_KEY;
+    const secretKey = process.env.TURNSTILE_SECRET_KEY;
 
     if (!secretKey) {
       console.error("TURNSTILE_SECRET_KEY not configured");
@@ -77,7 +77,7 @@ export async function POST(request: NextRequest) {
     }
 
     const jwtSecret = new TextEncoder().encode(
-      env.JWT_SECRET || "everrisepress-jwt-secret-change-in-production"
+      process.env.JWT_SECRET || "everrisepress-jwt-secret-change-in-production"
     );
 
     const token = await new SignJWT({ email, bookSlug })
