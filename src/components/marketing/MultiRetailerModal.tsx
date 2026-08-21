@@ -15,29 +15,75 @@ interface BookFormat {
 interface MultiRetailerModalProps {
   formats: BookFormat[];
   bookTitle: string;
+  coverImageUrl?: string;
   triggerText?: string;
 }
 
-const DISTRIBUTOR_LABELS: Record<string, { name: string; tagline: string }> = {
-  AMAZON_KDP: { name: "Amazon Kindle", tagline: "For Kindle readers and Prime members" },
-  DRAFT2DIGITAL: { name: "Books2Read", tagline: "Universal link — all retailers" },
-  INGRAMSPARK: { name: "Bookshop.org", tagline: "Support independent bookstores" },
-  APPLE_BOOKS: { name: "Apple Books", tagline: "For iPhone, iPad, and Mac readers" },
-  BARNES_AND_NOBLE: { name: "Barnes & Noble", tagline: "For Nook readers" },
-  KOBO: { name: "Rakuten Kobo", tagline: "For Kobo eReader users" },
-  BOOKSHOP_ORG: { name: "Bookshop.org", tagline: "Support independent bookstores" },
+interface RetailerMeta {
+  name: string;
+  tagline: string;
+  logo: string;
+  logoAlt: string;
+}
+
+const RETAILER_META: Record<string, RetailerMeta> = {
+  AMAZON_KDP: {
+    name: "Amazon Kindle",
+    tagline: "For Kindle readers and Prime members",
+    logo: "/images/retailers/amazon.png",
+    logoAlt: "Amazon",
+  },
+  DRAFT2DIGITAL: {
+    name: "Books2Read",
+    tagline: "Universal link — all retailers",
+    logo: "/images/retailers/books2read.png",
+    logoAlt: "Books2Read",
+  },
+  INGRAMSPARK: {
+    name: "Bookshop.org",
+    tagline: "Support independent bookstores",
+    logo: "/images/retailers/bookshop-org.png",
+    logoAlt: "Bookshop.org",
+  },
+  APPLE_BOOKS: {
+    name: "Apple Books",
+    tagline: "For iPhone, iPad, and Mac readers",
+    logo: "/images/retailers/apple-books.png",
+    logoAlt: "Apple Books",
+  },
+  BARNES_AND_NOBLE: {
+    name: "Barnes & Noble",
+    tagline: "For Nook readers",
+    logo: "/images/retailers/barnes-and-noble.png",
+    logoAlt: "Barnes & Noble",
+  },
+  KOBO: {
+    name: "Rakuten Kobo",
+    tagline: "For Kobo eReader users",
+    logo: "/images/retailers/kobo.png",
+    logoAlt: "Rakuten Kobo",
+  },
+  BOOKSHOP_ORG: {
+    name: "Bookshop.org",
+    tagline: "Support independent bookstores",
+    logo: "/images/retailers/bookshop-org.png",
+    logoAlt: "Bookshop.org",
+  },
 };
 
-const FORMAT_ICONS: Record<string, string> = {
-  EBOOK: "📱",
-  PAPERBACK: "📖",
-  HARDCOVER: "📕",
-  AUDIOBOOK: "🎧",
+const FORMAT_LABELS: Record<string, string> = {
+  EBOOK: "eBook",
+  PAPERBACK: "Paperback",
+  HARDCOVER: "Hardcover",
+  AUDIOBOOK: "Audiobook",
 };
+
+const FORMAT_ORDER = ["EBOOK", "PAPERBACK", "HARDCOVER", "AUDIOBOOK"];
 
 export default function MultiRetailerModal({
   formats,
   bookTitle,
+  coverImageUrl,
   triggerText = "Choose Your Format",
 }: MultiRetailerModalProps) {
   const [isOpen, setIsOpen] = useState(false);
@@ -82,6 +128,11 @@ export default function MultiRetailerModal({
     );
   }
 
+  const grouped = FORMAT_ORDER.map((formatType) => ({
+    formatType,
+    items: formats.filter((f) => f.formatType === formatType),
+  })).filter((g) => g.items.length > 0);
+
   return (
     <>
       <button
@@ -96,68 +147,93 @@ export default function MultiRetailerModal({
           <div className="absolute inset-0 bg-charcoal/80 backdrop-blur-sm" />
           <div
             ref={modalRef}
-            className="relative bg-cream rounded-lg shadow-2xl max-w-lg w-full max-h-[85vh] overflow-y-auto"
+            className="relative bg-cream rounded-lg shadow-2xl max-w-md w-full max-h-[85vh] overflow-y-auto"
           >
             <div className="p-6 md:p-8">
-              <div className="flex justify-between items-start mb-6">
-                <div>
-                  <p className="text-gold font-sans text-xs uppercase tracking-[0.2em] mb-1">
-                    Choose Your Retailer
-                  </p>
-                  <h3 className="font-heading text-2xl font-bold text-charcoal">
-                    {bookTitle}
-                  </h3>
+              {/* Header */}
+              <div className="flex justify-between items-start gap-4 mb-6">
+                <div className="flex items-start gap-4 min-w-0">
+                  {coverImageUrl && (
+                    <img
+                      src={coverImageUrl}
+                      alt={bookTitle}
+                      className="w-14 h-auto rounded shadow-md shrink-0"
+                    />
+                  )}
+                  <div className="min-w-0">
+                    <p className="text-gold font-sans text-xs uppercase tracking-[0.2em] mb-1">
+                      Choose Your Retailer
+                    </p>
+                    <h3 className="font-heading text-xl font-bold text-charcoal leading-snug">
+                      {bookTitle}
+                    </h3>
+                  </div>
                 </div>
                 <button
                   onClick={() => setIsOpen(false)}
-                  className="text-charcoal/40 hover:text-charcoal transition-colors text-2xl leading-none p-1"
+                  className="text-charcoal/40 hover:text-charcoal transition-colors text-2xl leading-none p-1 shrink-0"
                   aria-label="Close modal"
                 >
                   &times;
                 </button>
               </div>
 
-              <p className="text-text-muted text-sm mb-6">
-                Pick where you want to read. Every link takes you directly to the retailer.
-              </p>
+              {/* Format groups */}
+              {grouped.map((group) => (
+                <div key={group.formatType} className="mb-6 last:mb-0">
+                  <p className="text-text-muted font-sans text-xs uppercase tracking-[0.2em] mb-2">
+                    {FORMAT_LABELS[group.formatType] || group.formatType}
+                  </p>
+                  <div className="space-y-2">
+                    {group.items.map((format) => {
+                      const meta = RETAILER_META[format.distributor] || {
+                        name: format.distributor,
+                        tagline: "",
+                        logo: "",
+                        logoAlt: format.distributor,
+                      };
 
-              <div className="space-y-3">
-                {formats.map((format) => {
-                  const dist = DISTRIBUTOR_LABELS[format.distributor] || {
-                    name: format.distributor,
-                    tagline: "",
-                  };
-                  const icon = FORMAT_ICONS[format.formatType] || "📖";
-
-                  return (
-                    <a
-                      key={format.id}
-                      href={format.purchaseUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="flex items-center gap-4 p-4 rounded-lg border border-charcoal/10 hover:border-gold/50 hover:bg-white transition-all group"
-                    >
-                      <span className="text-2xl shrink-0">{icon}</span>
-                      <div className="flex-1 min-w-0">
-                        <div className="flex items-center gap-2">
-                          <span className="font-sans font-bold text-charcoal text-sm uppercase">
-                            {format.formatType}
+                      return (
+                        <a
+                          key={format.id}
+                          href={format.purchaseUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="flex items-center gap-4 p-3 rounded-lg border border-charcoal/10 bg-white/60 hover:border-gold hover:bg-white hover:shadow-md transition-all group"
+                        >
+                          {meta.logo ? (
+                            <span className="flex items-center justify-center w-20 h-11 bg-white rounded-md border border-charcoal/10 px-2 shrink-0">
+                              <img
+                                src={meta.logo}
+                                alt={meta.logoAlt}
+                                className="max-w-full max-h-full object-contain"
+                              />
+                            </span>
+                          ) : (
+                            <span className="w-20 h-11 shrink-0" />
+                          )}
+                          <span className="flex-1 min-w-0">
+                            <span className="block font-sans font-bold text-charcoal text-sm">
+                              {meta.name}
+                            </span>
+                            {meta.tagline && (
+                              <span className="block text-text-muted text-xs mt-0.5 truncate">
+                                {meta.tagline}
+                              </span>
+                            )}
                           </span>
-                          <span className="text-gold font-bold">
+                          <span className="text-gold font-bold text-sm shrink-0">
                             ${format.retailPrice}
                           </span>
-                        </div>
-                        <p className="text-text-muted text-xs mt-0.5">
-                          {dist.name} — {dist.tagline}
-                        </p>
-                      </div>
-                      <span className="text-gold group-hover:translate-x-1 transition-transform text-lg">
-                        &rarr;
-                      </span>
-                    </a>
-                  );
-                })}
-              </div>
+                          <span className="text-gold group-hover:translate-x-1 transition-transform text-lg shrink-0">
+                            &rarr;
+                          </span>
+                        </a>
+                      );
+                    })}
+                  </div>
+                </div>
+              ))}
 
               <p className="text-text-muted text-xs text-center mt-6">
                 You don&apos;t need another app. You need a pattern interrupt.

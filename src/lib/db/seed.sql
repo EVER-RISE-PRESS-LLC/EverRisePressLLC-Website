@@ -59,3 +59,39 @@ VALUES (
   'https://books2read.com/u/4E6eD0',
   CURRENT_TIMESTAMP
 );
+
+INSERT INTO book_formats (id, book_id, format_type, isbn, retail_price, currency, distributor, purchase_url, created_at)
+VALUES
+  (
+    '11111111-1111-4111-8111-111111111111',
+    'd08dac52-26dc-4595-a19a-dda27e2b3b82',
+    'EBOOK',
+    '9781835567173',
+    4.99,
+    'USD',
+    'APPLE_BOOKS',
+    'https://geo.itunes.apple.com/us/book/id6793190934?at=1010l9S2',
+    CURRENT_TIMESTAMP
+  ),
+  (
+    '22222222-2222-4222-8222-222222222222',
+    'd08dac52-26dc-4595-a19a-dda27e2b3b82',
+    'EBOOK',
+    '9781835567173',
+    4.99,
+    'USD',
+    'KOBO',
+    'http://click.linksynergy.com/deeplink?murl=http%3A%2F%2Fwww.kobo.com%2Fsearch%3Fquery%3D9781835567173&id=YBM6Ddr8uSs&mid=37217',
+    CURRENT_TIMESTAMP
+  ),
+  (
+    '33333333-3333-4333-8333-333333333333',
+    'd08dac52-26dc-4595-a19a-dda27e2b3b82',
+    'PAPERBACK',
+    '9781835566930',
+    12.99,
+    'USD',
+    'INGRAMSPARK',
+    'https://bookshop.org/search?keywords=9781835566930',
+    CURRENT_TIMESTAMP
+  );

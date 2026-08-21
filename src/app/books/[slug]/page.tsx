@@ -181,6 +181,7 @@ export default async function BookPage({ params }: { params: Promise<{ slug: str
                     isbn: f.isbn,
                   }))}
                   bookTitle={book.title}
+                  coverImageUrl={book.coverImageUrl}
                   triggerText="Buy Now"
                 />
               </div>
@@ -323,6 +324,7 @@ export default async function BookPage({ params }: { params: Promise<{ slug: str
                 isbn: f.isbn,
               }))}
               bookTitle={book.title}
+              coverImageUrl={book.coverImageUrl}
               triggerText={`Get the Full Book — $${formats[0]?.retailPrice}`}
             />
           </div>

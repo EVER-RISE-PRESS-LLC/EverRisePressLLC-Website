@@ -1,0 +1,1 @@
+DROP INDEX `book_formats_isbn_unique`;

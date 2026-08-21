@@ -42,7 +42,7 @@ export const bookFormats = sqliteTable("book_formats", {
   id: text("id").primaryKey().$defaultFn(() => crypto.randomUUID()),
   bookId: text("book_id").notNull().references(() => books.id, { onDelete: "cascade" }),
   formatType: text("format_type", { enum: ["EBOOK", "PAPERBACK", "HARDCOVER", "AUDIOBOOK"] }).notNull(),
-  isbn: text("isbn").unique(),
+  isbn: text("isbn"),
   retailPrice: real("retail_price").notNull(),
   currency: text("currency").notNull().default("USD"),
   distributor: text("distributor", {
