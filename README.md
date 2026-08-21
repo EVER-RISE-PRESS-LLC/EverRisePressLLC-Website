@@ -46,7 +46,7 @@ npm run db:migrate:remote # Apply to remote D1
   - Next.js 16 + TypeScript + Tailwind CSS
   - Cloudflare Workers via @opennextjs/cloudflare adapter
   - D1 database (everrisepress-db) + Drizzle ORM with full schema
-  - R2 caching bucket configured
+  - R2 caching bucket configured (later removed 2026-08-21: R2 disabled on account; adapter runs with no-op cache, fine for force-dynamic pages)
   - Environment variables structure ready
   - Build verified working
 
