@@ -1,4 +1,5 @@
 import type { WithContext, Book, Organization, Person, WebSite } from "schema-dts";
+import { cleanDashes } from "@/lib/utils";
 
 const SITE_URL = "https://everrisepressdev.workers.dev";
 const PUBLISHER_NAME = "EverRise Press";
@@ -44,7 +45,7 @@ export function getBookSchema(book: BookData, author: AuthorData): WithContext<B
     "@id": `${SITE_URL}/books/${book.slug}#book`,
     name: book.subtitle ? `${book.title}: ${book.subtitle}` : book.title,
     url: `${SITE_URL}/books/${book.slug}`,
-    description: book.synopsis,
+    description: cleanDashes(book.synopsis),
     image: `${SITE_URL}${book.coverImageUrl}`,
     inLanguage: "en-US",
     datePublished: book.publishedAt || undefined,
@@ -100,7 +101,7 @@ export function getPersonSchema(author: AuthorData): WithContext<Person> {
     url: `${SITE_URL}/authors/${author.slug}`,
     image: author.avatarUrl ? `${SITE_URL}${author.avatarUrl}` : undefined,
     jobTitle: author.title || undefined,
-    description: author.bio.slice(0, 500),
+    description: cleanDashes(author.bio).slice(0, 500),
     worksFor: {
       "@type": "Organization",
       name: PUBLISHER_NAME,

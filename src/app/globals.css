@@ -5,12 +5,13 @@
   --foreground: #1A1A1A;
   --gold: #D4AF37;
   --gold-hover: #EBC781;
+  --gold-deep: #8A6A1E;
   --charcoal: #1A1A1A;
   --cream: #F8F5EE;
   --ink-blue: #284B75;
-  --laurel: #5A7D5E;
+  --laurel: #4E6B51;
   --text-body: #2D2D2D;
-  --text-muted: #666666;
+  --text-muted: #575757;
 }
 
 @theme inline {
@@ -18,6 +19,7 @@
   --color-foreground: var(--foreground);
   --color-gold: var(--gold);
   --color-gold-hover: var(--gold-hover);
+  --color-gold-deep: var(--gold-deep);
   --color-charcoal: var(--charcoal);
   --color-cream: var(--cream);
   --color-ink-blue: var(--ink-blue);
@@ -28,6 +30,10 @@
   --font-heading: var(--font-spectral);
 }
 
+html {
+  scroll-behavior: smooth;
+}
+
 body {
   background: var(--background);
   color: var(--foreground);
@@ -36,4 +42,257 @@ body {
 
 h1, h2, h3, h4 {
   font-family: var(--font-heading), serif;
+}
+
+::selection {
+  background: var(--gold);
+  color: var(--charcoal);
+}
+
+/* ------------------------------------------------------------------ */
+/* Liquid glass surfaces                                              */
+/* ------------------------------------------------------------------ */
+
+.glass-dark {
+  position: relative;
+  background:
+    linear-gradient(160deg, rgba(248, 245, 238, 0.12) 0%, rgba(248, 245, 238, 0.04) 42%, rgba(248, 245, 238, 0.08) 100%);
+  -webkit-backdrop-filter: blur(22px) saturate(150%);
+  backdrop-filter: blur(22px) saturate(150%);
+  border: 1px solid rgba(248, 245, 238, 0.16);
+  box-shadow:
+    inset 0 1px 0 0 rgba(248, 245, 238, 0.2),
+    inset 0 -1px 0 0 rgba(0, 0, 0, 0.12),
+    0 24px 48px -24px rgba(0, 0, 0, 0.65);
+}
+
+.glass-light {
+  position: relative;
+  background:
+    linear-gradient(160deg, rgba(255, 255, 255, 0.72) 0%, rgba(255, 255, 255, 0.4) 42%, rgba(255, 255, 255, 0.58) 100%);
+  -webkit-backdrop-filter: blur(22px) saturate(160%);
+  backdrop-filter: blur(22px) saturate(160%);
+  border: 1px solid rgba(26, 26, 26, 0.1);
+  box-shadow:
+    inset 0 1px 0 0 rgba(255, 255, 255, 0.95),
+    inset 0 -1px 0 0 rgba(26, 26, 26, 0.04),
+    0 24px 48px -28px rgba(26, 26, 26, 0.35);
+}
+
+/* Opaque fallbacks where backdrop-filter is unavailable */
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .glass-dark {
+    background: rgba(33, 31, 26, 0.92);
+  }
+  .glass-light {
+    background: rgba(255, 255, 255, 0.94);
+  }
+}
+
+/* Specular sheen layer used on top of glass surfaces */
+.glass-sheen {
+  pointer-events: none;
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background:
+    radial-gradient(120% 60% at 12% 0%, rgba(255, 255, 255, 0.18) 0%, rgba(255, 255, 255, 0) 55%),
+    radial-gradient(90% 40% at 88% 100%, rgba(212, 175, 55, 0.08) 0%, rgba(212, 175, 55, 0) 60%);
+}
+
+/* Diagonal hairline texture with radial mask — signature bento-card surface */
+.bento-lines {
+  pointer-events: none;
+  position: absolute;
+  inset: 0;
+  opacity: 0.35;
+  background-image: repeating-linear-gradient(
+    45deg,
+    rgba(212, 175, 55, 0.5) 0px,
+    rgba(212, 175, 55, 0.5) 1px,
+    transparent 1px,
+    transparent 10px
+  );
+  -webkit-mask-image: radial-gradient(ellipse 80% 50% at 100% 0%, #000 70%, transparent 110%);
+  mask-image: radial-gradient(ellipse 80% 50% at 100% 0%, #000 70%, transparent 110%);
+}
+
+/* ------------------------------------------------------------------ */
+/* Scroll rhythm scale                                                */
+/* One consistent beat between page groups. Tight spacing inside      */
+/* groups (gap-5/6, mt-2/3), one shared gap after headings            */
+/* (.rhythm-gap), one shared beat between sections (.rhythm-section). */
+/* ------------------------------------------------------------------ */
+
+.rhythm-section {
+  padding-block: clamp(4rem, 8vw, 6.5rem);
+}
+
+.rhythm-gap {
+  margin-top: clamp(2.5rem, 5vw, 3.5rem);
+}
+
+/* Fixed floating navbar clearance for content that starts at page top */
+.rhythm-top {
+  padding-top: clamp(8rem, 14vw, 10rem);
+}
+
+/* ------------------------------------------------------------------ */
+/* Ambient surfaces                                                   */
+/* ------------------------------------------------------------------ */
+
+.ambient-dark {
+  background:
+    radial-gradient(90rem 44rem at 50% -14rem, rgba(212, 175, 55, 0.16) 0%, rgba(212, 175, 55, 0) 62%),
+    radial-gradient(64rem 36rem at 88% 112%, rgba(40, 75, 117, 0.22) 0%, rgba(40, 75, 117, 0) 60%),
+    var(--charcoal);
+}
+
+.ambient-cream {
+  background:
+    radial-gradient(70rem 40rem at 8% -10rem, rgba(212, 175, 55, 0.12) 0%, rgba(212, 175, 55, 0) 55%),
+    radial-gradient(56rem 32rem at 96% 108%, rgba(78, 107, 81, 0.1) 0%, rgba(78, 107, 81, 0) 55%),
+    var(--cream);
+}
+
+.bg-grain {
+  position: relative;
+}
+
+.bg-grain::after {
+  content: "";
+  pointer-events: none;
+  position: absolute;
+  inset: 0;
+  opacity: 0.5;
+  mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.4'/%3E%3C/svg%3E");
+}
+
+.bg-grain-soft {
+  position: relative;
+}
+
+.bg-grain-soft::after {
+  content: "";
+  pointer-events: none;
+  position: absolute;
+  inset: 0;
+  opacity: 0.16;
+  mix-blend-mode: multiply;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.4'/%3E%3C/svg%3E");
+}
+
+/* ------------------------------------------------------------------ */
+/* ScrollStack (React Bits)                                           */
+/* ------------------------------------------------------------------ */
+
+.scroll-stack-scroller {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow-y: auto;
+  overflow-x: visible;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+  transform: translateZ(0);
+  will-change: scroll-position;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(212, 175, 55, 0.35) transparent;
+}
+
+.scroll-stack-scroller::-webkit-scrollbar {
+  width: 6px;
+}
+
+.scroll-stack-scroller::-webkit-scrollbar-thumb {
+  background: rgba(212, 175, 55, 0.35);
+  border-radius: 999px;
+}
+
+.scroll-stack-scroller::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.scroll-stack-inner {
+  padding: clamp(3rem, 10vh, 5rem) clamp(1.25rem, 5vw, 5rem) 35rem;
+  min-height: 100%;
+}
+
+/* Window-scroll variant: no nested scroll area, page scroll drives it */
+.scroll-stack-scroller--native {
+  position: relative;
+  width: 100%;
+}
+
+.scroll-stack-scroller--native .scroll-stack-inner {
+  padding: 0 0 clamp(4rem, 12vh, 9rem);
+  min-height: 0;
+}
+
+.scroll-stack-card {
+  transform-origin: top center;
+  will-change: transform, filter;
+  backface-visibility: hidden;
+  transform-style: preserve-3d;
+  transform: translateZ(0);
+  position: relative;
+}
+
+.scroll-stack-end {
+  width: 100%;
+  height: 1px;
+}
+
+/* ------------------------------------------------------------------ */
+/* DotGrid background (React Bits)                                    */
+/* ------------------------------------------------------------------ */
+
+.dot-grid {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  width: 100%;
+  position: relative;
+}
+
+.dot-grid__wrap {
+  width: 100%;
+  height: 100%;
+  position: relative;
+}
+
+.dot-grid__canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+/* ------------------------------------------------------------------ */
+/* Motion utilities                                                   */
+/* ------------------------------------------------------------------ */
+
+@keyframes sheen-sweep {
+  0% {
+    transform: translateX(-160%) skewX(-18deg);
+  }
+  100% {
+    transform: translateX(220%) skewX(-18deg);
+  }
+}
+
+.animate-sheen {
+  animation: sheen-sweep 0.9s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  .animate-sheen {
+    animation: none;
+  }
 }

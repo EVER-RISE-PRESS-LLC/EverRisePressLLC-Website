@@ -98,7 +98,7 @@ npm run cf-typegen       # Regenerate Cloudflare types
 5. **Hosting:** Cloudflare Workers via @opennextjs/cloudflare
 6. **Domain:** `everrisepressdev.workers.dev` (temporary, no custom domain yet)
 7. **Git:** https://github.com/EVER-RISE-PRESS-LLC/EverRisePressLLC-Website
-8. **Status:** 5/10 milestones complete, site NOT YET DEPLOYED
+8. **Status:** 5/10 milestones complete; site deployed at everrisepressllc-website.everrisepressdev.workers.dev
 
 ---
 

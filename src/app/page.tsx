@@ -1,12 +1,122 @@
 import Image from "next/image";
-import Link from "next/link";
 import { getDatabase } from "@/lib/db/client";
 import { books, authors, bookFormats } from "@/lib/db/schema";
 import { eq } from "drizzle-orm";
+import { cleanDashes, cn } from "@/lib/utils";
 import { getWebSiteSchema, getOrganizationSchema } from "@/lib/schema";
 import JsonLd from "@/components/seo/JsonLd";
+import Navbar from "@/components/Navbar";
+import SiteFooter from "@/components/SiteFooter";
+import ReactiveButton from "@/components/ui/ReactiveButton";
+import Reveal from "@/components/ui/Reveal";
+import ScrubStatement from "@/components/ui/ScrubStatement";
+import ScrollStack, { ScrollStackItem } from "@/components/ui/ScrollStack";
+import CoverParallax from "@/components/ui/CoverParallax";
+import StoryCarousel from "@/components/ui/StoryCarousel";
+import StatsBento from "@/components/ui/stats-bento";
+import DotGrid from "@/components/ui/DotGrid";
+import {
+  ArrowRight,
+} from "lucide-react";
 
 export const dynamic = "force-dynamic";
+
+interface StackCardData {
+  label: string;
+  title: string;
+  body: string;
+  image: string;
+  alt: string;
+  position: string;
+  tone: "cream" | "charcoal";
+}
+
+const STACK_CARDS: StackCardData[] = [
+  {
+    label: "The Symptom",
+    title: "Monday Morning, Broke Again",
+    body: "You check your balance like it's a horror movie, peeking through your fingers hoping the monster went away. It didn't. Every Friday, the cycle resets.",
+    image: "/images/stack/img3.jpg",
+    alt: "Painting of a man seated in a backyard chair with his head on fire",
+    position: "object-[50%_45%]",
+    tone: "cream",
+  },
+  {
+    label: "The Diagnosis",
+    title: "Installed Before Age Ten",
+    body: "A ten-dollar allowance taught you that money always comes. That muscle memory never left your checking account. It compounds.",
+    image: "/images/stack/img1.jpg",
+    alt: "Grainy silhouette of a person whose head is consumed by orange and blue flame",
+    position: "object-[50%_40%]",
+    tone: "charcoal",
+  },
+  {
+    label: "The Hustle",
+    title: "Chasing Every Friday",
+    body: "The job hopping hustle: chasing the next paycheck instead of building a foundation. The cage is invisible because you built it yourself.",
+    image: "/images/stack/img2.jpg",
+    alt: "Painting of a figure slumped on a rooftop, head burning against a deep blue sky",
+    position: "object-[50%_50%]",
+    tone: "cream",
+  },
+  {
+    label: "The Cure",
+    title: "The Awakening",
+    body: "The monster isn't your income. It's muscle memory. Chapter 1 shows you exactly where the bleeding started, and reading it is free.",
+    image: "/images/stack/img4.jpg",
+    alt: "Classical painting of a collapsed figure whose body opens onto a blue sky with clouds",
+    position: "object-[50%_45%]",
+    tone: "charcoal",
+  },
+];
+
+function StackCard({ card, flip }: { card: StackCardData; flip: boolean }) {
+  const cream = card.tone === "cream";
+  return (
+    <div
+      className={cn(
+        "grid overflow-hidden rounded-3xl border md:grid-cols-[minmax(0,2fr)_minmax(0,3fr)]",
+        cream ? "border-charcoal/10 bg-cream" : "border-cream/15 bg-[#221E18]"
+      )}
+    >
+      <div className={cn("relative h-56 md:h-auto md:min-h-[26rem]", flip && "md:order-2")}>
+        <Image
+          src={card.image}
+          alt={card.alt}
+          fill
+          sizes="(max-width: 768px) 100vw, 45vw"
+          className={cn("object-cover", card.position)}
+        />
+      </div>
+      <div className="flex flex-col justify-center p-7 md:p-12">
+        <p
+          className={cn(
+            "text-xs font-bold uppercase tracking-[0.2em] md:text-sm",
+            cream ? "text-gold-deep" : "text-gold"
+          )}
+        >
+          {card.label}
+        </p>
+        <h3
+          className={cn(
+            "mt-4 font-heading text-2xl font-bold leading-snug md:text-4xl",
+            cream ? "text-charcoal" : "text-cream"
+          )}
+        >
+          {card.title}
+        </h3>
+        <p
+          className={cn(
+            "mt-4 text-base leading-relaxed md:text-lg",
+            cream ? "text-text-body" : "text-cream/75"
+          )}
+        >
+          {card.body}
+        </p>
+      </div>
+    </div>
+  );
+}
 
 export default async function Home() {
   const db = await getDatabase();
@@ -33,220 +143,317 @@ export default async function Home() {
     : [];
 
   return (
-    <div className="bg-cream text-charcoal">
+    <main className="w-full max-w-full overflow-x-hidden bg-cream text-charcoal">
       <JsonLd data={[getWebSiteSchema(), getOrganizationSchema()]} />
+      <Navbar />
 
-      {/* Hero Section */}
-      <section className="relative min-h-[90vh] flex items-center justify-center bg-charcoal text-cream overflow-hidden">
-        <div className="absolute inset-0 opacity-5">
-          <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(212,175,55,0.3),transparent_70%)]" />
+      {/* Attention - Hero */}
+      <section className="bg-charcoal bg-grain relative overflow-hidden pb-20 pt-28 md:pb-28 md:pt-32" data-nav-surface="dark">
+        <div aria-hidden className="pointer-events-none absolute inset-0">
+          <DotGrid
+            dotSize={2}
+            gap={20}
+            baseColor="#4A4438"
+            activeColor="#D4AF37"
+            proximity={200}
+            shockRadius={250}
+            shockStrength={5}
+            resistance={750}
+            returnDuration={2}
+          />
         </div>
-        <div className="relative z-10 max-w-4xl mx-auto px-6 text-center">
-          <p className="text-gold font-sans text-sm uppercase tracking-[0.2em] mb-6">
-            EverRise Press
-          </p>
-          <h1 className="font-heading text-4xl md:text-6xl lg:text-7xl font-bold leading-[1.1] mb-6">
-            Your Financial Heart Attack{" "}
-            <span className="text-gold">Is Already in Progress</span>
-          </h1>
-          <p className="text-lg md:text-xl text-cream/80 max-w-2xl mx-auto mb-10 leading-relaxed">
-            You&apos;re not losing money. You&apos;re <em>practicing</em> poverty until you&apos;re an expert. 
-            The patterns were installed before you could say no. The diagnosis is free.
-          </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Link
-              href="/books/how-to-have-a-financial-heart-attack"
-              className="inline-flex items-center justify-center px-8 py-4 bg-gold text-charcoal font-sans font-bold text-sm uppercase tracking-wider rounded hover:bg-gold-hover transition-colors"
-            >
-              Read the Diagnosis (Free Chapter 1)
-            </Link>
-            <Link
-              href="#the-book"
-              className="inline-flex items-center justify-center px-8 py-4 border-2 border-gold text-gold font-sans font-bold text-sm uppercase tracking-wider rounded hover:bg-gold hover:text-charcoal transition-colors"
-            >
-              See How Bad It Really Is
-            </Link>
-          </div>
-        </div>
-      </section>
-
-      {/* Wake-Up Call Section */}
-      <section className="py-20 md:py-32 bg-cream">
-        <div className="max-w-3xl mx-auto px-6 text-center">
-          <h2 className="font-heading text-3xl md:text-4xl font-bold text-charcoal mb-8">
-            You Don&apos;t Have a Money Problem.{" "}
-            <span className="text-gold">You Have a Pattern Problem.</span>
-          </h2>
-          <div className="space-y-6 text-text-body text-lg leading-relaxed">
-            <p>
-              Every Friday, the paycheck comes. Every Monday, it&apos;s gone. You check your bank account 
-              like it&apos;s a horror movie — peeking through your fingers, hoping the monster went away.
-            </p>
-            <p>
-              It didn&apos;t. It never does. Because the monster isn&apos;t your income. It&apos;s the muscle memory 
-              you built when you were 8 years old, blowing $10 on penny candy and quarters, learning the 
-              most dangerous lesson of your life: <strong>money will always come.</strong>
-            </p>
-            <p className="text-charcoal font-semibold text-xl">
-              Friday is coming. So is the crash.
-            </p>
-          </div>
-        </div>
-      </section>
-
-      {/* Featured Book Section */}
-      {book && (
-        <section id="the-book" className="py-20 md:py-32 bg-charcoal text-cream">
-          <div className="max-w-6xl mx-auto px-6">
-            <div className="grid md:grid-cols-2 gap-12 md:gap-16 items-center">
-              <div className="order-2 md:order-1">
-                <p className="text-gold font-sans text-sm uppercase tracking-[0.2em] mb-4">
-                  The Diagnosis
+        <div className="relative mx-auto max-w-6xl px-6">
+          <div className="grid items-center gap-12 lg:grid-cols-[minmax(0,7fr)_minmax(0,5fr)] lg:gap-10">
+            <div>
+              <Reveal>
+                <h1 className="max-w-2xl font-heading text-[clamp(2.25rem,5.5vw,4.5rem)] font-bold leading-[1.06] text-cream text-balance">
+                  <span className="block">Your Financial Heart Attack</span>
+                  <span className="block text-gold">Is Already in Progress.</span>
+                </h1>
+              </Reveal>
+              <Reveal delay={0.12}>
+                <p className="mt-7 max-w-xl text-lg leading-relaxed text-cream/80 md:text-xl">
+                  You&apos;re not losing money. You&apos;re{" "}
+                  <em>practicing</em> poverty until you&apos;re an expert.
+                  The diagnosis is free.
                 </p>
-                <h2 className="font-heading text-3xl md:text-4xl font-bold mb-4">
-                  {book.title}
-                </h2>
-                {book.subtitle && (
-                  <p className="text-cream/60 text-lg mb-8 font-heading italic">
-                    {book.subtitle}
-                  </p>
-                )}
-                <div className="space-y-4 text-cream/80 leading-relaxed mb-8">
-                  {book.synopsis.split("\n\n").map((paragraph, i) => (
-                    <p key={i}>{paragraph}</p>
-                  ))}
-                </div>
-                <div className="flex flex-col sm:flex-row gap-4">
-                  <Link
-                    href="/books/how-to-have-a-financial-heart-attack"
-                    className="inline-flex items-center justify-center px-8 py-4 bg-gold text-charcoal font-sans font-bold text-sm uppercase tracking-wider rounded hover:bg-gold-hover transition-colors"
+              </Reveal>
+              <Reveal delay={0.2}>
+                <div className="mt-10 flex flex-col gap-4 sm:flex-row">
+                  <ReactiveButton
+                    href="/books/how-to-have-a-financial-heart-attack/preview"
+                    size="lg"
+                    surface="dark"
                   >
                     Read Chapter 1 Free
-                  </Link>
-                  {formats.length > 0 && (
-                    <a
-                      href={formats[0].purchaseUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="inline-flex items-center justify-center px-8 py-4 border-2 border-gold text-gold font-sans font-bold text-sm uppercase tracking-wider rounded hover:bg-gold hover:text-charcoal transition-colors"
-                    >
-                      Get the Book — ${formats[0].retailPrice}
-                    </a>
-                  )}
+                    <ArrowRight className="size-4" />
+                  </ReactiveButton>
+                  {/* <ReactiveButton
+                    href="#the-book"
+                    variant="outline"
+                    size="lg"
+                    surface="dark"
+                    pointerEffects={false}
+                  >
+                    See How Bad It Really Is
+                  </ReactiveButton> */}
                 </div>
-              </div>
-              <div className="order-1 md:order-2 flex justify-center">
-                <div className="relative w-64 md:w-80 aspect-[2/3] bg-charcoal rounded-lg shadow-2xl shadow-gold/10 overflow-hidden border border-gold/20">
-                  <Image
+              </Reveal>
+            </div>
+
+            {book && (
+              <Reveal delay={0.18} className="relative z-10">
+                <div className="mx-auto w-56 rotate-3 sm:w-64 lg:w-72 xl:w-80">
+                  <span
+                    aria-hidden
+                    className="absolute -inset-6 rounded-full bg-gold/20 blur-3xl"
+                  />
+                  <div className="glass-dark relative overflow-hidden rounded-2xl p-2.5">
+                    <span aria-hidden className="glass-sheen" />
+                    <div className="relative aspect-[2/3] overflow-hidden rounded-xl">
+                      <Image
+                        src={book.coverImageUrl}
+                        alt={`${book.title} cover`}
+                        fill
+                        sizes="(max-width: 1024px) 16rem, 20rem"
+                        className="object-cover"
+                        priority
+                      />
+                    </div>
+                  </div>
+                </div>
+              </Reveal>
+            )}
+          </div>
+        </div>
+      </section>
+
+      {/* Interest - The Pattern Deck bento */}
+      <section className="ambient-cream relative rhythm-section" data-nav-surface="light">
+        <div className="mx-auto max-w-6xl px-6">
+          <Reveal>
+            <h2 className="max-w font-heading text-3xl font-bold leading-tight text-charcoal text-balance md:text-5xl">
+              Three patterns run your checking account.{" "}
+              <span className="text-gold-deep">
+                You built every one before age ten.
+              </span>
+            </h2>
+          </Reveal>
+
+          <StatsBento
+            bookHref="/books/how-to-have-a-financial-heart-attack/preview"
+            coverImageUrl={book?.coverImageUrl}
+            coverAlt={book ? `${book.title} cover` : undefined}
+            authorHref="/authors/lamont-mcleod"
+            authorName={author?.name}
+            authorAvatarUrl={author?.avatarUrl || "/images/authors/lamont-mcleod.jpg"}
+          />
+        </div>
+      </section>
+
+      {/* Desire - scrub reveal + card stacking */}
+      <section className="ambient-dark bg-grain relative overflow-hidden rhythm-section" data-nav-surface="dark">
+        <div className="mx-auto max-w-5xl px-6">
+          <ScrubStatement
+            text="You don't have a money problem. You have a pattern problem."
+            accentFrom={6}
+            className="font-heading text-3xl font-bold leading-snug text-cream md:text-5xl"
+          />
+        </div>
+
+        <div className="mt-14 md:mt-20">
+          <div className="mx-auto max-w-6xl px-6">
+            <ScrollStack
+              useWindowScroll
+              itemDistance={72}
+              itemStackDistance={24}
+              stackPosition="16%"
+              scaleEndPosition="10%"
+              baseScale={0.9}
+              itemScale={0.03}
+            >
+              {STACK_CARDS.map((card, i) => (
+                <ScrollStackItem
+                  key={card.title}
+                  itemClassName="overflow-hidden rounded-3xl shadow-[0_32px_64px_-24px_rgba(0,0,0,0.7)]"
+                >
+                  <StackCard card={card} flip={i % 2 === 1} />
+                </ScrollStackItem>
+              ))}
+            </ScrollStack>
+          </div>
+        </div>
+
+        {book && (
+          <div id="the-book" className="mx-auto mt-32 max-w-6xl scroll-mt-32 px-6 md:mt-56">
+            <div className="grid items-center gap-12 md:grid-cols-[auto_1fr] md:gap-20">
+              <div className="mx-auto w-64 md:w-80">
+                <div className="glass-dark relative overflow-hidden rounded-2xl p-2.5">
+                  <span aria-hidden className="glass-sheen" />
+                  <CoverParallax
                     src={book.coverImageUrl}
                     alt={`${book.title} cover`}
-                    fill
-                    sizes="(max-width: 768px) 16rem, 20rem"
-                    className="object-cover"
-                    priority
-                  />
-                </div>
-              </div>
-            </div>
-          </div>
-        </section>
-      )}
-
-      {/* Author Section */}
-      {author && (
-        <section className="py-20 md:py-32 bg-cream">
-          <div className="max-w-4xl mx-auto px-6">
-            <div className="flex flex-col md:flex-row gap-10 items-center md:items-start">
-              <div className="shrink-0">
-                <div className="w-40 h-40 md:w-48 md:h-48 rounded-full overflow-hidden border-4 border-gold shadow-lg">
-                  <Image
-                    src={author.avatarUrl || "/images/authors/lamont-mcleod.jpg"}
-                    alt={author.name}
-                    width={192}
-                    height={192}
-                    className="object-cover w-full h-full"
+                    className="aspect-[2/3] overflow-hidden rounded-xl"
                   />
                 </div>
               </div>
               <div>
-                <p className="text-gold font-sans text-sm uppercase tracking-[0.2em] mb-2">
-                  {author.title}
-                </p>
-                <h2 className="font-heading text-3xl md:text-4xl font-bold text-charcoal mb-6">
-                  {author.name}
-                </h2>
-                <div className="space-y-4 text-text-body leading-relaxed">
-                  <p>
-                    Lamont D. McLeod doesn&apos;t do financial advice. He does financial autopsies.
-                  </p>
-                  <p>
-                    In November 2010, a car accident left him quadriplegic. Thirteen days later, his mother died. 
-                    Most people would call that a tragedy. Lamont calls it the moment he stopped lying to himself 
-                    about what actually matters.
-                  </p>
-                  <p>
-                    Before the accident, he was the guy calling you about your credit card debt. The irony wasn&apos;t 
-                    lost on him — he was collecting on the same patterns he was living. He was practicing poverty 
-                    until he became an expert.
-                  </p>
-                </div>
-                <Link
-                  href="/authors/lamont-mcleod"
-                  className="inline-flex items-center mt-8 text-gold font-sans font-bold text-sm uppercase tracking-wider hover:text-gold-hover transition-colors"
-                >
-                  Read the Full Diagnosis &rarr;
-                </Link>
+                <Reveal>
+                  <h2 className="font-heading text-3xl font-bold leading-tight text-cream md:text-5xl">
+                    {book.title}
+                  </h2>
+                </Reveal>
+                {book.subtitle && (
+                  <Reveal delay={0.1}>
+                    <p className="mt-4 font-heading text-lg italic text-cream/75 md:text-xl">
+                      {book.subtitle}
+                    </p>
+                  </Reveal>
+                )}
+                <Reveal delay={0.18}>
+                  <div className="mt-6 max-w-xl space-y-4 text-base leading-relaxed text-cream/75">
+                    {cleanDashes(book.synopsis)
+                      .split("\n\n")
+                      .slice(0, 3)
+                      .map((paragraph, i) => (
+                        <p key={i}>{paragraph}</p>
+                      ))}
+                  </div>
+                </Reveal>
+                <Reveal delay={0.26}>
+                  <div className="mt-10 flex flex-col gap-4 sm:flex-row">
+                    <ReactiveButton
+                      href="/books/how-to-have-a-financial-heart-attack/preview"
+                      surface="dark"
+                      pointerEffects={false}
+                    >
+                      Read Chapter 1 Free
+                      <ArrowRight className="size-4" />
+                    </ReactiveButton>
+                    {formats.length > 0 && (
+                      <ReactiveButton
+                        href={formats[0].purchaseUrl}
+                        external
+                        variant="outline"
+                        surface="dark"
+                        pointerEffects={false}
+                      >
+                        Get the Book for ${formats[0].retailPrice}
+                      </ReactiveButton>
+                    )}
+                  </div>
+                </Reveal>
               </div>
             </div>
           </div>
-        </section>
-      )}
+        )}
+      </section>
 
-      {/* Final CTA */}
-      <section className="py-20 md:py-32 bg-charcoal text-cream">
-        <div className="max-w-3xl mx-auto px-6 text-center">
-          <h2 className="font-heading text-3xl md:text-5xl font-bold mb-6">
-            You&apos;ve Been Diagnosed.{" "}
-            <span className="text-gold">Now What?</span>
-          </h2>
-          <p className="text-cream/70 text-lg mb-10 max-w-xl mx-auto">
-            The patterns are visible. The muscle memory is documented. You can keep scrolling, 
-            or you can read the full autopsy. Chapter 1 is free. The cure is up to you.
-          </p>
-          <Link
-            href="/books/how-to-have-a-financial-heart-attack"
-            className="inline-flex items-center justify-center px-10 py-5 bg-gold text-charcoal font-sans font-bold text-sm uppercase tracking-wider rounded hover:bg-gold-hover transition-colors"
-          >
-            Read Chapter 1 — Free
-          </Link>
+      {/* Author + testimony */}
+      <section className="ambient-cream relative rhythm-section" data-nav-surface="light">
+        <div className="mx-auto max-w-6xl px-6">
+          <div className="grid items-start gap-14 md:grid-cols-[minmax(0,2fr)_minmax(0,3fr)] md:gap-20">
+            <div>
+              <Reveal>
+                <h2 className="font-heading text-3xl font-bold leading-tight text-charcoal text-balance md:text-5xl">
+                  He doesn&apos;t do advice.{" "}
+                  <span className="text-gold-deep">He does autopsies.</span>
+                </h2>
+              </Reveal>
+              <Reveal delay={0.12}>
+                <div className="mt-10 flex items-center gap-5">
+                  {author && (
+                    <div className="size-20 shrink-0 overflow-hidden rounded-2xl border-2 border-gold shadow-xl shadow-gold/15 md:size-24">
+                      <Image
+                        src={author.avatarUrl || "/images/authors/lamont-mcleod.jpg"}
+                        alt={author.name}
+                        width={96}
+                        height={96}
+                        className="h-full w-full object-cover"
+                      />
+                    </div>
+                  )}
+                  <div>
+                    <p className="font-heading text-2xl font-bold text-charcoal">
+                      {author?.name}
+                    </p>
+                    <p className="text-sm font-medium uppercase tracking-wider text-gold-deep">
+                      {author?.title}
+                    </p>
+                  </div>
+                </div>
+              </Reveal>
+              <Reveal delay={0.2}>
+                <p className="mt-8 max-w-md text-base leading-relaxed text-text-body">
+                  In November 2010, a car accident left him quadriplegic. Thirteen
+                  days later, his mother died. He calls it the moment he stopped
+                  lying to himself about what actually matters.
+                </p>
+              </Reveal>
+              <Reveal delay={0.28}>
+                <div className="mt-8">
+                  <ReactiveButton
+                    href="/authors/lamont-mcleod"
+                    variant="outline"
+                    size="sm"
+                    surface="light"
+                  >
+                    Read the Full Autopsy
+                    <ArrowRight className="size-3.5" />
+                  </ReactiveButton>
+                </div>
+              </Reveal>
+            </div>
+
+            <Reveal delay={0.15}>
+              <StoryCarousel />
+            </Reveal>
+          </div>
         </div>
       </section>
 
-      {/* Footer */}
-      <footer className="py-8 bg-charcoal border-t border-cream/10">
-        <div className="max-w-6xl mx-auto px-6 flex flex-col md:flex-row justify-between items-center gap-4">
-          <div className="flex items-center gap-3">
-            <Image
-              src="/images/logo.png"
-              alt="EverRise Press"
-              width={32}
-              height={32}
-              className="opacity-60"
-            />
-            <span className="text-cream/40 text-sm">
-              &copy; {new Date().getFullYear()} EverRise Press LLC
-            </span>
-          </div>
-          <div className="flex gap-6 text-cream/40 text-sm">
-            <Link href="/privacy" className="hover:text-gold transition-colors">
-              Privacy
-            </Link>
-            <Link href="/authors/lamont-mcleod" className="hover:text-gold transition-colors">
-              Author
-            </Link>
-          </div>
+      {/* Action - CTA with inline typography pill */}
+      <section className="ambient-dark bg-grain relative overflow-hidden rhythm-section" data-nav-surface="dark">
+        <div className="mx-auto max-w-5xl px-6 text-center">
+          <Reveal>
+            <h2 className="mx-auto max-w-4xl font-heading text-4xl font-bold leading-tight text-cream text-balance md:text-6xl">
+              You&apos;ve been diagnosed.{" "}
+              <span className="inline-block w-20 overflow-hidden rounded-full border border-gold/40 align-middle shadow-lg shadow-gold/20 md:w-28">
+                {book && (
+                  <Image
+                    src={book.coverImageUrl}
+                    alt=""
+                    width={112}
+                    height={56}
+                    className="h-9 w-full object-cover object-top md:h-12"
+                  />
+                )}
+              </span>{" "}
+              <span className="text-gold">Now what?</span>
+            </h2>
+          </Reveal>
+          <Reveal delay={0.12}>
+            <p className="mx-auto mt-8 max-w-xl text-lg leading-relaxed text-cream/80">
+              The patterns are visible. The muscle memory is documented.
+              Chapter 1 is free. The cure is up to you.
+            </p>
+          </Reveal>
+          <Reveal delay={0.24}>
+            <div className="mt-12 flex justify-center">
+              <ReactiveButton
+                href="/books/how-to-have-a-financial-heart-attack/preview"
+                size="lg"
+                surface="dark"
+              >
+                Read Chapter 1 Free
+                <ArrowRight className="size-4" />
+              </ReactiveButton>
+            </div>
+          </Reveal>
         </div>
-      </footer>
-    </div>
+      </section>
+
+      <SiteFooter />
+    </main>
   );
 }

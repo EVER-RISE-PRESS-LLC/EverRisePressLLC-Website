@@ -15,7 +15,7 @@ High-converting, SEO-first digital publishing platform featuring:
 - **Framework:** Next.js 16 (App Router, TypeScript, Tailwind CSS)
 - **Hosting:** Cloudflare Workers + Pages
 - **Database:** Cloudflare D1 (SQLite) + Drizzle ORM
-- **Caching:** Cloudflare R2
+- **Caching:** Cloudflare Assets (R2 removed 2026-08-21 — product disabled on account; no ISR in use)
 - **ESP:** Mailchimp Marketing API
 - **Analytics:** PostHog, GA4, Meta CAPI
 
@@ -68,7 +68,7 @@ npm run db:migrate:remote # Apply to remote D1
   - Spectral SC + Karla typography
   - Responsive design across all pages
 
-- [x] **Milestone 4: Book Landing Page & Multi-Retailer Modal** (Completed: 2026-08-20)
+- [x] **Milestone 4: Book Landing Page & Multi-Retailer Modal** (Completed: 2026-08-20, retailer links live 2026-08-22)
   - Book detail page with System 4 conversion copy
   - MultiRetailerModal component — format/vendor selector (scales with new retailers)
   - JSON-LD Book schema injection on book page
@@ -76,6 +76,8 @@ npm run db:migrate:remote # Apply to remote D1
   - JSON-LD Person schema on author page
   - Dynamic metadata (OpenGraph) per book
   - schema-dts typed structured data
+  - Retailer links added (2026-08-22): Apple Books + Kobo eBook ($4.99), IngramSpark paperback ($12.99, ISBN 9781835566930)
+  - Modal redesigned (2026-08-22): official retailer logos, format grouping, book cover in header
 
 - [x] **Milestone 5: Gated Chapter 1 Reader & Lead Capture** (Completed: 2026-08-20)
   - GatedReaderModal component with email capture gate
@@ -120,6 +122,6 @@ npm run db:migrate:remote # Apply to remote D1
 
 ---
 
-**Last Updated:** 2026-08-20  
+**Last Updated:** 2026-08-22  
 **Progress:** 5/10 milestones complete  
 **Next:** Milestone 6 - Mailchimp Integration & Email Nurture

@@ -1,6 +1,10 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
+import Image from "next/image";
+import { motion, AnimatePresence } from "framer-motion";
+import ReactiveButton from "@/components/ui/ReactiveButton";
+import { ArrowUpRight } from "lucide-react";
 
 interface BookFormat {
   id: string;
@@ -35,7 +39,7 @@ const RETAILER_META: Record<string, RetailerMeta> = {
   },
   DRAFT2DIGITAL: {
     name: "Books2Read",
-    tagline: "Universal link — all retailers",
+    tagline: "Universal link, all retailers",
     logo: "/images/retailers/books2read.png",
     logoAlt: "Books2Read",
   },
@@ -117,14 +121,15 @@ export default function MultiRetailerModal({
 
   if (formats.length === 1) {
     return (
-      <a
+      <ReactiveButton
         href={formats[0].purchaseUrl}
-        target="_blank"
-        rel="noopener noreferrer"
-        className="inline-flex items-center justify-center px-8 py-4 border-2 border-gold text-gold font-sans font-bold text-sm uppercase tracking-wider rounded hover:bg-gold hover:text-charcoal transition-colors"
+        external
+        variant="outline"
+        surface="dark"
       >
-        Buy Now — ${formats[0].retailPrice}
-      </a>
+        Buy Now for ${formats[0].retailPrice}
+        <ArrowUpRight className="size-4" />
+      </ReactiveButton>
     );
   }
 
@@ -135,113 +140,138 @@ export default function MultiRetailerModal({
 
   return (
     <>
-      <button
+      <ReactiveButton
         onClick={() => setIsOpen(true)}
-        className="inline-flex items-center justify-center px-8 py-4 border-2 border-gold text-gold font-sans font-bold text-sm uppercase tracking-wider rounded hover:bg-gold hover:text-charcoal transition-colors"
+        variant="outline"
+        surface="dark"
       >
         {triggerText}
-      </button>
+        <ArrowUpRight className="size-4" />
+      </ReactiveButton>
 
-      {isOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-          <div className="absolute inset-0 bg-charcoal/80 backdrop-blur-sm" />
-          <div
-            ref={modalRef}
-            className="relative bg-cream rounded-lg shadow-2xl max-w-md w-full max-h-[85vh] overflow-y-auto"
+      <AnimatePresence>
+        {isOpen && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.25 }}
+            className="fixed inset-0 z-50 flex items-center justify-center p-4"
           >
-            <div className="p-6 md:p-8">
-              {/* Header */}
-              <div className="flex justify-between items-start gap-4 mb-6">
-                <div className="flex items-start gap-4 min-w-0">
-                  {coverImageUrl && (
-                    <img
-                      src={coverImageUrl}
-                      alt={bookTitle}
-                      className="w-14 h-auto rounded shadow-md shrink-0"
-                    />
-                  )}
-                  <div className="min-w-0">
-                    <p className="text-gold font-sans text-xs uppercase tracking-[0.2em] mb-1">
-                      Choose Your Retailer
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="absolute inset-0 bg-charcoal/80 backdrop-blur-md"
+              onClick={() => setIsOpen(false)}
+            />
+            <motion.div
+              ref={modalRef}
+              initial={{ opacity: 0, y: 28, scale: 0.96 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, y: 20, scale: 0.97 }}
+              transition={{ type: "spring", stiffness: 300, damping: 28 }}
+              className="glass-light relative max-h-[85vh] w-full max-w-md overflow-y-auto rounded-3xl"
+            >
+              <span aria-hidden className="glass-sheen" />
+              <div className="relative p-6 md:p-8">
+                {/* Header */}
+                <div className="mb-6 flex items-start justify-between gap-4">
+                  <div className="flex min-w-0 items-start gap-4">
+                    {coverImageUrl && (
+                      <Image
+                        src={coverImageUrl}
+                        alt={bookTitle}
+                        width={56}
+                        height={84}
+                        className="w-14 shrink-0 rounded-md shadow-md"
+                      />
+                    )}
+                    <div className="min-w-0">
+                      <p className="mb-1 text-xs font-bold uppercase tracking-[0.2em] text-gold-deep">
+                        Choose Your Retailer
+                      </p>
+                      <h3 className="font-heading text-xl font-bold leading-snug text-charcoal">
+                        {bookTitle}
+                      </h3>
+                    </div>
+                  </div>
+                  <button
+                    onClick={() => setIsOpen(false)}
+                    className="shrink-0 p-1 text-2xl leading-none text-charcoal/60 transition-colors hover:text-charcoal"
+                    aria-label="Close modal"
+                  >
+                    &times;
+                  </button>
+                </div>
+
+                {/* Format groups */}
+                {grouped.map((group) => (
+                  <div key={group.formatType} className="mb-6 last:mb-0">
+                    <p className="mb-2 text-xs font-bold uppercase tracking-[0.2em] text-text-muted">
+                      {FORMAT_LABELS[group.formatType] || group.formatType}
                     </p>
-                    <h3 className="font-heading text-xl font-bold text-charcoal leading-snug">
-                      {bookTitle}
-                    </h3>
-                  </div>
-                </div>
-                <button
-                  onClick={() => setIsOpen(false)}
-                  className="text-charcoal/40 hover:text-charcoal transition-colors text-2xl leading-none p-1 shrink-0"
-                  aria-label="Close modal"
-                >
-                  &times;
-                </button>
-              </div>
+                    <div className="space-y-2">
+                      {group.items.map((format) => {
+                        const meta = RETAILER_META[format.distributor] || {
+                          name: format.distributor,
+                          tagline: "",
+                          logo: "",
+                          logoAlt: format.distributor,
+                        };
 
-              {/* Format groups */}
-              {grouped.map((group) => (
-                <div key={group.formatType} className="mb-6 last:mb-0">
-                  <p className="text-text-muted font-sans text-xs uppercase tracking-[0.2em] mb-2">
-                    {FORMAT_LABELS[group.formatType] || group.formatType}
-                  </p>
-                  <div className="space-y-2">
-                    {group.items.map((format) => {
-                      const meta = RETAILER_META[format.distributor] || {
-                        name: format.distributor,
-                        tagline: "",
-                        logo: "",
-                        logoAlt: format.distributor,
-                      };
-
-                      return (
-                        <a
-                          key={format.id}
-                          href={format.purchaseUrl}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="flex items-center gap-4 p-3 rounded-lg border border-charcoal/10 bg-white/60 hover:border-gold hover:bg-white hover:shadow-md transition-all group"
-                        >
-                          {meta.logo ? (
-                            <span className="flex items-center justify-center w-20 h-11 bg-white rounded-md border border-charcoal/10 px-2 shrink-0">
-                              <img
-                                src={meta.logo}
-                                alt={meta.logoAlt}
-                                className="max-w-full max-h-full object-contain"
-                              />
-                            </span>
-                          ) : (
-                            <span className="w-20 h-11 shrink-0" />
-                          )}
-                          <span className="flex-1 min-w-0">
-                            <span className="block font-sans font-bold text-charcoal text-sm">
-                              {meta.name}
-                            </span>
-                            {meta.tagline && (
-                              <span className="block text-text-muted text-xs mt-0.5 truncate">
-                                {meta.tagline}
+                        return (
+                          <a
+                            key={format.id}
+                            href={format.purchaseUrl}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="group flex items-center gap-4 rounded-xl border border-charcoal/10 bg-white/60 p-3 transition-all duration-300 hover:border-gold hover:bg-white hover:shadow-lg"
+                          >
+                            {meta.logo ? (
+                              <span className="flex h-11 w-20 shrink-0 items-center justify-center rounded-md border border-charcoal/10 bg-white px-2">
+                                <Image
+                                  src={meta.logo}
+                                  alt={meta.logoAlt}
+                                  width={80}
+                                  height={44}
+                                  className="max-h-full max-w-full object-contain"
+                                />
                               </span>
+                            ) : (
+                              <span className="h-11 w-20 shrink-0" />
                             )}
-                          </span>
-                          <span className="text-gold font-bold text-sm shrink-0">
-                            ${format.retailPrice}
-                          </span>
-                          <span className="text-gold group-hover:translate-x-1 transition-transform text-lg shrink-0">
-                            &rarr;
-                          </span>
-                        </a>
-                      );
-                    })}
+                            <span className="min-w-0 flex-1">
+                              <span className="block text-sm font-bold text-charcoal">
+                                {meta.name}
+                              </span>
+                              {meta.tagline && (
+                                <span className="mt-0.5 block truncate text-xs text-text-muted">
+                                  {meta.tagline}
+                                </span>
+                              )}
+                            </span>
+                            <span className="shrink-0 text-sm font-bold text-gold-deep">
+                              ${format.retailPrice}
+                            </span>
+                            <span className="shrink-0 text-lg text-gold-deep transition-transform duration-300 group-hover:translate-x-1">
+                              &rarr;
+                            </span>
+                          </a>
+                        );
+                      })}
+                    </div>
                   </div>
-                </div>
-              ))}
+                ))}
 
-              <p className="text-text-muted text-xs text-center mt-6">
-                You don&apos;t need another app. You need a pattern interrupt.
-              </p>
-            </div>
-          </div>
-        </div>
-      )}
+                <p className="mt-6 text-center text-xs text-text-muted">
+                  You don&apos;t need another app. You need a pattern interrupt.
+                </p>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </>
   );
 }
