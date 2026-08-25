@@ -9,6 +9,7 @@
 		"global_fetch_strictly_public"
 	],
 	"vars": {
+		"NEXT_PUBLIC_SITE_URL": "https://everrisepress.com",
 		"NEXT_PUBLIC_TURNSTILE_SITE_KEY": "0x4AAAAAAEWC4iu22r4MiMkL",
 		"REFERRAL_DEFAULT_BOOK_SLUG": "",
 		"NEXT_PUBLIC_POSTHOG_KEY": "phc_viaTXsk4kFDt8mFHci5CYr4A7PfZizqa4xQTzo6JN7Vi",

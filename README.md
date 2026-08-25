@@ -140,4 +140,5 @@ npm run db:migrate:remote # Apply to remote D1
 
 **Last Updated:** 2026-08-26  
 **Progress:** 8/10 milestones complete (Milestone 6 deferred)  
-**Next:** Milestone 10 - Polish, Privacy & Launch (deploy pending)
+**Domain:** `https://everrisepress.com` (live, canonical — site URL via `NEXT_PUBLIC_SITE_URL`)  
+**Next:** Milestone 10 - Polish, Privacy & Launch

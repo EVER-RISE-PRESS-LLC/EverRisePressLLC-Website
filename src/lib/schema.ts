@@ -1,7 +1,7 @@
 import type { WithContext, Book, Organization, Person, WebSite } from "schema-dts";
 import { cleanDashes } from "@/lib/utils";
 
-const SITE_URL = "https://everrisepressdev.workers.dev";
+const SITE_URL = "https://everrisepress.com";
 const PUBLISHER_NAME = "EverRise Press";
 
 interface BookFormatData {
