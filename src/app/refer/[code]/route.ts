@@ -9,6 +9,7 @@ import {
   hashIp,
   normalizePartnerSlug,
 } from "@/lib/referral";
+import { captureServerEvent, getAnonymousId } from "@/lib/posthog";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -20,7 +21,7 @@ export async function GET(
   const { code } = await params;
   const slug = normalizePartnerSlug(code);
 
-  const { env } = await getCloudflareContext({ async: true });
+  const { env, ctx } = await getCloudflareContext({ async: true });
   const db = getDb(env.DB);
 
   const partner = await db
@@ -63,9 +64,20 @@ export async function GET(
     country: request.headers.get("CF-IPCountry"),
   });
 
+  const { distinctId } = getAnonymousId(request.headers.get("cookie"));
+
+  const phCapture = captureServerEvent(distinctId, "referral_link_visited", {
+    partner_slug: partner.slug,
+    partner_name: partner.name,
+    book_slug: book?.slug ?? null,
+  });
+  if (ctx && typeof ctx.waitUntil === "function") {
+    ctx.waitUntil(phCapture);
+  }
+
   const destination = book
-    ? `/books/${book.slug}?utm_source=podcast&utm_medium=referral&utm_campaign=${encodeURIComponent(partner.slug)}`
-    : `/?utm_source=podcast&utm_medium=referral&utm_campaign=${encodeURIComponent(partner.slug)}`;
+    ? `/books/${book.slug}?utm_source=podcast&utm_medium=referral&utm_campaign=${encodeURIComponent(partner.slug)}&_phid=${encodeURIComponent(distinctId)}`
+    : `/?utm_source=podcast&utm_medium=referral&utm_campaign=${encodeURIComponent(partner.slug)}&_phid=${encodeURIComponent(distinctId)}`;
 
   const response = NextResponse.redirect(new URL(destination, request.url), 302);
 

@@ -4,6 +4,7 @@ import { getDb } from "@/lib/db";
 import { books, referralPartners, retailerClicks } from "@/lib/db/schema";
 import { and, eq } from "drizzle-orm";
 import { REFERRAL_COOKIE_NAME, hashIp, normalizePartnerSlug } from "@/lib/referral";
+import { captureServerEvent, getAnonymousId } from "@/lib/posthog";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -26,7 +27,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Invalid payload." }, { status: 400 });
     }
 
-    const { env } = await getCloudflareContext({ async: true });
+    const { env, ctx } = await getCloudflareContext({ async: true });
     const db = getDb(env.DB);
 
     const book = await db
@@ -66,6 +67,17 @@ export async function POST(request: NextRequest) {
       country: request.headers.get("CF-IPCountry"),
       partnerId: partner?.id ?? null,
     });
+
+    const { distinctId } = getAnonymousId(request.headers.get("cookie"));
+    const phCapture = captureServerEvent(distinctId, "retailer_redirect_click", {
+      book_slug: bookSlug,
+      retailer,
+      format_type: formatType,
+      partner_slug: referralSlug,
+    });
+    if (ctx && typeof ctx.waitUntil === "function") {
+      ctx.waitUntil(phCapture);
+    }
 
     return NextResponse.json({ success: true });
   } catch (error) {

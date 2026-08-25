@@ -2,6 +2,7 @@
 
 import { useEffect } from "react";
 import TurnstileLeadForm from "@/components/forms/TurnstileLeadForm";
+import { trackEvent } from "@/components/providers/PostHogProvider";
 import ChapterViewer from "./ChapterViewer";
 
 interface GatedReaderModalProps {
@@ -28,6 +29,10 @@ export default function GatedReaderModal({
   useEffect(() => {
     if (!isOpen) return;
 
+    if (!isUnlocked) {
+      trackEvent("chapter_unlock_modal_open", { book_slug: bookSlug });
+    }
+
     const handleEscape = (e: KeyboardEvent) => {
       if (e.key === "Escape" && isUnlocked) onClose();
     };
@@ -39,7 +44,7 @@ export default function GatedReaderModal({
       document.removeEventListener("keydown", handleEscape);
       document.body.style.overflow = "";
     };
-  }, [isOpen, isUnlocked, onClose]);
+  }, [isOpen, isUnlocked, onClose, bookSlug]);
 
   if (!isOpen) return null;
 

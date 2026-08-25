@@ -5,6 +5,8 @@ import { leads, books, referralPartners } from "@/lib/db/schema";
 import { and, eq } from "drizzle-orm";
 import { verifyTurnstileToken } from "@/lib/turnstile";
 import { REFERRAL_COOKIE_NAME, normalizePartnerSlug } from "@/lib/referral";
+import { captureServerEvent, getAnonymousId } from "@/lib/posthog";
+import { sendMetaLeadEvent } from "@/lib/meta";
 import { SignJWT } from "jose";
 
 export const runtime = "nodejs";
@@ -27,7 +29,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const { env } = await getCloudflareContext({ async: true });
+    const { env, ctx } = await getCloudflareContext({ async: true });
     const secretKey = env.TURNSTILE_SECRET_KEY || process.env.TURNSTILE_SECRET_KEY;
 
     if (!secretKey) {
@@ -97,6 +99,32 @@ export async function POST(request: NextRequest) {
         .update(leads)
         .set({ partnerId: partner.id })
         .where(eq(leads.id, existingLead.id));
+    }
+
+    const { distinctId } = getAnonymousId(request.headers.get("cookie"));
+
+    const phCapture = captureServerEvent(distinctId, "lead_generated", {
+      email,
+      book_slug: book.slug,
+      partner_slug: partner?.slug ?? null,
+      source_utm: partner?.slug ?? null,
+    });
+    if (ctx && typeof ctx.waitUntil === "function") {
+      ctx.waitUntil(phCapture);
+    }
+
+    const metaCapture = sendMetaLeadEvent({
+      email,
+      ip: request.headers.get("CF-Connecting-IP"),
+      userAgent: request.headers.get("user-agent"),
+      eventSourceUrl: request.nextUrl?.origin
+        ? `${request.nextUrl.origin}/books/${book.slug}/preview`
+        : "",
+      fbc: request.cookies.get("_fbc")?.value ?? null,
+      fbp: request.cookies.get("_fbp")?.value ?? null,
+    });
+    if (ctx && typeof ctx.waitUntil === "function") {
+      ctx.waitUntil(metaCapture);
     }
 
     const jwtSecret = new TextEncoder().encode(

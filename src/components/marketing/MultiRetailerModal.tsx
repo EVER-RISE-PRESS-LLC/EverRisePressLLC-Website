@@ -4,6 +4,7 @@ import { useState, useEffect, useRef } from "react";
 import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
 import ReactiveButton from "@/components/ui/ReactiveButton";
+import { gtagEvent } from "@/lib/gtag";
 import { ArrowUpRight } from "lucide-react";
 
 interface BookFormat {
@@ -96,6 +97,11 @@ export default function MultiRetailerModal({
   const modalRef = useRef<HTMLDivElement>(null);
 
   function trackRetailerClick(format: BookFormat) {
+    gtagEvent("retailer_redirect_click", {
+      book_slug: bookSlug,
+      retailer: format.distributor,
+      format_type: format.formatType,
+    });
     if (!bookSlug) return;
     try {
       fetch("/api/retailer-click", {

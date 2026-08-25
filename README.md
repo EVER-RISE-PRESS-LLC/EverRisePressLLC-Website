@@ -117,11 +117,13 @@ npm run db:migrate:remote # Apply to remote D1
   - Future feature wishlist (analytics, A/B testing, partner portal, etc.) tracked in `docs/admin-panel-spec.md` §13.2 — not in current scope
   - Fix (2026-08-25): admin login redirect loop — auth guard moved to `(admin)/admin/(panel)/layout.tsx` so it no longer wraps `/admin/login`
 
-- [ ] **Milestone 9: SEO, GEO & Analytics**
-  - JSON-LD structured data
-  - Sitemap and robots.txt
-  - PostHog analytics
-  - GA4 integration
+- [x] **Milestone 9: SEO, GEO & Analytics** (Completed: 2026-08-26)
+  - PostHog: client provider (autocapture ON, session replay OFF per owner, pageview/pageleave, identify on lead, `usePostHogFlag` hook), server-side capture via `/batch/` (`referral_link_visited`, `lead_generated`, `retailer_redirect_click`) with `_phid` ID unification on /refer redirects — project token verified against capture API
+  - GA4 via `@next/third-parties` (`G-WPN7FBMPXZ`): `generate_lead`, `chapter_unlock_modal_open`, `retailer_redirect_click` client events
+  - Meta: client Pixel loader (`2855054114869901`) + server-side CAPI `Lead` event from `/api/lead` (SHA-256 hashed email/IP/UA, fbc/fbp; token as Cloudflare secret)
+  - `app/sitemap.ts` (home, privacy, books, authors) + `app/robots.ts` (blocks /admin, /api, preview) + `app/llms.txt/route.ts` (GEO index for AI crawlers)
+  - OG images: **static** pre-generated cards in `public/images/og/` (book + default) wired into book page + homepage metadata — dynamic `/api/og` (next/og Satori) was built, tested, then removed: its wasm/font payload pushed the worker to 2985/3072 KiB; static cards recovered 876 KiB of budget
+  - PostHog-side setup (funnels, cohorts, alerts, survey creation) = owner actions in PostHog UI — click-paths documented in `docs/admin-panel-spec.md` §13.2
 
 - [ ] **Milestone 10: Polish, Privacy & Launch**
   - Privacy policy page
@@ -136,6 +138,6 @@ npm run db:migrate:remote # Apply to remote D1
 
 ---
 
-**Last Updated:** 2026-08-25  
-**Progress:** 7/10 milestones complete (Milestone 6 deferred)  
-**Next:** Milestone 9 - SEO, GEO & Analytics
+**Last Updated:** 2026-08-26  
+**Progress:** 8/10 milestones complete (Milestone 6 deferred)  
+**Next:** Milestone 10 - Polish, Privacy & Launch (deploy pending)

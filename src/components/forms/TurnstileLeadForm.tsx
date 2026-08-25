@@ -3,13 +3,21 @@
 import { useState, useCallback } from "react";
 import { Turnstile } from "@marsidev/react-turnstile";
 import { env } from "@/lib/env";
+import { trackEvent, identifyUser } from "@/components/providers/PostHogProvider";
+import { trackMetaEvent } from "@/components/providers/MetaPixelProvider";
+import { gtagEvent } from "@/lib/gtag";
 
 interface TurnstileLeadFormProps {
   bookSlug: string;
+  partnerSlug?: string | null;
   onSuccess: () => void;
 }
 
-export default function TurnstileLeadForm({ bookSlug, onSuccess }: TurnstileLeadFormProps) {
+export default function TurnstileLeadForm({
+  bookSlug,
+  partnerSlug,
+  onSuccess,
+}: TurnstileLeadFormProps) {
   const [email, setEmail] = useState("");
   const [token, setToken] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -48,6 +56,14 @@ export default function TurnstileLeadForm({ bookSlug, onSuccess }: TurnstileLead
         }
 
         if (data.success) {
+          const props = { book_slug: bookSlug, partner_slug: partnerSlug ?? null };
+          trackEvent("chapter_unlock_success", props);
+          identifyUser(email, props);
+          gtagEvent("generate_lead", {
+            book_slug: bookSlug,
+            partner_slug: partnerSlug ?? undefined,
+          });
+          trackMetaEvent("Lead", { content_name: bookSlug });
           onSuccess();
         } else {
           throw new Error("Verification failed. Try again.");
@@ -58,7 +74,7 @@ export default function TurnstileLeadForm({ bookSlug, onSuccess }: TurnstileLead
         setIsSubmitting(false);
       }
     },
-    [email, token, bookSlug, onSuccess]
+    [email, token, bookSlug, partnerSlug, onSuccess]
   );
 
   if (!siteKey) {

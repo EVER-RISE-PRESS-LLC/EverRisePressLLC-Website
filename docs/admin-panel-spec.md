@@ -456,9 +456,9 @@ Shadcn components to install (via `npx shadcn@latest add`): `button card input l
 > The dashboard is functional. The owner wants a rich feature set here — these are tracked for future work, NOT for the current milestone. Add new ideas to this list rather than building them unscheduled.
 
 **Analytics & reporting**
-- PostHog session-replay deep links from the Leads table (watch a lead's exact reader session)
+- PostHog session-replay deep links from the Leads table (watch a lead's exact reader session) — *(note: replay intentionally disabled site-wide per owner decision 2026-08-25; re-enabling = remove `disable_session_recording` + flip project setting)*
 - GA4/PostHog acquisition reports embedded in the dashboard (campaign, source/medium breakdowns)
-- Full funnel view: visit → chapter unlock → email lead → retailer click → purchase (PostHog funnels, M9+)
+- Full funnel view: visit → chapter unlock → email lead → retailer click → purchase (PostHog funnels, M9+) — *events now live (M9 analytics done 2026-08-25); funnel UI setup pending PostHog-side*
 - Cohort segmentation: "read chapter 1 but didn't buy", "arrived via podcast X", "returning reader"
 - Time-of-day / day-of-week heatmaps for clicks and leads
 - Country breakdown tables + map for referral clicks

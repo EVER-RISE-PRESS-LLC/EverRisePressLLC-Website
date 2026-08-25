@@ -7,6 +7,7 @@ import { books, authors, bookFormats } from "@/lib/db/schema";
 import { eq } from "drizzle-orm";
 import { getBookSchema, getOrganizationSchema } from "@/lib/schema";
 import { cleanDashes } from "@/lib/utils";
+import { env } from "@/lib/env";
 import JsonLd from "@/components/seo/JsonLd";
 import MultiRetailerModal from "@/components/marketing/MultiRetailerModal";
 import Navbar from "@/components/Navbar";
@@ -30,6 +31,9 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
 
   if (!book) return { title: "Book Not Found" };
 
+  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || env.NEXT_PUBLIC_SITE_URL;
+  const ogImageUrl = `${baseUrl}/images/og/${book.slug}.png`;
+
   return {
     title: `${book.title} | EverRise Press`,
     description: "You aren't just losing money. You're practicing poverty until you're an expert. The diagnosis is free.",
@@ -37,6 +41,26 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
       title: book.title,
       description: cleanDashes(book.synopsis).slice(0, 160),
       type: "book",
+      images: [
+        {
+          url: ogImageUrl,
+          width: 1200,
+          height: 630,
+          alt: book.title,
+        },
+        {
+          url: `${baseUrl}/images/og/everrise-default.png`,
+          width: 1200,
+          height: 630,
+          alt: "EverRise Press",
+        },
+      ],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: book.title,
+      description: cleanDashes(book.synopsis).slice(0, 160),
+      images: [ogImageUrl],
     },
   };
 }

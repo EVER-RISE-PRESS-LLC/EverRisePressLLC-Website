@@ -1,7 +1,9 @@
 import { notFound } from "next/navigation";
+import { cookies } from "next/headers";
 import { getDatabase } from "@/lib/db/client";
 import { books, authors, bookFormats } from "@/lib/db/schema";
 import { eq } from "drizzle-orm";
+import { REFERRAL_COOKIE_NAME } from "@/lib/referral";
 import GatedReaderClient from "./GatedReaderClient";
 
 export const dynamic = "force-dynamic";
@@ -31,6 +33,9 @@ export default async function BookPreviewPage({ params }: { params: Promise<{ sl
     .from(bookFormats)
     .where(eq(bookFormats.bookId, book.id));
 
+  const cookieStore = await cookies();
+  const partnerSlug = cookieStore.get(REFERRAL_COOKIE_NAME)?.value ?? null;
+
   return (
     <GatedReaderClient
       bookSlug={book.slug}
@@ -43,6 +48,7 @@ export default async function BookPreviewPage({ params }: { params: Promise<{ sl
       authorSlug={author?.slug || ""}
       purchaseUrl={formats[0]?.purchaseUrl || ""}
       retailPrice={formats[0]?.retailPrice || 0}
+      partnerSlug={partnerSlug}
     />
   );
 }

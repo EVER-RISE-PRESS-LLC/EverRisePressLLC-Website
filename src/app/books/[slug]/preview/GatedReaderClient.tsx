@@ -1,9 +1,11 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import TurnstileLeadForm from "@/components/forms/TurnstileLeadForm";
+import { trackEvent } from "@/components/providers/PostHogProvider";
+import { gtagEvent } from "@/lib/gtag";
 import Navbar from "@/components/Navbar";
 import SiteFooter from "@/components/SiteFooter";
 
@@ -18,6 +20,7 @@ interface GatedReaderClientProps {
   authorSlug: string;
   purchaseUrl: string;
   retailPrice: number;
+  partnerSlug: string | null;
 }
 
 export default function GatedReaderClient({
@@ -31,6 +34,7 @@ export default function GatedReaderClient({
   authorSlug,
   purchaseUrl,
   retailPrice,
+  partnerSlug,
 }: GatedReaderClientProps) {
   const [isUnlocked, setIsUnlocked] = useState(() => {
     if (typeof document !== "undefined") {
@@ -38,6 +42,21 @@ export default function GatedReaderClient({
     }
     return false;
   });
+  const trackedOpen = useRef(false);
+
+  useEffect(() => {
+    if (!isUnlocked && !trackedOpen.current) {
+      trackedOpen.current = true;
+      trackEvent("chapter_unlock_modal_open", {
+        book_slug: bookSlug,
+        partner_slug: partnerSlug ?? null,
+      });
+      gtagEvent("chapter_unlock_modal_open", {
+        book_slug: bookSlug,
+        partner_slug: partnerSlug ?? undefined,
+      });
+    }
+  }, [isUnlocked, bookSlug, partnerSlug]);
 
   const handleSuccess = () => {
     setIsUnlocked(true);
@@ -155,6 +174,7 @@ export default function GatedReaderClient({
                     src={bookCoverUrl}
                     alt={`${bookTitle} cover`}
                     fill
+                    sizes="(max-width: 768px) 14rem, 24rem"
                     className="object-cover"
                     priority
                   />
@@ -180,7 +200,11 @@ export default function GatedReaderClient({
                 </p>
 
                 <div className="bg-white rounded-lg border border-charcoal/10 p-6 md:p-8">
-                  <TurnstileLeadForm bookSlug={bookSlug} onSuccess={handleSuccess} />
+                  <TurnstileLeadForm
+                    bookSlug={bookSlug}
+                    partnerSlug={partnerSlug}
+                    onSuccess={handleSuccess}
+                  />
                 </div>
 
                 <div className="mt-8 pt-8 border-t border-charcoal/10">
