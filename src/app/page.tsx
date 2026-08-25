@@ -79,7 +79,7 @@ function StackCard({ card, flip }: { card: StackCardData; flip: boolean }) {
         cream ? "border-charcoal/10 bg-cream" : "border-cream/15 bg-[#221E18]"
       )}
     >
-      <div className={cn("relative h-56 md:h-auto md:min-h-[26rem]", flip && "md:order-2")}>
+      <div className={cn("relative h-56 md:h-auto md:min-h-104", flip && "md:order-2")}>
         <Image
           src={card.image}
           alt={card.alt}
@@ -210,7 +210,7 @@ export default async function Home() {
                   />
                   <div className="glass-dark relative overflow-hidden rounded-2xl p-2.5">
                     <span aria-hidden className="glass-sheen" />
-                    <div className="relative aspect-[2/3] overflow-hidden rounded-xl">
+                    <div className="relative aspect-2/3 overflow-hidden rounded-xl">
                       <Image
                         src={book.coverImageUrl}
                         alt={`${book.title} cover`}
@@ -293,7 +293,7 @@ export default async function Home() {
                   <CoverParallax
                     src={book.coverImageUrl}
                     alt={`${book.title} cover`}
-                    className="aspect-[2/3] overflow-hidden rounded-xl"
+                    className="aspect-2/3 overflow-hidden rounded-xl"
                   />
                 </div>
               </div>

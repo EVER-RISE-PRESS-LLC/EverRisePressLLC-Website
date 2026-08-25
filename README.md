@@ -87,21 +87,35 @@ npm run db:migrate:remote # Apply to remote D1
   - POST /api/lead endpoint (Turnstile verify → DB insert → JWT cookie)
   - 7-day chapter access cookie for returning readers
 
-- [ ] **Milestone 6: Mailchimp Integration & Email Nurture**
+- [ ] **Milestone 6: Mailchimp Integration & Email Nurture** (deferred — awaiting Mailchimp account access)
   - Mailchimp API integration
   - Automated subscriber tagging
   - Webhook sync
 
-- [ ] **Milestone 7: Podcast Referral Engine**
-  - Referral redirect system
-  - Cookie attribution
-  - Click tracking
+- [x] **Milestone 7: Podcast Referral Engine** (Completed: 2026-08-25)
+  - `/refer/[code]` edge redirect with slug normalization (`src/app/refer/[code]/route.ts`)
+  - 30-day `everise_ref` HttpOnly attribution cookie (SameSite=Lax)
+  - Click logging to `referral_clicks` (SHA-256 hashed IP, UA, referer, country via CF headers)
+  - Redirect to latest published book with `utm_source=podcast&utm_medium=referral&utm_campaign=<slug>`; overridable via `REFERRAL_DEFAULT_BOOK_SLUG` var
+  - Unknown/inactive codes 302 to homepage (no click logged)
+  - `/api/lead` reads `everise_ref` cookie → attaches `partnerId` + `sourceUtm` to lead (and backfills existing leads missing partner attribution)
+  - Seed partners: `growth-mindset-podcast`, `test-partner` (`src/lib/db/seed-referral-partners.sql`, local + remote)
+  - Note: `middleware.ts` (admin route protection) deferred to Milestone 8 — cookie attribution handled directly in route + lead API
 
-- [ ] **Milestone 8: Admin Dashboard**
-  - KPI dashboard
-  - Partner management
-  - Lead export
-  - Book editor
+- [x] **Milestone 8: Admin Dashboard** (Completed: 2026-08-25)
+  - shadcn/ui (v4, radix base) + dark charcoal / gold admin theme; Light/Dark toggle + UI scale (A−/A+, 90–150%) persisted to localStorage
+  - Custom auth: PBKDF2 password hashing (Web Crypto) + `jose` JWT session cookie `admin_session` (7d); roles ADMIN / EDITOR / PARTNER
+  - `/admin` route group with server-side auth guard; `/admin/login`; `scripts/create-admin.mjs` (`npm run admin:create`)
+  - **Dashboard** — KPI cards (clicks / leads / conversion / retailer exits, with 30-day deltas), 30-day leads-vs-clicks chart (recharts), retailer exit breakdown, top-partners table
+  - **Referrals** — list table (copy /refer link, click/lead/conv counts, active badge), create/edit dialogs, per-partner detail page (activity chart, recent leads, recent clicks, deactivate/reactivate)
+  - **Leads** — filter by book/partner/email search, pagination, Mailchimp badge (Pending until M6), CSV export (`/api/admin/leads/export`)
+  - **Books** — catalog list + full editor (book details, cover preview, chapter 1 HTML, retailer format repeater); create/edit/delete APIs
+  - **Authors** — list + editor (bio, photo, social links)
+  - Retailer exit tracking added: `retailer_clicks` table (migration 0002), `/api/retailer-click`, MultiRetailerModal instrumentation with referral-cookie attribution
+  - Removed note: M7 middleware note superseded — admin protection now via layout guard
+  - Spec doc: `docs/admin-panel-spec.md`
+  - Future feature wishlist (analytics, A/B testing, partner portal, etc.) tracked in `docs/admin-panel-spec.md` §13.2 — not in current scope
+  - Fix (2026-08-25): admin login redirect loop — auth guard moved to `(admin)/admin/(panel)/layout.tsx` so it no longer wraps `/admin/login`
 
 - [ ] **Milestone 9: SEO, GEO & Analytics**
   - JSON-LD structured data
@@ -122,6 +136,6 @@ npm run db:migrate:remote # Apply to remote D1
 
 ---
 
-**Last Updated:** 2026-08-22  
-**Progress:** 5/10 milestones complete  
-**Next:** Milestone 6 - Mailchimp Integration & Email Nurture
+**Last Updated:** 2026-08-25  
+**Progress:** 7/10 milestones complete (Milestone 6 deferred)  
+**Next:** Milestone 9 - SEO, GEO & Analytics

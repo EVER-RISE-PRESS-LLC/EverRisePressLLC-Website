@@ -19,6 +19,7 @@ interface BookFormat {
 interface MultiRetailerModalProps {
   formats: BookFormat[];
   bookTitle: string;
+  bookSlug?: string;
   coverImageUrl?: string;
   triggerText?: string;
 }
@@ -87,11 +88,30 @@ const FORMAT_ORDER = ["EBOOK", "PAPERBACK", "HARDCOVER", "AUDIOBOOK"];
 export default function MultiRetailerModal({
   formats,
   bookTitle,
+  bookSlug,
   coverImageUrl,
   triggerText = "Choose Your Format",
 }: MultiRetailerModalProps) {
   const [isOpen, setIsOpen] = useState(false);
   const modalRef = useRef<HTMLDivElement>(null);
+
+  function trackRetailerClick(format: BookFormat) {
+    if (!bookSlug) return;
+    try {
+      fetch("/api/retailer-click", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          bookSlug,
+          retailer: format.distributor,
+          formatType: format.formatType,
+        }),
+        keepalive: true,
+      }).catch(() => {});
+    } catch {
+      // tracking must never block navigation
+    }
+  }
 
   useEffect(() => {
     if (!isOpen) return;
@@ -126,6 +146,7 @@ export default function MultiRetailerModal({
         external
         variant="outline"
         surface="dark"
+        onClick={() => trackRetailerClick(formats[0])}
       >
         Buy Now for ${formats[0].retailPrice}
         <ArrowUpRight className="size-4" />
@@ -226,6 +247,7 @@ export default function MultiRetailerModal({
                             href={format.purchaseUrl}
                             target="_blank"
                             rel="noopener noreferrer"
+                            onClick={() => trackRetailerClick(format)}
                             className="group flex items-center gap-4 rounded-xl border border-charcoal/10 bg-white/60 p-3 transition-all duration-300 hover:border-gold hover:bg-white hover:shadow-lg"
                           >
                             {meta.logo ? (

@@ -1,6 +1,9 @@
 import type { Metadata } from "next";
-import { Spectral, Karla } from "next/font/google";
+import { Spectral, Karla, Geist } from "next/font/google";
 import "./globals.css";
+import { cn } from "@/lib/utils";
+
+const geist = Geist({subsets:['latin'],variable:'--font-sans'});
 
 const spectral = Spectral({
   variable: "--font-spectral",
@@ -26,7 +29,9 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html
       lang="en"
-      className={`${spectral.variable} ${karla.variable} h-full antialiased`}
+      data-scroll-behavior="smooth"
+      className={cn("h-full", "antialiased", spectral.variable, karla.variable, "font-sans", geist.variable)}
+      suppressHydrationWarning
     >
       <body className="min-h-full flex flex-col">{children}</body>
     </html>

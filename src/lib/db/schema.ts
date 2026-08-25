@@ -84,3 +84,15 @@ export const leads = sqliteTable("leads", {
   unlockedAt: text("unlocked_at").notNull().default(sql`(CURRENT_TIMESTAMP)`),
   createdAt: text("created_at").notNull().default(sql`(CURRENT_TIMESTAMP)`),
 });
+
+export const retailerClicks = sqliteTable("retailer_clicks", {
+  id: text("id").primaryKey().$defaultFn(() => crypto.randomUUID()),
+  bookId: text("book_id").notNull().references(() => books.id, { onDelete: "cascade" }),
+  retailer: text("retailer").notNull(),
+  formatType: text("format_type").notNull(),
+  ipHash: text("ip_hash"),
+  userAgent: text("user_agent"),
+  country: text("country"),
+  partnerId: text("partner_id").references(() => referralPartners.id),
+  createdAt: text("created_at").notNull().default(sql`(CURRENT_TIMESTAMP)`),
+});

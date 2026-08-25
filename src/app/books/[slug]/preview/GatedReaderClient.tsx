@@ -56,7 +56,7 @@ export default function GatedReaderClient({
       {isUnlocked ? (
         <main>
           <article
-            className="mx-auto max-w-[720px] px-6 pb-12 pt-28 md:px-8 md:pb-16 md:pt-32"
+            className="mx-auto max-w-180 px-6 pb-12 pt-28 md:px-8 md:pb-16 md:pt-32"
             data-nav-surface="light"
           >
             <p className="text-gold font-sans text-xs uppercase tracking-[0.2em] mb-3">
@@ -150,7 +150,7 @@ export default function GatedReaderClient({
           <div className="max-w-4xl mx-auto px-6">
             <div className="grid md:grid-cols-5 gap-10 md:gap-16 items-start">
               <div className="md:col-span-2 flex flex-col items-center md:items-start">
-                <div className="relative w-56 md:w-full aspect-[2/3] rounded-lg shadow-2xl shadow-gold/10 overflow-hidden border border-gold/20 mb-6">
+                <div className="relative w-56 md:w-full aspect-2/3 rounded-lg shadow-2xl shadow-gold/10 overflow-hidden border border-gold/20 mb-6">
                   <Image
                     src={bookCoverUrl}
                     alt={`${bookTitle} cover`}

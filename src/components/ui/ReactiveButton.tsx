@@ -109,7 +109,7 @@ export default function ReactiveButton(props: ReactiveButtonProps) {
       initial={{ x: "-170%", skewX: -18 }}
       whileHover={{ x: "230%" }}
       transition={{ duration: 0.9, ease: [0.4, 0, 0.2, 1] }}
-      className="pointer-events-none absolute inset-y-0 left-0 w-1/3 bg-gradient-to-r from-transparent via-white/45 to-transparent"
+      className="pointer-events-none absolute inset-y-0 left-0 w-1/3 bg-linear-to-r from-transparent via-white/45 to-transparent"
     />
   ) : null;
 

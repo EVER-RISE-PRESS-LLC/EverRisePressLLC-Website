@@ -129,7 +129,7 @@ export default async function BookPage({ params }: { params: Promise<{ slug: str
             <Reveal className="mx-auto w-64 md:w-80 lg:w-96">
               <div className="glass-dark relative overflow-hidden rounded-2xl p-2.5">
                 <span aria-hidden className="glass-sheen" />
-                <div className="relative aspect-[2/3] overflow-hidden rounded-xl">
+                <div className="relative aspect-2/3 overflow-hidden rounded-xl">
                   <Image
                     src={book.coverImageUrl}
                     alt={`${book.title} cover`}
@@ -198,6 +198,7 @@ export default async function BookPage({ params }: { params: Promise<{ slug: str
                       isbn: f.isbn,
                     }))}
                     bookTitle={book.title}
+                    bookSlug={book.slug}
                     coverImageUrl={book.coverImageUrl}
                     triggerText={`Get the Full Book for $${formats[0]?.retailPrice}`}
                   />
@@ -352,6 +353,7 @@ export default async function BookPage({ params }: { params: Promise<{ slug: str
                   isbn: f.isbn,
                 }))}
                 bookTitle={book.title}
+                bookSlug={book.slug}
                 coverImageUrl={book.coverImageUrl}
                 triggerText={`Get the Full Book for $${formats[0]?.retailPrice}`}
               />

@@ -1,9 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getCloudflareContext } from "@opennextjs/cloudflare";
 import { getDb } from "@/lib/db";
-import { leads, books } from "@/lib/db/schema";
-import { eq } from "drizzle-orm";
+import { leads, books, referralPartners } from "@/lib/db/schema";
+import { and, eq } from "drizzle-orm";
 import { verifyTurnstileToken } from "@/lib/turnstile";
+import { REFERRAL_COOKIE_NAME, normalizePartnerSlug } from "@/lib/referral";
 import { SignJWT } from "jose";
 
 export const runtime = "nodejs";
@@ -69,11 +70,33 @@ export async function POST(request: NextRequest) {
       .limit(1)
       .then((rows) => rows[0]);
 
+    const referralSlug = request.cookies.get(REFERRAL_COOKIE_NAME)?.value ?? null;
+    const partner = referralSlug
+      ? await db
+          .select()
+          .from(referralPartners)
+          .where(
+            and(
+              eq(referralPartners.slug, normalizePartnerSlug(referralSlug)),
+              eq(referralPartners.isActive, true)
+            )
+          )
+          .limit(1)
+          .then((rows) => rows[0])
+      : null;
+
     if (!existingLead) {
       await db.insert(leads).values({
         email,
         bookId: book.id,
+        partnerId: partner?.id ?? null,
+        sourceUtm: partner?.slug ?? null,
       });
+    } else if (partner && !existingLead.partnerId) {
+      await db
+        .update(leads)
+        .set({ partnerId: partner.id })
+        .where(eq(leads.id, existingLead.id));
     }
 
     const jwtSecret = new TextEncoder().encode(

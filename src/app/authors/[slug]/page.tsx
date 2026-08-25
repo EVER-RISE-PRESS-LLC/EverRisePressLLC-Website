@@ -151,7 +151,7 @@ export default async function AuthorPage({ params }: { params: Promise<{ slug: s
                   <GlassCard surface="dark" interactive radius="3xl" className="h-full">
                     <div className="flex h-full flex-col gap-8 p-7 sm:flex-row md:p-8">
                       <div className="mx-auto w-40 shrink-0 sm:mx-0">
-                        <div className="relative aspect-[2/3] overflow-hidden rounded-xl border border-cream/15 shadow-2xl shadow-black/40">
+                        <div className="relative aspect-2/3 overflow-hidden rounded-xl border border-cream/15 shadow-2xl shadow-black/40">
                           <Image
                             src={book.coverImageUrl}
                             alt={`${book.title} cover`}

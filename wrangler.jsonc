@@ -9,7 +9,8 @@
 		"global_fetch_strictly_public"
 	],
 	"vars": {
-		"NEXT_PUBLIC_TURNSTILE_SITE_KEY": "0x4AAAAAAEWC4iu22r4MiMkL"
+		"NEXT_PUBLIC_TURNSTILE_SITE_KEY": "0x4AAAAAAEWC4iu22r4MiMkL",
+		"REFERRAL_DEFAULT_BOOK_SLUG": ""
 	},
 	"assets": {
 		"directory": ".open-next/assets",
