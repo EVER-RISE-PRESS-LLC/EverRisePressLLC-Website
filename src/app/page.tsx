@@ -57,7 +57,7 @@ const STACK_CARDS: StackCardData[] = [
     label: "The Hustle",
     title: "Chasing Every Friday",
     body: "The job hopping hustle: chasing the next paycheck instead of building a foundation. The cage is invisible because you built it yourself.",
-    image: "/images/stack/img2.webp",
+    image: "/images/stack/img2.jpg",
     alt: "Painting of a figure slumped on a rooftop, head burning against a deep blue sky",
     position: "object-[50%_50%]",
     tone: "cream",
@@ -66,7 +66,7 @@ const STACK_CARDS: StackCardData[] = [
     label: "The Cure",
     title: "The Awakening",
     body: "The monster isn't your income. It's muscle memory. Chapter 1 shows you exactly where the bleeding started, and reading it is free.",
-    image: "/images/stack/img4.webp",
+    image: "/images/stack/img4.jpg",
     alt: "Classical painting of a collapsed figure whose body opens onto a blue sky with clouds",
     position: "object-[50%_45%]",
     tone: "charcoal",
@@ -168,20 +168,20 @@ export default async function Home() {
         <div className="relative mx-auto max-w-6xl px-6">
           <div className="grid items-center gap-12 lg:grid-cols-[minmax(0,7fr)_minmax(0,5fr)] lg:gap-10">
             <div>
-              <Reveal immediate>
+              <Reveal>
                 <h1 className="max-w-2xl font-heading text-[clamp(2.25rem,5.5vw,4.5rem)] font-bold leading-[1.06] text-cream text-balance">
                   <span className="block">Your Financial Heart Attack</span>
                   <span className="block text-gold">Is Already in Progress.</span>
                 </h1>
               </Reveal>
-              <Reveal immediate delay={0.12}>
+              <Reveal delay={0.12}>
                 <p className="mt-7 max-w-xl text-lg leading-relaxed text-cream/80 md:text-xl">
                   You&apos;re not losing money. You&apos;re{" "}
                   <em>practicing</em> poverty until you&apos;re an expert.
                   The diagnosis is free.
                 </p>
               </Reveal>
-              <Reveal immediate delay={0.2}>
+              <Reveal delay={0.2}>
                 <div className="mt-10 flex flex-col gap-4 sm:flex-row">
                   <ReactiveButton
                     href="/books/how-to-have-a-financial-heart-attack/preview"
@@ -205,7 +205,7 @@ export default async function Home() {
             </div>
 
             {book && (
-              <Reveal immediate delay={0.18} className="relative z-10">
+              <Reveal delay={0.18} className="relative z-10">
                 <div className="mx-auto w-56 rotate-3 sm:w-64 lg:w-72 xl:w-80">
                   <span
                     aria-hidden
