@@ -1,11 +1,13 @@
 import Image from "next/image";
 import { notFound } from "next/navigation";
+import type { Metadata } from "next";
 import { getDatabase } from "@/lib/db/client";
 import { authors, books, bookFormats } from "@/lib/db/schema";
 import { eq } from "drizzle-orm";
-import { getPersonSchema } from "@/lib/schema";
+import { buildMetadata } from "@/lib/seo/metadata";
+import type { AuthorSeoData } from "@/lib/seo/registry";
 import { cleanDashes } from "@/lib/utils";
-import JsonLd from "@/components/seo/JsonLd";
+import SeoJsonLd from "@/components/seo/SeoJsonLd";
 import Navbar from "@/components/Navbar";
 import SiteFooter from "@/components/SiteFooter";
 import ReactiveButton from "@/components/ui/ReactiveButton";
@@ -14,6 +16,28 @@ import Reveal from "@/components/ui/Reveal";
 import { ArrowRight, ArrowUpRight } from "lucide-react";
 
 export const dynamic = "force-dynamic";
+
+export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
+  const { slug } = await params;
+  const db = await getDatabase();
+  const author = await db
+    .select()
+    .from(authors)
+    .where(eq(authors.slug, slug))
+    .limit(1)
+    .then((rows) => rows[0]);
+
+  if (!author) return { title: "Author Not Found" };
+
+  return buildMetadata("author", {
+    slug: author.slug,
+    name: author.name,
+    title: author.title,
+    bio: author.bio,
+    avatarUrl: author.avatarUrl,
+    socialLinks: author.socialLinks as Record<string, string> | null,
+  } satisfies AuthorSeoData);
+}
 
 export default async function AuthorPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
@@ -45,18 +69,18 @@ export default async function AuthorPage({ params }: { params: Promise<{ slug: s
 
   const socialLinks = author.socialLinks as Record<string, string> | null;
 
-  const personSchema = getPersonSchema({
+  const seoAuthorData: AuthorSeoData = {
     slug: author.slug,
     name: author.name,
     title: author.title,
     bio: author.bio,
     avatarUrl: author.avatarUrl,
     socialLinks,
-  });
+  };
 
   return (
     <main className="w-full max-w-full overflow-x-hidden bg-cream text-charcoal">
-      <JsonLd data={personSchema} />
+      <SeoJsonLd type="author" data={seoAuthorData} />
       <Navbar />
 
       {/* Author hero */}

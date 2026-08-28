@@ -1,52 +1,46 @@
 import type { MetadataRoute } from "next";
 import { getDatabase } from "@/lib/db/client";
-import { authors, books } from "@/lib/db/schema";
-import { env } from "@/lib/env";
+import { SITE_URL } from "@/lib/seo/ids";
+import { seoRegistry, type SeoPageType } from "@/lib/seo/registry";
 
 export const dynamic = "force-dynamic";
 
+/**
+ * Iteration order for registry-driven sitemap entries. Ordering is
+ * cosmetic (search engines ignore it) but kept stable: home + privacy
+ * first, then content types.
+ */
+const SITEMAP_TYPE_ORDER: SeoPageType[] = [
+  "home",
+  "privacy",
+  "book",
+  "author",
+  "article",
+];
+
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const baseUrl =
-    process.env.NEXT_PUBLIC_SITE_URL || env.NEXT_PUBLIC_SITE_URL;
   const db = await getDatabase();
 
-  const [bookRows, authorRows] = await Promise.all([
-    db
-      .select({ slug: books.slug, updatedAt: books.updatedAt })
-      .from(books),
-    db
-      .select({ slug: authors.slug, updatedAt: authors.updatedAt })
-      .from(authors),
-  ]);
+  const entries: MetadataRoute.Sitemap = [];
 
-  const staticPages: MetadataRoute.Sitemap = [
-    {
-      url: `${baseUrl}/`,
-      lastModified: new Date(),
-      changeFrequency: "weekly",
-      priority: 1,
-    },
-    {
-      url: `${baseUrl}/privacy`,
-      lastModified: new Date(),
-      changeFrequency: "yearly",
-      priority: 0.1,
-    },
-  ];
+  for (const type of SITEMAP_TYPE_ORDER) {
+    const entry = seoRegistry[type];
+    if (!entry.sitemapEntries) continue;
 
-  const bookEntries: MetadataRoute.Sitemap = bookRows.map((book) => ({
-    url: `${baseUrl}/books/${book.slug}`,
-    lastModified: book.updatedAt ? new Date(book.updatedAt) : new Date(),
-    changeFrequency: "weekly",
-    priority: 0.9,
-  }));
+    const items = await entry.sitemapEntries(db);
+    for (const item of items) {
+      entries.push({
+        url: `${SITE_URL}${item.path}`,
+        lastModified: item.lastModified
+          ? new Date(item.lastModified)
+          : new Date(),
+        ...(item.changeFrequency
+          ? { changeFrequency: item.changeFrequency }
+          : {}),
+        ...(item.priority !== undefined ? { priority: item.priority } : {}),
+      });
+    }
+  }
 
-  const authorEntries: MetadataRoute.Sitemap = authorRows.map((author) => ({
-    url: `${baseUrl}/authors/${author.slug}`,
-    lastModified: author.updatedAt ? new Date(author.updatedAt) : new Date(),
-    changeFrequency: "monthly",
-    priority: 0.7,
-  }));
-
-  return [...staticPages, ...bookEntries, ...authorEntries];
+  return entries;
 }

@@ -18,10 +18,12 @@
     "db:seed": "wrangler d1 execute everrisepress-db --file ./src/lib/db/seed.sql",
     "db:seed:partners:local": "wrangler d1 execute everrisepress-db --local --file ./src/lib/db/seed-referral-partners.sql",
     "db:seed:partners:remote": "wrangler d1 execute everrisepress-db --remote --file ./src/lib/db/seed-referral-partners.sql",
-    "admin:create": "node scripts/create-admin.mjs"
+    "admin:create": "node scripts/create-admin.mjs",
+    "indexnow": "node scripts/indexnow.mjs"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.9.1",
+    "@jdevalk/seo-graph-core": "0.7.0",
     "@marsidev/react-turnstile": "^1.6.0",
     "@next/third-parties": "^16.3.3",
     "@opennextjs/cloudflare": "^1.20.2",

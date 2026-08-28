@@ -1,96 +1,62 @@
 import { getDatabase } from "@/lib/db/client";
-import { authors, bookFormats, books } from "@/lib/db/schema";
-import { asc, eq } from "drizzle-orm";
-import { env } from "@/lib/env";
+import { authors, books } from "@/lib/db/schema";
+import { SITE_URL } from "@/lib/seo/ids";
+import { seoPageTypes, seoRegistry } from "@/lib/seo/registry";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
 export async function GET() {
-  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || env.NEXT_PUBLIC_SITE_URL;
   const db = await getDatabase();
 
-  const [bookRows, authorRows] = await Promise.all([
-    db
-      .select({
-        slug: books.slug,
-        title: books.title,
-        subtitle: books.subtitle,
-        synopsis: books.synopsis,
-      })
-      .from(books)
-      .orderBy(asc(books.publishedAt)),
-    db
-      .select({ slug: authors.slug, name: authors.name, title: authors.title })
-      .from(authors),
-  ]);
-
-  const formats = await db
-    .select({
-      bookSlug: books.slug,
-      formatType: bookFormats.formatType,
-      retailPrice: bookFormats.retailPrice,
-      distributor: bookFormats.distributor,
-    })
-    .from(bookFormats)
-    .innerJoin(books, eq(bookFormats.bookId, books.id));
-
-  const formatsByBook = new Map<string, typeof formats>();
-  for (const format of formats) {
-    const list = formatsByBook.get(format.bookSlug) ?? [];
-    const isDuplicate = list.some(
-      (f) => f.formatType === format.formatType && f.retailPrice === format.retailPrice
-    );
-    if (!isDuplicate) list.push(format);
-    formatsByBook.set(format.bookSlug, list);
+  // Registry-driven sections (## Catalog from the book type, ## Authors
+  // from the author type). New content types contribute automatically.
+  const sections: string[] = [];
+  for (const type of seoPageTypes) {
+    const entry = seoRegistry[type];
+    if (!entry.llmsSection) continue;
+    const section = await entry.llmsSection(db);
+    if (section) sections.push(section);
   }
 
-  const bookLines = bookRows
-    .map((book) => {
-      const bookFormatsList = formatsByBook.get(book.slug) ?? [];
-      const formatsSummary = bookFormatsList
-        .map((f) => `${f.formatType.charAt(0) + f.formatType.slice(1).toLowerCase()} ($${f.retailPrice})`)
-        .join(", ");
-      const synopsis = book.synopsis
-        .replace(/\s+/g, " ")
-        .slice(0, 280)
-        .trim();
-      return [
-        `### ${book.title}${book.subtitle ? ` — ${book.subtitle}` : ""}`,
-        `- Slug: ${book.slug}`,
-        `- URL: ${baseUrl}/books/${book.slug}`,
-        `- Formats: ${formatsSummary || "Coming soon"}`,
-        `- Free sample: ${baseUrl}/books/${book.slug}/preview`,
-        `- About: ${synopsis}`,
-      ].join("\n");
-    })
-    .join("\n\n");
+  // Per-entity @id references for AI crawlers that want deep links into
+  // the knowledge graph (see /schema.json for the full assembled graph).
+  const [bookRows, authorRows] = await Promise.all([
+    db.select({ slug: books.slug, title: books.title }).from(books),
+    db.select({ slug: authors.slug, name: authors.name }).from(authors),
+  ]);
 
-  const authorLines = authorRows
-    .map(
-      (author) =>
-        `### ${author.name}${author.title ? `, ${author.title}` : ""}\n- URL: ${baseUrl}/authors/${author.slug}`
-    )
-    .join("\n\n");
+  const entityLines = [
+    `- Knowledge graph (all entities, one fetch): ${SITE_URL}/schema.json`,
+    `- Schemamap (schema endpoint discovery): ${SITE_URL}/schemamap.xml`,
+    `- API catalog (RFC 9727): ${SITE_URL}/.well-known/api-catalog`,
+    `- Organization: ${SITE_URL}/#organization`,
+    `- WebSite: ${SITE_URL}/#website`,
+    `- Blog: ${SITE_URL}/blog/#blog`,
+    ...bookRows.map(
+      (book) => `- Book "${book.title}": ${SITE_URL}/books/${book.slug}#book`
+    ),
+    ...authorRows.map(
+      (author) => `- Person "${author.name}": ${SITE_URL}/authors/${author.slug}#person`
+    ),
+  ];
 
   const markdown = `# EverRise Press LLC
 
 > Modern independent publishing house founded by Lamont D. McLeod. Debut title: *How To Have a Financial Heart Attack*.
 
-## Catalog
-
-${bookLines || "No books published yet."}
-
-## Authors
-
-${authorLines || "No authors listed."}
+${sections.join("\n\n")}
 
 ## Publisher
 
 - Publisher: EverRise Press LLC
 - Founder: Lamont D. McLeod
-- Homepage: ${baseUrl}
-- Privacy policy: ${baseUrl}/privacy
+- Homepage: ${SITE_URL}
+- Privacy policy: ${SITE_URL}/privacy
+
+## Schema
+
+${entityLines.join("\n")}
 `;
 
   return new Response(markdown, {

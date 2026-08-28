@@ -5,10 +5,10 @@ import type { Metadata } from "next";
 import { getDatabase } from "@/lib/db/client";
 import { books, authors, bookFormats } from "@/lib/db/schema";
 import { eq } from "drizzle-orm";
-import { getBookSchema, getOrganizationSchema } from "@/lib/schema";
+import { buildMetadata } from "@/lib/seo/metadata";
+import type { BookSeoData } from "@/lib/seo/registry";
 import { cleanDashes } from "@/lib/utils";
-import { env } from "@/lib/env";
-import JsonLd from "@/components/seo/JsonLd";
+import SeoJsonLd from "@/components/seo/SeoJsonLd";
 import MultiRetailerModal from "@/components/marketing/MultiRetailerModal";
 import Navbar from "@/components/Navbar";
 import SiteFooter from "@/components/SiteFooter";
@@ -31,38 +31,16 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
 
   if (!book) return { title: "Book Not Found" };
 
-  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || env.NEXT_PUBLIC_SITE_URL;
-  const ogImageUrl = `${baseUrl}/images/og/${book.slug}.png`;
-
-  return {
-    title: `${book.title} | EverRise Press`,
-    description: "You aren't just losing money. You're practicing poverty until you're an expert. The diagnosis is free.",
-    openGraph: {
-      title: book.title,
-      description: cleanDashes(book.synopsis).slice(0, 160),
-      type: "book",
-      images: [
-        {
-          url: ogImageUrl,
-          width: 1200,
-          height: 630,
-          alt: book.title,
-        },
-        {
-          url: `${baseUrl}/images/og/everrise-default.png`,
-          width: 1200,
-          height: 630,
-          alt: "EverRise Press",
-        },
-      ],
-    },
-    twitter: {
-      card: "summary_large_image",
-      title: book.title,
-      description: cleanDashes(book.synopsis).slice(0, 160),
-      images: [ogImageUrl],
-    },
-  };
+  return buildMetadata("book", {
+    slug: book.slug,
+    title: book.title,
+    subtitle: book.subtitle,
+    synopsis: book.synopsis,
+    coverImageUrl: book.coverImageUrl,
+    publishedAt: book.publishedAt,
+    formats: [],
+    author: null,
+  } satisfies BookSeoData);
 }
 
 export default async function BookPage({ params }: { params: Promise<{ slug: string }> }) {
@@ -90,33 +68,23 @@ export default async function BookPage({ params }: { params: Promise<{ slug: str
     .from(bookFormats)
     .where(eq(bookFormats.bookId, book.id));
 
-  const bookSchema = getBookSchema(
-    {
-      slug: book.slug,
-      title: book.title,
-      subtitle: book.subtitle,
-      synopsis: book.synopsis,
-      coverImageUrl: book.coverImageUrl,
-      publishedAt: book.publishedAt,
-      formats: formats.map((f) => ({
-        formatType: f.formatType,
-        isbn: f.isbn,
-        retailPrice: f.retailPrice,
-        currency: f.currency,
-        purchaseUrl: f.purchaseUrl,
-      })),
-    },
-    author
-      ? {
-          slug: author.slug,
-          name: author.name,
-          title: author.title,
-          bio: author.bio,
-          avatarUrl: author.avatarUrl,
-          socialLinks: author.socialLinks as Record<string, string> | null,
-        }
-      : { slug: "", name: "Unknown", title: null, bio: "", avatarUrl: null, socialLinks: null }
-  );
+  const seoBookData: BookSeoData = {
+    slug: book.slug,
+    title: book.title,
+    subtitle: book.subtitle,
+    synopsis: book.synopsis,
+    coverImageUrl: book.coverImageUrl,
+    publishedAt: book.publishedAt,
+    updatedAt: book.updatedAt,
+    formats: formats.map((f) => ({
+      formatType: f.formatType,
+      isbn: f.isbn,
+      retailPrice: f.retailPrice,
+      currency: f.currency,
+      purchaseUrl: f.purchaseUrl,
+    })),
+    author: author ? { slug: author.slug, name: author.name } : null,
+  };
 
   const insideItems = [
     {
@@ -143,7 +111,7 @@ export default async function BookPage({ params }: { params: Promise<{ slug: str
 
   return (
     <main className="w-full max-w-full overflow-x-hidden bg-cream text-charcoal">
-      <JsonLd data={[bookSchema, getOrganizationSchema()]} />
+      <SeoJsonLd type="book" data={seoBookData} />
       <Navbar />
 
       {/* Hero - editorial split */}

@@ -40,7 +40,7 @@
 | Caching | No-op (R2 disabled on account 2026-08-21; all pages force-dynamic, no ISR cache needed) |
 | Bot Protection | Cloudflare Turnstile (Managed mode) |
 | Auth/Cookies | `jose` (JWT signing for chapter access) |
-| Structured Data | `schema-dts` v2.0.0 |
+| Structured Data | `@jdevalk/seo-graph-core` 0.7.0 + `schema-dts` v2.0.0 (registry-driven automated SEO system — see `docs/seo-system.md`) |
 | Turnstile UI | `@marsidev/react-turnstile` v1.6.0 |
 | Wrangler | v4.124.0 |
 
@@ -309,6 +309,8 @@ JWT_SECRET=everrisepress-jwt-secret-change-in-production
 - Deploy to production
 - Connect custom domain + DNS
 - Needs: Privacy policy text, DNS records, retailer link confirmation
+- **SEO System (2026-08-26):** Automated SEO layer built on `@jdevalk/seo-graph-core@0.7.0` — content-type registry (`src/lib/seo/registry.ts`) drives JSON-LD knowledge graphs (Organization/WebSite/Book/Person/Blog), metadata+canonicals, breadcrumbs, sitemap entries, and llms.txt sections from one registration. Endpoints: `GET /schema.json` (corpus graph), IndexNow script (`npm run indexnow`, key in `public/<32-hex>.txt`), `## Schema` section in llms.txt. Runbook + future content types: `docs/seo-system.md`.
+- **Speed & performance plan (2026-08-26):** (1) HTML edge caching for marketing pages (all force-dynamic → every request hits D1; use Cloudflare Cache API/SWR with DB-triggered invalidation), (2) D1 query batching (parallelize sequential awaits, use `batch()`), (3) third-party script tuning (PostHog/GA4/Meta defer), (4) LCP polish (scroll-stack image candidates, hero `priority`, asset sizes), (5) worker bundle diet (2226 KiB gzip today). Tracked in README M10.
 - **Known polish item:** `src/app/manifest.json` has broken icon paths — `/src/app/icon.png/web-app-manifest-*.png` should be `/web-app-manifest-*.png` (files live in `public/`). Found 2026-08-21 during worker size fix.
 - **Note (2026-08-21):** First deploy succeeded after archiving `src/app/icon0.svg` (1.97 MB raster-in-SVG favicon) to `Logo-and-images/icon0-archived-favicon.svg`. Worker gzip: 3068 KiB → 1245 KiB (free-plan limit is 3 MiB). Favicons now served by `favicon.ico` + `icon1.png` + `apple-icon.png`. Do NOT put large images in `src/app/` — Next.js inlines file-based metadata into the worker bundle; keep images in `public/` (served as assets, never bundled).
 

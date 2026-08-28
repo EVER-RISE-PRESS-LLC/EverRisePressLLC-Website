@@ -1,10 +1,11 @@
 import Image from "next/image";
+import type { Metadata } from "next";
 import { getDatabase } from "@/lib/db/client";
 import { books, authors, bookFormats } from "@/lib/db/schema";
 import { eq } from "drizzle-orm";
 import { cleanDashes, cn } from "@/lib/utils";
-import { getWebSiteSchema, getOrganizationSchema } from "@/lib/schema";
-import JsonLd from "@/components/seo/JsonLd";
+import { buildMetadata } from "@/lib/seo/metadata";
+import SeoJsonLd from "@/components/seo/SeoJsonLd";
 import Navbar from "@/components/Navbar";
 import SiteFooter from "@/components/SiteFooter";
 import ReactiveButton from "@/components/ui/ReactiveButton";
@@ -20,6 +21,8 @@ import {
 } from "lucide-react";
 
 export const dynamic = "force-dynamic";
+
+export const metadata: Metadata = buildMetadata("home");
 
 interface StackCardData {
   label: string;
@@ -144,7 +147,7 @@ export default async function Home() {
 
   return (
     <main className="w-full max-w-full overflow-x-hidden bg-cream text-charcoal">
-      <JsonLd data={[getWebSiteSchema(), getOrganizationSchema()]} />
+      <SeoJsonLd type="home" />
       <Navbar />
 
       {/* Attention - Hero */}

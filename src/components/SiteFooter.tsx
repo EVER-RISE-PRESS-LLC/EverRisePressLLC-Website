@@ -12,8 +12,13 @@ export default function SiteFooter({ extraLinks = [] }: SiteFooterProps) {
     { label: "Home", href: "/", icon: BookOpen },
     { label: "Author", href: "/authors/lamont-mcleod", icon: UserRound },
     { label: "Privacy", href: "/privacy", icon: ShieldCheck },
-    ...extraLinks.map((link) => ({ ...link, icon: BookOpen })),
   ];
+
+  const seenHrefs = new Set(links.map((link) => link.href));
+  const extra = extraLinks
+    .filter((link) => !seenHrefs.has(link.href))
+    .map((link) => ({ ...link, icon: BookOpen }));
+  const allLinks = [...links, ...extra];
 
   return (
     <footer
@@ -44,7 +49,7 @@ export default function SiteFooter({ extraLinks = [] }: SiteFooterProps) {
         </div>
 
         <nav className="flex flex-wrap items-center justify-center gap-x-8 gap-y-3">
-          {links.map((link) => (
+          {allLinks.map((link) => (
             <Link
               key={`${link.label}-${link.href}`}
               href={link.href}

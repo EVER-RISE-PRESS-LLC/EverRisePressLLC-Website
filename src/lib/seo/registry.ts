@@ -1,0 +1,652 @@
+import type { GraphEntity } from "@jdevalk/seo-graph-core";
+import {
+  buildArticle,
+  buildBreadcrumbList,
+  buildImageObject,
+  buildPiece,
+  buildWebPage,
+  buildWebSite,
+} from "@jdevalk/seo-graph-core";
+import type {
+  Blog,
+  Book,
+  BreadcrumbList,
+  Organization,
+  Person,
+  WebSite,
+  WithContext,
+} from "schema-dts";
+import { asc, eq } from "drizzle-orm";
+import type { Database } from "@/lib/db";
+import { authors, bookFormats, books } from "@/lib/db/schema";
+import { cleanDashes } from "@/lib/utils";
+import { BRAND_NAME, seoIds, SITE_URL, type SeoIds } from "./ids";
+
+/* ------------------------------------------------------------------ */
+/* Content data shapes                                                */
+/* ------------------------------------------------------------------ */
+
+export interface BookFormatSeoData {
+  formatType: string;
+  isbn: string | null;
+  retailPrice: number;
+  currency: string;
+  purchaseUrl: string;
+}
+
+export interface BookAuthorRefData {
+  slug: string;
+  name: string;
+}
+
+export interface BookSeoData {
+  slug: string;
+  title: string;
+  subtitle: string | null;
+  synopsis: string;
+  coverImageUrl: string;
+  publishedAt: string | null;
+  updatedAt?: string | null;
+  formats: BookFormatSeoData[];
+  author: BookAuthorRefData | null;
+}
+
+export interface AuthorSeoData {
+  slug: string;
+  name: string;
+  title: string | null;
+  bio: string;
+  avatarUrl: string | null;
+  socialLinks: Record<string, string> | null;
+}
+
+export interface ArticleSeoData {
+  slug: string;
+  title: string;
+  description: string;
+  publishedAt: string;
+  updatedAt?: string | null;
+  imageUrl?: string;
+  section?: string;
+  wordCount?: number;
+  author: BookAuthorRefData;
+}
+
+/* ------------------------------------------------------------------ */
+/* Registry contract                                                  */
+/* ------------------------------------------------------------------ */
+
+export type SeoPageType = "home" | "book" | "author" | "privacy" | "article";
+
+export interface SeoCrumbs {
+  name: string;
+  url?: string;
+}
+
+export interface SeoMetadataInput {
+  /** Raw page title — buildMetadata appends " | EverRise Press". */
+  title: string;
+  description: string;
+  /** Absolute path on the canonical origin, e.g. "/books/slug". */
+  canonicalPath: string;
+  imageUrl?: string;
+  imageAlt?: string;
+  extraOgImages?: { url: string; width: number; height: number; alt: string }[];
+  ogType?: "website" | "article" | "profile" | "book";
+  ogTitle?: string;
+  ogDescription?: string;
+  twitterTitle?: string;
+  twitterDescription?: string;
+  noindex?: boolean;
+}
+
+export interface SeoSitemapEntry {
+  path: string;
+  lastModified?: string;
+  priority?: number;
+  changeFrequency?:
+    | "always"
+    | "hourly"
+    | "daily"
+    | "weekly"
+    | "monthly"
+    | "yearly"
+    | "never";
+}
+
+export interface RegistryEntry {
+  buildPieces(data: unknown, ids: SeoIds): GraphEntity[];
+  buildBreadcrumbs(data: unknown): SeoCrumbs[];
+  metadata(data: unknown): SeoMetadataInput;
+  sitemapEntries?(db: Database): Promise<SeoSitemapEntry[]>;
+  llmsSection?(db: Database): Promise<string | null>;
+}
+
+/* ------------------------------------------------------------------ */
+/* Shared helpers                                                     */
+/* ------------------------------------------------------------------ */
+
+const FORMAT_TYPE_MAP: Record<
+  string,
+  | "https://schema.org/EBook"
+  | "https://schema.org/Paperback"
+  | "https://schema.org/Hardcover"
+  | "https://schema.org/AudiobookFormat"
+> = {
+  EBOOK: "https://schema.org/EBook",
+  PAPERBACK: "https://schema.org/Paperback",
+  HARDCOVER: "https://schema.org/Hardcover",
+  AUDIOBOOK: "https://schema.org/AudiobookFormat",
+};
+
+/** Parse a D1 text timestamp into a Date, guarding against invalid values. */
+function safeDate(value: string | null | undefined): Date | undefined {
+  if (!value) return undefined;
+  const date = new Date(value);
+  return Number.isNaN(date.getTime()) ? undefined : date;
+}
+
+const HOME_CRUMB: SeoCrumbs = { name: "Home", url: `${SITE_URL}/` };
+
+/**
+ * BreadcrumbList piece. Built with buildPiece (rather than the library's
+ * buildBreadcrumbList) because collection crumbs ("Books", "Authors") have
+ * no index page yet and therefore no URL — the library builder emits an
+ * undefined `item` for url-less middle crumbs.
+ */
+function breadcrumbListPiece(pageUrl: string, crumbs: SeoCrumbs[]): GraphEntity {
+  return buildPiece<WithContext<BreadcrumbList>>({
+    "@type": "BreadcrumbList",
+    "@id": seoIds.breadcrumb(pageUrl),
+    itemListElement: crumbs.map((crumb, index) => ({
+      "@type": "ListItem",
+      position: index + 1,
+      name: crumb.name,
+      ...(crumb.url ? { item: { "@id": crumb.url } } : {}),
+    })),
+  });
+}
+
+/* ------------------------------------------------------------------ */
+/* Site-wide entities (stubs used by graph.ts + home + /schema.json)  */
+/* ------------------------------------------------------------------ */
+
+export function organizationPiece(): GraphEntity {
+  return buildPiece<WithContext<Organization>>({
+    "@type": "Organization",
+    "@id": seoIds.organization,
+    name: BRAND_NAME,
+    legalName: "EverRise Press LLC",
+    url: SITE_URL,
+    logo: `${SITE_URL}/images/logo.png`,
+    description:
+      "Independent digital publishing house. We don't do financial advice. We do financial autopsies.",
+  });
+}
+
+export function websitePiece(): GraphEntity {
+  return buildWebSite(
+    {
+      "@id": seoIds.website,
+      url: `${SITE_URL}/`,
+      name: BRAND_NAME,
+      description:
+        "Independent digital publishing house delivering transformative financial and personal development content.",
+      publisher: { "@id": seoIds.organization },
+      inLanguage: "en-US",
+    },
+    seoIds.factory
+  );
+}
+
+export function blogPiece(): GraphEntity {
+  return buildPiece<WithContext<Blog>>({
+    "@type": "Blog",
+    "@id": seoIds.blog,
+    name: `${BRAND_NAME} Blog`,
+    url: `${SITE_URL}/blog/`,
+    publisher: { "@id": seoIds.organization },
+    inLanguage: "en-US",
+    hasPart: [],
+  });
+}
+
+/** Full Person entity for an author (author page + /schema.json corpus). */
+export function buildPersonPiece(author: AuthorSeoData): GraphEntity {
+  const sameAs = author.socialLinks
+    ? Object.values(author.socialLinks).filter((url): url is string => Boolean(url))
+    : [];
+
+  return buildPiece<WithContext<Person>>({
+    "@type": "Person",
+    "@id": seoIds.person(author.slug),
+    name: author.name,
+    url: `${SITE_URL}/authors/${author.slug}`,
+    image: author.avatarUrl ? `${SITE_URL}${author.avatarUrl}` : undefined,
+    jobTitle: author.title ?? undefined,
+    description: cleanDashes(author.bio).slice(0, 500),
+    worksFor: { "@id": seoIds.organization },
+    sameAs: sameAs.length > 0 ? sameAs : undefined,
+  });
+}
+
+/** Full Book entity (book page + /schema.json corpus). */
+export function buildBookPiece(book: BookSeoData): GraphEntity {
+  return buildPiece<WithContext<Book>>({
+    "@type": "Book",
+    "@id": seoIds.book(book.slug),
+    name: book.subtitle ? `${book.title}: ${book.subtitle}` : book.title,
+    url: `${SITE_URL}/books/${book.slug}`,
+    description: cleanDashes(book.synopsis),
+    image: `${SITE_URL}${book.coverImageUrl}`,
+    inLanguage: "en-US",
+    datePublished: book.publishedAt || undefined,
+    publisher: { "@id": seoIds.organization },
+    author: book.author ? { "@id": seoIds.person(book.author.slug) } : undefined,
+    workExample: book.formats.map((format) => ({
+      "@type": "Book" as const,
+      bookFormat: FORMAT_TYPE_MAP[format.formatType] || ("https://schema.org/EBook" as const),
+      isbn: format.isbn || undefined,
+      offers: {
+        "@type": "Offer" as const,
+        price: format.retailPrice.toString(),
+        priceCurrency: format.currency,
+        availability: "https://schema.org/InStock" as const,
+        url: format.purchaseUrl,
+      },
+    })),
+  });
+}
+
+/* ------------------------------------------------------------------ */
+/* Registry                                                           */
+/* ------------------------------------------------------------------ */
+
+export const seoRegistry: Record<SeoPageType, RegistryEntry> = {
+  home: {
+    buildPieces() {
+      return [
+        organizationPiece(),
+        websitePiece(),
+        buildWebPage(
+          {
+            url: `${SITE_URL}/`,
+            name: BRAND_NAME,
+            isPartOf: { "@id": seoIds.website },
+            about: { "@id": seoIds.organization },
+            mainEntity: { "@id": seoIds.organization },
+            inLanguage: "en-US",
+          },
+          seoIds.factory
+        ),
+      ];
+    },
+    buildBreadcrumbs() {
+      return [];
+    },
+    metadata() {
+      return {
+        title: `${BRAND_NAME} | Books made for people who want to take control of their finances`,
+        description:
+          "You're practicing poverty without knowing. Ever Rise is an independent publishing house that diagnoses the patterns keeping you broke.",
+        canonicalPath: "/",
+        imageUrl: `${SITE_URL}/images/og/everrise-default.png`,
+        imageAlt: BRAND_NAME,
+        ogTitle: BRAND_NAME,
+        ogDescription:
+          "You're practicing poverty without knowing. Ever Rise is an independent publishing house that diagnoses the patterns keeping you broke.",
+        twitterTitle: BRAND_NAME,
+        twitterDescription:
+          "You're not losing money. You're practicing poverty until you're an expert.",
+      };
+    },
+    sitemapEntries: async () => [
+      {
+        path: "/",
+        lastModified: new Date().toISOString(),
+        changeFrequency: "weekly",
+        priority: 1,
+      },
+    ],
+  },
+
+  book: {
+    buildPieces(data) {
+      const book = data as BookSeoData;
+      const url = `${SITE_URL}/books/${book.slug}`;
+
+      return [
+        buildBookPiece(book),
+        buildWebPage(
+          {
+            url,
+            name: book.title,
+            isPartOf: { "@id": seoIds.website },
+            breadcrumb: { "@id": seoIds.breadcrumb(url) },
+            mainEntity: { "@id": seoIds.book(book.slug) },
+            author: book.author ? { "@id": seoIds.person(book.author.slug) } : undefined,
+            datePublished: safeDate(book.publishedAt),
+            dateModified: safeDate(book.updatedAt),
+            inLanguage: "en-US",
+          },
+          seoIds.factory
+        ),
+        breadcrumbListPiece(url, this.buildBreadcrumbs(data)),
+      ];
+    },
+    buildBreadcrumbs(data) {
+      const book = data as BookSeoData;
+      return [
+        HOME_CRUMB,
+        { name: "Books" },
+        { name: book.title, url: `${SITE_URL}/books/${book.slug}` },
+      ];
+    },
+    metadata(data) {
+      const book = data as BookSeoData;
+      const ogDescription = cleanDashes(book.synopsis).slice(0, 160);
+      return {
+        title: book.title,
+        description:
+          "You aren't just losing money. You're practicing poverty until you're an expert. The diagnosis is free.",
+        canonicalPath: `/books/${book.slug}`,
+        imageUrl: `${SITE_URL}/images/og/${book.slug}.png`,
+        imageAlt: book.title,
+        extraOgImages: [
+          {
+            url: `${SITE_URL}/images/og/everrise-default.png`,
+            width: 1200,
+            height: 630,
+            alt: BRAND_NAME,
+          },
+        ],
+        ogType: "book",
+        ogTitle: book.title,
+        ogDescription,
+        twitterTitle: book.title,
+        twitterDescription: ogDescription,
+      };
+    },
+    sitemapEntries: async (db) => {
+      const rows = await db
+        .select({ slug: books.slug, updatedAt: books.updatedAt })
+        .from(books);
+      return rows.map((book) => ({
+        path: `/books/${book.slug}`,
+        lastModified: book.updatedAt ?? new Date().toISOString(),
+        changeFrequency: "weekly",
+        priority: 0.9,
+      }));
+    },
+    llmsSection: async (db) => {
+      const [bookRows, formatRows] = await Promise.all([
+        db
+          .select({
+            slug: books.slug,
+            title: books.title,
+            subtitle: books.subtitle,
+            synopsis: books.synopsis,
+          })
+          .from(books)
+          .orderBy(asc(books.publishedAt)),
+        db
+          .select({
+            bookSlug: books.slug,
+            formatType: bookFormats.formatType,
+            retailPrice: bookFormats.retailPrice,
+          })
+          .from(bookFormats)
+          .innerJoin(books, eq(bookFormats.bookId, books.id)),
+      ]);
+
+      const formatsByBook = new Map<string, typeof formatRows>();
+      for (const format of formatRows) {
+        const list = formatsByBook.get(format.bookSlug) ?? [];
+        const isDuplicate = list.some(
+          (f) => f.formatType === format.formatType && f.retailPrice === format.retailPrice
+        );
+        if (!isDuplicate) list.push(format);
+        formatsByBook.set(format.bookSlug, list);
+      }
+
+      const bookLines = bookRows
+        .map((book) => {
+          const formatsList = formatsByBook.get(book.slug) ?? [];
+          const formatsSummary = formatsList
+            .map(
+              (f) =>
+                `${f.formatType.charAt(0) + f.formatType.slice(1).toLowerCase()} ($${f.retailPrice})`
+            )
+            .join(", ");
+          const synopsis = book.synopsis.replace(/\s+/g, " ").slice(0, 280).trim();
+          return [
+            `### ${book.title}${book.subtitle ? ` — ${book.subtitle}` : ""}`,
+            `- Slug: ${book.slug}`,
+            `- URL: ${SITE_URL}/books/${book.slug}`,
+            `- Formats: ${formatsSummary || "Coming soon"}`,
+            `- Free sample: ${SITE_URL}/books/${book.slug}/preview`,
+            `- About: ${synopsis}`,
+          ].join("\n");
+        })
+        .join("\n\n");
+
+      return `## Catalog\n\n${bookLines || "No books published yet."}`;
+    },
+  },
+
+  author: {
+    buildPieces(data) {
+      const author = data as AuthorSeoData;
+      const url = `${SITE_URL}/authors/${author.slug}`;
+
+      return [
+        buildPersonPiece(author),
+        buildWebPage(
+          {
+            url,
+            name: author.name,
+            isPartOf: { "@id": seoIds.website },
+            breadcrumb: { "@id": seoIds.breadcrumb(url) },
+            about: { "@id": seoIds.person(author.slug) },
+            mainEntity: { "@id": seoIds.person(author.slug) },
+            inLanguage: "en-US",
+          },
+          seoIds.factory,
+          "ProfilePage"
+        ),
+        breadcrumbListPiece(url, this.buildBreadcrumbs(data)),
+      ];
+    },
+    buildBreadcrumbs(data) {
+      const author = data as AuthorSeoData;
+      return [
+        HOME_CRUMB,
+        { name: "Authors" },
+        { name: author.name, url: `${SITE_URL}/authors/${author.slug}` },
+      ];
+    },
+    metadata(data) {
+      const author = data as AuthorSeoData;
+      const description = cleanDashes(author.bio).slice(0, 160);
+      return {
+        title: author.name,
+        description,
+        canonicalPath: `/authors/${author.slug}`,
+        ogType: "profile",
+        ogTitle: author.name,
+      };
+    },
+    sitemapEntries: async (db) => {
+      const rows = await db
+        .select({ slug: authors.slug, updatedAt: authors.updatedAt })
+        .from(authors);
+      return rows.map((author) => ({
+        path: `/authors/${author.slug}`,
+        lastModified: author.updatedAt ?? new Date().toISOString(),
+        changeFrequency: "monthly",
+        priority: 0.7,
+      }));
+    },
+    llmsSection: async (db) => {
+      const authorRows = await db
+        .select({ slug: authors.slug, name: authors.name, title: authors.title })
+        .from(authors);
+
+      const authorLines = authorRows
+        .map(
+          (author) =>
+            `### ${author.name}${author.title ? `, ${author.title}` : ""}\n- URL: ${SITE_URL}/authors/${author.slug}`
+        )
+        .join("\n\n");
+
+      return `## Authors\n\n${authorLines || "No authors listed."}`;
+    },
+  },
+
+  privacy: {
+    buildPieces() {
+      return [
+        buildWebPage(
+          {
+            url: `${SITE_URL}/privacy`,
+            name: "Privacy Policy",
+            isPartOf: { "@id": seoIds.website },
+            inLanguage: "en-US",
+          },
+          seoIds.factory
+        ),
+      ];
+    },
+    buildBreadcrumbs() {
+      return [];
+    },
+    metadata() {
+      return {
+        title: "Privacy Policy",
+        description:
+          "What EverRise Press collects, why we collect it, and how to unsubscribe or request deletion.",
+        canonicalPath: "/privacy",
+      };
+    },
+    sitemapEntries: async () => [
+      {
+        path: "/privacy",
+        lastModified: new Date().toISOString(),
+        changeFrequency: "yearly",
+        priority: 0.1,
+      },
+    ],
+  },
+
+  /**
+   * PRE-WIRED for the future blog. No posts table exists yet — adding one
+   * later is a data-query job, not schema work. See docs/seo-system.md.
+   */
+  article: {
+    buildPieces(data) {
+      const article = data as ArticleSeoData;
+      const url = `${SITE_URL}/blog/${article.slug}`;
+      const authorId = seoIds.person(article.author.slug);
+
+      return [
+        blogPiece(),
+        buildWebPage(
+          {
+            url,
+            name: article.title,
+            isPartOf: { "@id": seoIds.website },
+            breadcrumb: { "@id": seoIds.breadcrumb(url) },
+            author: { "@id": authorId },
+            datePublished: safeDate(article.publishedAt),
+            dateModified: safeDate(article.updatedAt),
+            primaryImage: article.imageUrl
+              ? { "@id": seoIds.primaryImage(url) }
+              : undefined,
+            inLanguage: "en-US",
+          },
+          seoIds.factory
+        ),
+        buildArticle(
+          {
+            url,
+            isPartOf: [{ "@id": seoIds.webPage(url) }, { "@id": seoIds.blog }],
+            author: { "@id": authorId },
+            publisher: { "@id": seoIds.organization },
+            headline: article.title,
+            description: article.description,
+            datePublished: safeDate(article.publishedAt) ?? new Date(),
+            dateModified: safeDate(article.updatedAt),
+            image: article.imageUrl
+              ? { "@id": seoIds.primaryImage(url) }
+              : undefined,
+            articleSection: article.section,
+            wordCount: article.wordCount,
+            inLanguage: "en-US",
+          },
+          seoIds.factory,
+          "BlogPosting"
+        ),
+        ...(article.imageUrl
+          ? [
+              buildImageObject(
+                {
+                  pageUrl: url,
+                  url: article.imageUrl,
+                  width: 1200,
+                  height: 630,
+                },
+                seoIds.factory
+              ),
+            ]
+          : []),
+        buildPiece<WithContext<Person>>({
+          "@type": "Person",
+          "@id": authorId,
+          name: article.author.name,
+          url: `${SITE_URL}/authors/${article.author.slug}`,
+        }),
+        buildBreadcrumbList(
+          {
+            url,
+            items: [
+              { name: "Home", url: `${SITE_URL}/` },
+              { name: "Blog", url: `${SITE_URL}/blog/` },
+              { name: article.title, url },
+            ],
+          },
+          seoIds.factory
+        ),
+      ];
+    },
+    buildBreadcrumbs(data) {
+      const article = data as ArticleSeoData;
+      return [
+        HOME_CRUMB,
+        { name: "Blog", url: `${SITE_URL}/blog/` },
+        { name: article.title, url: `${SITE_URL}/blog/${article.slug}` },
+      ];
+    },
+    metadata(data) {
+      const article = data as ArticleSeoData;
+      return {
+        title: article.title,
+        description: article.description,
+        canonicalPath: `/blog/${article.slug}`,
+        imageUrl: article.imageUrl,
+        ogType: "article",
+        ogTitle: article.title,
+      };
+    },
+    sitemapEntries: async () => [],
+    llmsSection: async () => null,
+  },
+};
+
+/** Iteration order for registry-driven routes (sitemap, llms.txt). */
+export const seoPageTypes: SeoPageType[] = [
+  "home",
+  "book",
+  "author",
+  "privacy",
+  "article",
+];

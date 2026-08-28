@@ -130,6 +130,14 @@ npm run db:migrate:remote # Apply to remote D1
   - Performance audit
   - Production deployment
   - Custom domain setup
+  - **WQR (Web Quality Rating) audit** — run Joost de Valk's Web Quality Rating checklist against all pages (added 2026-08-26, part of M10)
+  - [x] **SEO Graph / automated SEO system** (Completed: 2026-08-26) — Automated SEO system on @jdevalk/seo-graph-core 0.7.0: registry-driven JSON-LD graph, metadata+canonicals, breadcrumbs, /schema.json, IndexNow script, sitemap+llms.txt automation. See docs/seo-system.md.
+  - **Speed & performance optimization plan** (added 2026-08-26, part of M10):
+    - HTML edge caching for mostly-static marketing pages (all pages are force-dynamic → every request hits D1; use Cloudflare Cache API / stale-while-revalidate with DB-triggered invalidation)
+    - D1 query batching — homepage/book/author pages run 2–3 sequential awaits; parallelize and use D1 `batch()` to cut round-trips
+    - Third-party script tuning — PostHog/GA4/Meta load client-side on every page; defer/prioritize, keep them off the reader modal hot path
+    - LCP polish — fix dev LCP candidate warning on scroll-stack images, confirm hero cover `priority`, audit `public/images/stack/*` file sizes
+    - Worker bundle diet — 2226 KiB gzip today; recheck after any new dep (R2 ISR unavailable on account)
 
 ### Polish Backlog (found during development)
 

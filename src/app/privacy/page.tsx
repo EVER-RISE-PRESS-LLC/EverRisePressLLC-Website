@@ -1,12 +1,10 @@
 import type { Metadata } from "next";
+import { buildMetadata } from "@/lib/seo/metadata";
+import SeoJsonLd from "@/components/seo/SeoJsonLd";
 import Navbar from "@/components/Navbar";
 import SiteFooter from "@/components/SiteFooter";
 
-export const metadata: Metadata = {
-  title: "Privacy Policy | EverRise Press",
-  description:
-    "What EverRise Press collects, why we collect it, and how to unsubscribe or request deletion.",
-};
+export const metadata: Metadata = buildMetadata("privacy");
 
 const SECTIONS = [
   {
@@ -72,6 +70,7 @@ const SECTIONS = [
 export default function PrivacyPage() {
   return (
     <main className="w-full max-w-full overflow-x-hidden bg-cream text-charcoal">
+      <SeoJsonLd type="privacy" />
       <Navbar />
       <section
         className="ambient-cream relative rhythm-top pb-20 md:pb-28"
