@@ -32,7 +32,7 @@ export default function SiteFooter({ extraLinks = [] }: SiteFooterProps) {
       <div className="mx-auto flex max-w-6xl flex-col items-center justify-between gap-8 px-6 py-14 md:flex-row">
         <div className="flex items-center gap-3">
           <Image
-            src="/images/logo.png"
+            src="/images/logo.webp"
             alt="EverRise Press"
             width={36}
             height={36}

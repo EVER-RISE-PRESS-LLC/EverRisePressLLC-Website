@@ -21,6 +21,8 @@ function initPostHog(): Promise<PostHog> {
       capture_pageview: true,
       capture_pageleave: true,
       disable_session_recording: true,
+      disable_surveys: true,
+      capture_dead_clicks: false,
       person_profiles: "always",
     });
 

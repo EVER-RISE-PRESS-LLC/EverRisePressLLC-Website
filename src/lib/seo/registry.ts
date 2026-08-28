@@ -178,7 +178,7 @@ export function organizationPiece(): GraphEntity {
     name: BRAND_NAME,
     legalName: "EverRise Press LLC",
     url: SITE_URL,
-    logo: `${SITE_URL}/images/logo.png`,
+    logo: `${SITE_URL}/images/logo.webp`,
     description:
       "Independent digital publishing house. We don't do financial advice. We do financial autopsies.",
   });
@@ -422,9 +422,9 @@ export const seoRegistry: Record<SeoPageType, RegistryEntry> = {
           return [
             `### ${book.title}${book.subtitle ? ` — ${book.subtitle}` : ""}`,
             `- Slug: ${book.slug}`,
-            `- URL: ${SITE_URL}/books/${book.slug}`,
+            `- URL: [${SITE_URL}/books/${book.slug}](${SITE_URL}/books/${book.slug})`,
             `- Formats: ${formatsSummary || "Coming soon"}`,
-            `- Free sample: ${SITE_URL}/books/${book.slug}/preview`,
+            `- Free sample: [Chapter 1 preview](${SITE_URL}/books/${book.slug}/preview)`,
             `- About: ${synopsis}`,
           ].join("\n");
         })
@@ -495,7 +495,7 @@ export const seoRegistry: Record<SeoPageType, RegistryEntry> = {
       const authorLines = authorRows
         .map(
           (author) =>
-            `### ${author.name}${author.title ? `, ${author.title}` : ""}\n- URL: ${SITE_URL}/authors/${author.slug}`
+            `### ${author.name}${author.title ? `, ${author.title}` : ""}\n- URL: [${SITE_URL}/authors/${author.slug}](${SITE_URL}/authors/${author.slug})`
         )
         .join("\n\n");
 

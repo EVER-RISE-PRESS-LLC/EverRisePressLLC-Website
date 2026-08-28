@@ -27,17 +27,17 @@ export async function GET() {
   ]);
 
   const entityLines = [
-    `- Knowledge graph (all entities, one fetch): ${SITE_URL}/schema.json`,
-    `- Schemamap (schema endpoint discovery): ${SITE_URL}/schemamap.xml`,
-    `- API catalog (RFC 9727): ${SITE_URL}/.well-known/api-catalog`,
-    `- Organization: ${SITE_URL}/#organization`,
-    `- WebSite: ${SITE_URL}/#website`,
-    `- Blog: ${SITE_URL}/blog/#blog`,
+    `- Knowledge graph (all entities, one fetch): [schema.json](${SITE_URL}/schema.json)`,
+    `- Schemamap (schema endpoint discovery): [schemamap.xml](${SITE_URL}/schemamap.xml)`,
+    `- API catalog (RFC 9727): [api-catalog](${SITE_URL}/.well-known/api-catalog)`,
+    `- Organization: [EverRise Press LLC](${SITE_URL}/#organization)`,
+    `- WebSite: [${SITE_URL}](${SITE_URL}/#website)`,
+    `- Blog: [Blog](${SITE_URL}/blog/#blog)`,
     ...bookRows.map(
-      (book) => `- Book "${book.title}": ${SITE_URL}/books/${book.slug}#book`
+      (book) => `- Book "[${book.title}](${SITE_URL}/books/${book.slug})" (entity: [${book.slug}#book](${SITE_URL}/books/${book.slug}#book))`
     ),
     ...authorRows.map(
-      (author) => `- Person "${author.name}": ${SITE_URL}/authors/${author.slug}#person`
+      (author) => `- Person "[${author.name}](${SITE_URL}/authors/${author.slug})" (entity: [${author.slug}#person](${SITE_URL}/authors/${author.slug}#person))`
     ),
   ];
 
@@ -51,8 +51,8 @@ ${sections.join("\n\n")}
 
 - Publisher: EverRise Press LLC
 - Founder: Lamont D. McLeod
-- Homepage: ${SITE_URL}
-- Privacy policy: ${SITE_URL}/privacy
+- Homepage: [${SITE_URL}](${SITE_URL})
+- Privacy policy: [${SITE_URL}/privacy](${SITE_URL}/privacy)
 
 ## Schema
 

@@ -56,6 +56,8 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       suppressHydrationWarning
     >
       <body className="min-h-full flex flex-col">
+        <link rel="preconnect" href="https://us-assets.i.posthog.com" />
+        <link rel="preconnect" href="https://us.i.posthog.com" />
         <GoogleAnalytics gaId={env.NEXT_PUBLIC_GA_ID} />
         <PostHogProvider>
           <MetaPixelProvider>{children}</MetaPixelProvider>

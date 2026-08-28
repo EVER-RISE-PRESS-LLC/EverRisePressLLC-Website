@@ -118,7 +118,7 @@ export default async function BookPage({ params }: { params: Promise<{ slug: str
       <section className="ambient-dark bg-grain relative overflow-hidden pb-16 pt-28 md:pb-24 md:pt-32" data-nav-surface="dark">
         <div className="relative mx-auto max-w-6xl px-6">
           <div className="grid items-center gap-14 md:grid-cols-[minmax(0,2fr)_minmax(0,3fr)] md:gap-20">
-            <Reveal className="mx-auto w-64 md:w-80 lg:w-96">
+            <Reveal immediate className="mx-auto w-64 md:w-80 lg:w-96">
               <div className="glass-dark relative overflow-hidden rounded-2xl p-2.5">
                 <span aria-hidden className="glass-sheen" />
                 <div className="relative aspect-2/3 overflow-hidden rounded-xl">
@@ -135,13 +135,13 @@ export default async function BookPage({ params }: { params: Promise<{ slug: str
             </Reveal>
 
             <div>
-              <Reveal>
+              <Reveal immediate>
                 <h1 className="max-w-4xl font-heading text-4xl font-bold leading-[1.08] text-cream text-balance md:text-6xl">
                   {book.title}
                 </h1>
               </Reveal>
               {book.subtitle && (
-                <Reveal delay={0.1}>
+                <Reveal immediate delay={0.1}>
                   <p className="mt-5 font-heading text-lg italic text-cream/75 md:text-xl">
                     {book.subtitle}
                   </p>
@@ -149,7 +149,7 @@ export default async function BookPage({ params }: { params: Promise<{ slug: str
               )}
 
               {formats.length > 0 && (
-                <Reveal delay={0.18}>
+                <Reveal immediate delay={0.18}>
                   <div className="mt-8">
                     <div className="flex items-baseline gap-3">
                       <span className="font-heading text-3xl font-bold text-gold">
@@ -170,7 +170,7 @@ export default async function BookPage({ params }: { params: Promise<{ slug: str
                 </Reveal>
               )}
 
-              <Reveal delay={0.26}>
+              <Reveal immediate delay={0.26}>
                 <div className="mt-9 flex flex-col gap-4 sm:flex-row sm:items-center">
                   <ReactiveButton
                     href={`/books/${book.slug}/preview`}
@@ -198,7 +198,7 @@ export default async function BookPage({ params }: { params: Promise<{ slug: str
               </Reveal>
 
               {author && (
-                <Reveal delay={0.34}>
+                <Reveal immediate delay={0.34}>
                   <div className="mt-10 flex items-center gap-4 border-t border-cream/10 pt-6">
                     <div className="size-12 shrink-0 overflow-hidden rounded-full border-2 border-gold">
                       <Image

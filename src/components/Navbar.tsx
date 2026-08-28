@@ -135,7 +135,7 @@ export default function Navbar({ cta, refreshKey }: NavbarProps) {
               )}
             >
               <Image
-                src="/images/logo.png"
+                src="/images/logo.webp"
                 alt=""
                 width={24}
                 height={24}
@@ -240,7 +240,7 @@ export default function Navbar({ cta, refreshKey }: NavbarProps) {
                 >
                   <span className="flex size-9 shrink-0 items-center justify-center rounded-full bg-cream/10">
                     <Image
-                      src="/images/logo.png"
+                      src="/images/logo.webp"
                       alt=""
                       width={24}
                       height={24}

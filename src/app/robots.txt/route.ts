@@ -48,8 +48,8 @@ User-agent: PetalBot
 Allow: /
 
 Sitemap: ${baseUrl}/sitemap.xml
-Schemamap: ${baseUrl}/schemamap.xml
-Agentmap: ${baseUrl}/.well-known/api-catalog
+# Schemamap: ${baseUrl}/schemamap.xml
+# Agentmap: ${baseUrl}/.well-known/api-catalog
 `;
 
   return new Response(robots, {
