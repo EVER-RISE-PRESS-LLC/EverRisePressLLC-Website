@@ -22,10 +22,10 @@ const karla = Karla({
 });
 
 export const metadata: Metadata = {
-  title: "EverRise Press | Your Financial Heart Attack Is Already in Progress",
-  description: "You're not losing money. You're practicing poverty until you're an expert. Independent publishing that diagnoses the patterns keeping you broke.",
+  title: "EverRise Press | Books That Hepls You Financially",
+  description: "EverRise Press by Lamont McLeod. We publish books that stops you from practicing poverty.",
   openGraph: {
-    title: "EverRise Press",
+    title: "EverRise Press - Books That Hepls You Financially",
     description: "You're not losing money. You're practicing poverty until you're an expert.",
     images: [
       {

@@ -219,7 +219,7 @@ export default function Navbar({ cta, refreshKey }: NavbarProps) {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.25 }}
-            className="fixed inset-0 z-[60] md:hidden"
+            className="fixed inset-0 z-60 md:hidden"
           >
             <div
               className="absolute inset-0 bg-charcoal/60 backdrop-blur-sm"
