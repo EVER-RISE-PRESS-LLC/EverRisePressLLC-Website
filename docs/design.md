@@ -87,3 +87,18 @@
 * **Border:** `1px solid #E2DCCF`
 * **Text Color:** `#2D2D2D`
 * **Padding:** `48px 40px`
+
+
+## 5. Public-site motion and interaction — 22 October 2026
+
+The existing charcoal, cream and gold identity remains. Public interfaces use the installed Spectral heading face and Karla body face consistently. The landing page leads with the book, introduces four reader-selected themes, provides edition details, introduces the author, and ends at the free-chapter action.
+
+- Keep navigation geometry fixed. A slim gold underline identifies the current destination. Never resize the navigation in response to scroll.
+- One focal interaction: selecting a book theme changes its supporting illustration with a 320 ms crossfade. Native details/summary elements remain operable without JavaScript. Do not autoplay or pin reading content.
+- Controls stay under the pointer. Use 160 ms color feedback and a 1 px pressed offset; arrow travel is limited to 3 px. No magnetic movement, decorative sheen, or button glow.
+- Dialogs use 240 ms ease-out entrance and 140 ms exit. Keyboard focus is contained, Escape closes, and focus returns to the trigger.
+- Reduced motion uses brief fades and color changes, with no spatial transforms or smooth scrolling. Reading text always renders visible.
+- Use 6 px control radii and 12 px reading/dialog surfaces. Gold primary actions on dark sections; charcoal primary actions on light sections. Borders or soft offset shadows serve separation; no decorative glass.
+- At small widths, show book information and actions before its large cover. Keep touch targets at least 44 px.
+
+Tokens and implementations live in src/app/globals.css and the shared Navbar, ReactiveButton, GlassCard and BookStories components. Legacy animation components remain available in source but are not mounted by the homepage.

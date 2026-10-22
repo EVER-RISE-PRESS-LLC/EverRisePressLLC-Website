@@ -69,7 +69,7 @@ const SECTIONS = [
 
 export default function PrivacyPage() {
   return (
-    <main className="w-full max-w-full overflow-x-hidden bg-cream text-charcoal">
+    <main id="page-content" tabIndex={-1} className="w-full max-w-full overflow-x-hidden bg-cream text-charcoal">
       <SeoJsonLd type="privacy" />
       <Navbar />
       <section

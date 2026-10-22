@@ -79,7 +79,7 @@ export default async function AuthorPage({ params }: { params: Promise<{ slug: s
   };
 
   return (
-    <main className="w-full max-w-full overflow-x-hidden bg-cream text-charcoal">
+    <main id="page-content" tabIndex={-1} className="w-full max-w-full overflow-x-hidden bg-cream text-charcoal">
       <SeoJsonLd type="author" data={seoAuthorData} />
       <Navbar />
 
@@ -88,15 +88,14 @@ export default async function AuthorPage({ params }: { params: Promise<{ slug: s
         <div className="relative mx-auto max-w-5xl px-6">
           <div className="flex flex-col items-center gap-12 md:flex-row md:items-start md:gap-16">
             <Reveal className="shrink-0">
-              <div className="glass-dark relative overflow-hidden rounded-2xl p-2.5">
-                <span aria-hidden className="glass-sheen" />
+              <div className="overflow-hidden rounded-xl bg-white">
                 <div className="size-48 overflow-hidden rounded-xl md:size-64">
                   <Image
                     src={author.avatarUrl || "/images/authors/lamont-mcleod.jpg"}
                     alt={author.name}
                     width={256}
                     height={256}
-                    className="h-full w-full object-cover"
+                    className="h-full w-full object-cover object-top"
                     priority
                   />
                 </div>
@@ -105,14 +104,10 @@ export default async function AuthorPage({ params }: { params: Promise<{ slug: s
 
             <div className="text-center md:text-left">
               <Reveal>
-                <p className="text-sm font-bold uppercase tracking-[0.2em] text-gold">
-                  {author.title}
-                </p>
-              </Reveal>
-              <Reveal delay={0.1}>
-                <h1 className="mt-4 font-heading text-4xl font-bold leading-[1.08] text-cream text-balance md:text-6xl">
+                <h1 className="font-heading text-4xl font-bold leading-[1.08] text-cream text-balance md:text-6xl">
                   {author.name}
                 </h1>
+                {author.title && <p className="mt-4 text-base text-gold">{author.title}</p>}
               </Reveal>
               {socialLinks && (
                 <Reveal delay={0.2}>
@@ -246,7 +241,7 @@ export default async function AuthorPage({ params }: { params: Promise<{ slug: s
           <Reveal delay={0.24}>
             <div className="mt-12 flex justify-center">
               <ReactiveButton
-                href="/books/how-to-have-a-financial-heart-attack"
+                href="/books/how-to-have-a-financial-heart-attack/preview"
                 size="lg"
                 surface="light"
               >

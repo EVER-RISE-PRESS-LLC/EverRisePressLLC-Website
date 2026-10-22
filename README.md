@@ -157,6 +157,13 @@ npm run db:migrate:remote # Apply to remote D1
   - Deployed Worker version `880c78a4-12d5-44dc-8a44-1cf23b141075`. Audit, ten-day plan and owner review inputs: [seo-dev-doc](docs/seo-dev-doc.md).
 - [ ] **Days two through ten** — verify biography/imprint/privacy, revise book and author content, publish two reviewed articles and a discussion guide, improve measured performance and evaluate GSC after recrawling. See the dated plan; these are not automated runs.
 
+### Interface and sharing refinement
+
+- [x] **Coherent public UI and motion** (Completed: 2026-10-22) — steady navigation and controls, reader-controlled book themes, accessible mobile and retailer dialogs, visible server-rendered text, and reduced-motion alternatives. Preserved the existing palette and publishing identity.
+- [x] **Homepage Open Graph card** — real cover and Lamont portrait references, a clear free-chapter call to action, and the email requirement. Versioned 1200 × 630 JPEG: `public/images/og/everrise-home-20261022.jpg`.
+- [x] **Production verification** — deployed Worker `74a0e681-cffb-4f1e-8bdb-11fbcb55f756`; build, TypeScript, lint, live SEO smoke checks and social crawler image checks passed. Compressed Worker: 2,044.83 KiB.
+- Direction, generation prompt and validation notes: [Visual refinement](docs/visual-refinement.md).
+
 **Last Updated:** 2026-10-22
 **Progress:** 8/10 milestones complete (Milestone 6 deferred)  
 **Domain:** `https://everrisepress.com` (live, canonical — site URL via `NEXT_PUBLIC_SITE_URL`)  

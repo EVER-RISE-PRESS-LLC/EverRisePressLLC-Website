@@ -110,7 +110,7 @@ export default async function BookPage({ params }: { params: Promise<{ slug: str
   ];
 
   return (
-    <main className="w-full max-w-full overflow-x-hidden bg-cream text-charcoal">
+    <main id="page-content" tabIndex={-1} className="w-full max-w-full overflow-x-hidden bg-cream text-charcoal">
       <SeoJsonLd type="book" data={seoBookData} />
       <Navbar />
 
@@ -118,10 +118,9 @@ export default async function BookPage({ params }: { params: Promise<{ slug: str
       <section className="ambient-dark bg-grain relative overflow-hidden pb-16 pt-28 md:pb-24 md:pt-32" data-nav-surface="dark">
         <div className="relative mx-auto max-w-6xl px-6">
           <div className="grid items-center gap-14 md:grid-cols-[minmax(0,2fr)_minmax(0,3fr)] md:gap-20">
-            <Reveal className="mx-auto w-64 md:w-80 lg:w-96">
-              <div className="glass-dark relative overflow-hidden rounded-2xl p-2.5">
-                <span aria-hidden className="glass-sheen" />
-                <div className="relative aspect-2/3 overflow-hidden rounded-xl">
+            <Reveal className="order-2 mx-auto w-48 md:order-none md:w-80 lg:w-96">
+              <div className="press-book-jacket relative mx-auto overflow-hidden">
+                <div className="relative aspect-2/3 overflow-hidden">
                   <Image
                     src={book.coverImageUrl}
                     alt={`${book.title} cover`}
@@ -134,7 +133,7 @@ export default async function BookPage({ params }: { params: Promise<{ slug: str
               </div>
             </Reveal>
 
-            <div>
+            <div className="order-1 md:order-none">
               <Reveal>
                 <h1 className="max-w-4xl font-heading text-4xl font-bold leading-[1.08] text-cream text-balance md:text-6xl">
                   {book.title}

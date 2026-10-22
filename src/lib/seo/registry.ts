@@ -292,10 +292,10 @@ export const seoRegistry: Record<SeoPageType, RegistryEntry> = {
         description:
           "Explore How To Have a Financial Heart Attack by Lamont D. McLeod. Read about the book, meet the author, and try Chapter 1 free with email signup.",
         canonicalPath: "/",
-        imageUrl: `${SITE_URL}/images/og/everrise-default.png`,
-        imageAlt: BRAND_NAME,
-        ogTitle: BRAND_NAME,
-        twitterTitle: BRAND_NAME,
+        imageUrl: `${SITE_URL}/images/og/everrise-home-20261022.jpg`,
+        imageAlt: "How To Have a Financial Heart Attack book cover with author Lamont D. McLeod. Read Chapter 1 free with email signup.",
+        ogTitle: "How To Have a Financial Heart Attack | Read Chapter 1 Free",
+        twitterTitle: "How To Have a Financial Heart Attack | Read Chapter 1 Free",
       };
     },
     sitemapEntries: async () => [

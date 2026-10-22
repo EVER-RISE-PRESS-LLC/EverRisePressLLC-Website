@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { GoogleAnalytics } from "@next/third-parties/google";
-import { Spectral, Karla, Geist } from "next/font/google";
+import { Spectral, Karla } from "next/font/google";
 import "./globals.css";
 import { cn } from "@/lib/utils";
 import { env } from "@/lib/env";
@@ -8,8 +8,6 @@ import PostHogProvider from "@/components/providers/PostHogProvider";
 import MetaPixelProvider from "@/components/providers/MetaPixelProvider";
 import { buildMetadata } from "@/lib/seo/metadata";
 import { SITE_URL } from "@/lib/seo/ids";
-
-const geist = Geist({subsets:['latin'],variable:'--font-sans'});
 
 const spectral = Spectral({
   variable: "--font-spectral",
@@ -38,7 +36,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
     <html
       lang="en"
       data-scroll-behavior="smooth"
-      className={cn("h-full", "antialiased", spectral.variable, karla.variable, "font-sans", geist.variable)}
+      className={cn("h-full", "antialiased", spectral.variable, karla.variable, "font-sans")}
       suppressHydrationWarning
     >
       <body className="min-h-full flex flex-col">

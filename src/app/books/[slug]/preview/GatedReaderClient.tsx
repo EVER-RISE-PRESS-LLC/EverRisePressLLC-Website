@@ -73,7 +73,7 @@ export default function GatedReaderClient({
       />
 
       {isUnlocked ? (
-        <main>
+        <main id="page-content" tabIndex={-1}>
           <article
             className="mx-auto max-w-180 px-6 pb-12 pt-28 md:px-8 md:pb-16 md:pt-32"
             data-nav-surface="light"
@@ -121,21 +121,21 @@ export default function GatedReaderClient({
                     href={purchaseUrl}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="inline-flex items-center justify-center px-10 py-5 bg-gold text-charcoal font-sans font-bold text-sm uppercase tracking-wider rounded-full hover:bg-gold-hover transition-colors duration-300 active:scale-[0.98]"
+                    className="inline-flex items-center justify-center px-10 py-5 bg-gold text-charcoal font-sans font-bold text-sm uppercase tracking-wider rounded-md hover:bg-gold-hover transition-colors duration-300 active:scale-[0.98]"
                   >
                     Get the Full Book for ${retailPrice}
                   </a>
                 ) : (
                   <Link
                     href={`/books/${bookSlug}`}
-                    className="inline-flex items-center justify-center px-10 py-5 bg-gold text-charcoal font-sans font-bold text-sm uppercase tracking-wider rounded-full hover:bg-gold-hover transition-colors duration-300 active:scale-[0.98]"
+                    className="inline-flex items-center justify-center px-10 py-5 bg-gold text-charcoal font-sans font-bold text-sm uppercase tracking-wider rounded-md hover:bg-gold-hover transition-colors duration-300 active:scale-[0.98]"
                   >
                     Get the Full Book for ${retailPrice}
                   </Link>
                 )}
                 <Link
                   href={`/books/${bookSlug}`}
-                  className="inline-flex items-center justify-center px-10 py-5 border border-cream/25 text-cream font-sans font-bold text-sm uppercase tracking-wider rounded-full hover:border-gold hover:text-gold transition-colors duration-300 active:scale-[0.98]"
+                  className="inline-flex items-center justify-center px-10 py-5 border border-cream/25 text-cream font-sans font-bold text-sm uppercase tracking-wider rounded-md hover:border-gold hover:text-gold transition-colors duration-300 active:scale-[0.98]"
                 >
                   See All Formats
                 </Link>
@@ -165,7 +165,7 @@ export default function GatedReaderClient({
           </section>
         </main>
       ) : (
-        <main className="rhythm-top pb-20 md:pb-24" data-nav-surface="light">
+        <main id="page-content" tabIndex={-1} className="rhythm-top pb-20 md:pb-24" data-nav-surface="light">
           <div className="max-w-4xl mx-auto px-6">
             <div className="grid md:grid-cols-5 gap-10 md:gap-16 items-start">
               <div className="md:col-span-2 flex flex-col items-center md:items-start">

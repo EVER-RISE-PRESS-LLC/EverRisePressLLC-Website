@@ -1,11 +1,11 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState } from "react";
 import Image from "next/image";
-import { motion, AnimatePresence } from "framer-motion";
+import { Dialog } from "radix-ui";
 import ReactiveButton from "@/components/ui/ReactiveButton";
 import { gtagEvent } from "@/lib/gtag";
-import { ArrowUpRight } from "lucide-react";
+import { ArrowUpRight, X, ArrowRight } from "lucide-react";
 
 interface BookFormat {
   id: string;
@@ -94,7 +94,6 @@ export default function MultiRetailerModal({
   triggerText = "Choose Your Format",
 }: MultiRetailerModalProps) {
   const [isOpen, setIsOpen] = useState(false);
-  const modalRef = useRef<HTMLDivElement>(null);
 
   function trackRetailerClick(format: BookFormat) {
     gtagEvent("retailer_redirect_click", {
@@ -119,30 +118,6 @@ export default function MultiRetailerModal({
     }
   }
 
-  useEffect(() => {
-    if (!isOpen) return;
-    const handleEscape = (e: KeyboardEvent) => {
-      if (e.key === "Escape") setIsOpen(false);
-    };
-    document.addEventListener("keydown", handleEscape);
-    document.body.style.overflow = "hidden";
-    return () => {
-      document.removeEventListener("keydown", handleEscape);
-      document.body.style.overflow = "";
-    };
-  }, [isOpen]);
-
-  useEffect(() => {
-    if (!isOpen) return;
-    const handleClickOutside = (e: MouseEvent) => {
-      if (modalRef.current && !modalRef.current.contains(e.target as Node)) {
-        setIsOpen(false);
-      }
-    };
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, [isOpen]);
-
   if (formats.length === 0) return null;
 
   if (formats.length === 1) {
@@ -166,140 +141,41 @@ export default function MultiRetailerModal({
   })).filter((g) => g.items.length > 0);
 
   return (
-    <>
-      <ReactiveButton
-        onClick={() => setIsOpen(true)}
-        variant="outline"
-        surface="dark"
-      >
-        {triggerText}
-        <ArrowUpRight className="size-4" />
-      </ReactiveButton>
-
-      <AnimatePresence>
-        {isOpen && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.25 }}
-            className="fixed inset-0 z-50 flex items-center justify-center p-4"
-          >
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              className="absolute inset-0 bg-charcoal/80 backdrop-blur-md"
-              onClick={() => setIsOpen(false)}
-            />
-            <motion.div
-              ref={modalRef}
-              initial={{ opacity: 0, y: 28, scale: 0.96 }}
-              animate={{ opacity: 1, y: 0, scale: 1 }}
-              exit={{ opacity: 0, y: 20, scale: 0.97 }}
-              transition={{ type: "spring", stiffness: 300, damping: 28 }}
-              className="glass-light relative max-h-[85vh] w-full max-w-md overflow-y-auto rounded-3xl"
-            >
-              <span aria-hidden className="glass-sheen" />
-              <div className="relative p-6 md:p-8">
-                {/* Header */}
-                <div className="mb-6 flex items-start justify-between gap-4">
-                  <div className="flex min-w-0 items-start gap-4">
-                    {coverImageUrl && (
-                      <Image
-                        src={coverImageUrl}
-                        alt={bookTitle}
-                        width={56}
-                        height={84}
-                        className="w-14 shrink-0 rounded-md shadow-md"
-                      />
-                    )}
-                    <div className="min-w-0">
-                      <p className="mb-1 text-xs font-bold uppercase tracking-[0.2em] text-gold-deep">
-                        Choose Your Retailer
-                      </p>
-                      <h3 className="font-heading text-xl font-bold leading-snug text-charcoal">
-                        {bookTitle}
-                      </h3>
-                    </div>
-                  </div>
-                  <button
-                    onClick={() => setIsOpen(false)}
-                    className="shrink-0 p-1 text-2xl leading-none text-charcoal/60 transition-colors hover:text-charcoal"
-                    aria-label="Close modal"
-                  >
-                    &times;
-                  </button>
+    <Dialog.Root open={isOpen} onOpenChange={setIsOpen}>
+      <Dialog.Trigger asChild>
+        <ReactiveButton variant="outline" size="lg" surface="dark">{triggerText}<ArrowUpRight className="size-4"/></ReactiveButton>
+      </Dialog.Trigger>
+      <Dialog.Portal>
+        <Dialog.Overlay className="press-dialog-overlay"/>
+        <Dialog.Content className="press-retailer-dialog">
+          <div className="p-6 md:p-8">
+            <div className="mb-6 flex items-start justify-between gap-4">
+              <div className="flex min-w-0 items-start gap-4">
+                {coverImageUrl && <Image src={coverImageUrl} alt="" width={56} height={84} className="w-14 shrink-0 rounded-sm"/>}
+                <div className="min-w-0">
+                  <Dialog.Title className="font-heading text-xl font-semibold leading-snug text-charcoal">{bookTitle}</Dialog.Title>
+                  <Dialog.Description className="mt-2 text-sm text-text-muted">Choose a format and retailer.</Dialog.Description>
                 </div>
-
-                {/* Format groups */}
-                {grouped.map((group) => (
-                  <div key={group.formatType} className="mb-6 last:mb-0">
-                    <p className="mb-2 text-xs font-bold uppercase tracking-[0.2em] text-text-muted">
-                      {FORMAT_LABELS[group.formatType] || group.formatType}
-                    </p>
-                    <div className="space-y-2">
-                      {group.items.map((format) => {
-                        const meta = RETAILER_META[format.distributor] || {
-                          name: format.distributor,
-                          tagline: "",
-                          logo: "",
-                          logoAlt: format.distributor,
-                        };
-
-                        return (
-                          <a
-                            key={format.id}
-                            href={format.purchaseUrl}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            onClick={() => trackRetailerClick(format)}
-                            className="group flex items-center gap-4 rounded-xl border border-charcoal/10 bg-white/60 p-3 transition-all duration-300 hover:border-gold hover:bg-white hover:shadow-lg"
-                          >
-                            {meta.logo ? (
-                              <span className="flex h-11 w-20 shrink-0 items-center justify-center rounded-md border border-charcoal/10 bg-white px-2">
-                                <Image
-                                  src={meta.logo}
-                                  alt={meta.logoAlt}
-                                  width={80}
-                                  height={44}
-                                  className="max-h-full max-w-full object-contain"
-                                />
-                              </span>
-                            ) : (
-                              <span className="h-11 w-20 shrink-0" />
-                            )}
-                            <span className="min-w-0 flex-1">
-                              <span className="block text-sm font-bold text-charcoal">
-                                {meta.name}
-                              </span>
-                              {meta.tagline && (
-                                <span className="mt-0.5 block truncate text-xs text-text-muted">
-                                  {meta.tagline}
-                                </span>
-                              )}
-                            </span>
-                            <span className="shrink-0 text-sm font-bold text-gold-deep">
-                              ${format.retailPrice}
-                            </span>
-                            <span className="shrink-0 text-lg text-gold-deep transition-transform duration-300 group-hover:translate-x-1">
-                              &rarr;
-                            </span>
-                          </a>
-                        );
-                      })}
-                    </div>
-                  </div>
-                ))}
-
-                <p className="mt-6 text-center text-xs text-text-muted">
-                  You don&apos;t need another app. You need a pattern interrupt.
-                </p>
               </div>
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-    </>
+              <Dialog.Close asChild><button className="flex size-11 shrink-0 items-center justify-center rounded-md text-charcoal hover:bg-charcoal/10" aria-label="Close retailer chooser"><X size={20}/></button></Dialog.Close>
+            </div>
+            {grouped.map(group => <div key={group.formatType} className="mb-6 last:mb-0">
+              <h3 className="mb-3 text-sm font-bold text-text-body">{FORMAT_LABELS[group.formatType] || group.formatType}</h3>
+              <div className="space-y-2">
+                {group.items.map(format => {
+                  const meta = RETAILER_META[format.distributor] || {name:format.distributor,tagline:"",logo:"",logoAlt:format.distributor};
+                  return <a key={format.id} href={format.purchaseUrl} target="_blank" rel="noopener noreferrer" onClick={() => trackRetailerClick(format)} className="flex items-center gap-3 rounded-md border border-charcoal/20 bg-white p-3 text-charcoal transition-colors hover:border-gold-deep hover:bg-cream">
+                    {meta.logo && <Image src={meta.logo} alt={meta.logoAlt} width={64} height={40} className="h-10 w-16 shrink-0 object-contain"/>}
+                    <span className="min-w-0 flex-1"><span className="block text-sm font-bold">{meta.name}</span><span className="mt-1 block text-xs text-text-muted">{meta.tagline}</span></span>
+                    <span className="shrink-0 text-sm font-bold">${format.retailPrice}</span><ArrowRight size={16} aria-hidden/>
+                  </a>;
+                })}
+              </div>
+            </div>)}
+            <p className="mt-6 text-xs text-text-muted">Opens the retailer in a new tab.</p>
+          </div>
+        </Dialog.Content>
+      </Dialog.Portal>
+    </Dialog.Root>
   );
 }

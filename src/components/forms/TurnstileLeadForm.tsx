@@ -6,6 +6,7 @@ import { env } from "@/lib/env";
 import { trackEvent, identifyUser } from "@/components/providers/PostHogProvider";
 import { trackMetaEvent } from "@/components/providers/MetaPixelProvider";
 import { gtagEvent } from "@/lib/gtag";
+import ReactiveButton from "@/components/ui/ReactiveButton";
 
 interface TurnstileLeadFormProps {
   bookSlug: string;
@@ -31,7 +32,7 @@ export default function TurnstileLeadForm({
       setError("");
 
       if (!email) {
-        setError("You need an email. That's how this works.");
+        setError("Enter your email address to continue.");
         return;
       }
 
@@ -96,6 +97,10 @@ export default function TurnstileLeadForm({
         <input
           id="email"
           type="email"
+          name="email"
+          autoComplete="email"
+          aria-describedby={error ? "chapter-form-error" : undefined}
+          aria-invalid={Boolean(error)}
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           placeholder="you@example.com"
@@ -109,7 +114,8 @@ export default function TurnstileLeadForm({
         <Turnstile
           siteKey={siteKey}
           onSuccess={setToken}
-          onError={() => setError("Verification failed. Please try again.")}
+          onError={() => { setToken(""); setError("Verification failed. Please try again."); }}
+          onExpire={() => setToken("")}
           options={{
             theme: "light",
             size: "flexible",
@@ -118,19 +124,20 @@ export default function TurnstileLeadForm({
       </div>
 
       {error && (
-        <p className="text-red-600 text-sm font-semibold text-center">{error}</p>
+        <p id="chapter-form-error" role="alert" className="text-red-700 text-sm font-semibold text-center">{error}</p>
       )}
 
-      <button
+      <ReactiveButton
         type="submit"
         disabled={isSubmitting || !token}
-        className="w-full px-8 py-4 bg-gold text-charcoal font-sans font-bold text-sm uppercase tracking-wider rounded hover:bg-gold-hover transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+        className="w-full"
+        aria-busy={isSubmitting}
       >
         {isSubmitting ? "Unlocking..." : "Unlock Chapter 1"}
-      </button>
+      </ReactiveButton>
 
       <p className="text-text-muted text-xs text-center">
-        No spam. No bullshit. Just the diagnosis.
+        Complete the verification, then unlock your free chapter.
       </p>
     </form>
   );
