@@ -43,7 +43,7 @@ export default function SiteFooter({ extraLinks = [] }: SiteFooterProps) {
               EverRise Press LLC
             </p>
             <p className="text-xs uppercase tracking-wider text-cream/60">
-              You don&apos;t need a cheerleader. You need a diagnosis.
+              Books about money and the stories behind our habits.
             </p>
           </div>
         </div>
@@ -63,7 +63,7 @@ export default function SiteFooter({ extraLinks = [] }: SiteFooterProps) {
       <div className="border-t border-cream/10">
         <div className="mx-auto flex max-w-6xl flex-col items-center justify-between gap-2 px-6 py-5 text-xs text-cream/60 md:flex-row">
           <p>&copy; {new Date().getFullYear()} EverRise Press LLC. All rights reserved.</p>
-          <p>Friday is coming. So is the crash.</p>
+          <p>Read. Reflect. Start a conversation.</p>
         </div>
       </div>
     </footer>

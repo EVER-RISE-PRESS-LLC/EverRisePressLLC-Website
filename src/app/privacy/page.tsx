@@ -10,7 +10,7 @@ const SECTIONS = [
   {
     title: "Overview",
     body: [
-      "EverRise Press LLC (\u201cwe\u201d, \u201cus\u201d) publishes books and offers a free first-chapter reading experience. This policy explains what personal data we collect through everisepress.com, why we collect it, and the choices you have.",
+      "EverRise Press LLC (\u201cwe\u201d, \u201cus\u201d) publishes books and offers a free first-chapter reading experience. This policy explains what personal data we collect through everrisepress.com, why we collect it, and the choices you have.",
       "We collect the minimum needed to deliver the free chapter and follow up by email. We do not sell your personal information.",
     ],
   },

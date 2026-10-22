@@ -8,7 +8,7 @@ const ITEMS: CarouselItemData[] = [
     id: 1,
     title: "Lamont McLeod, Founder",
     description:
-      "Most people would call that a tragedy. Lamont calls it the moment he stopped lying to himself about what actually matters.",
+      "Meet the author of How To Have a Financial Heart Attack and explore the background to his book.",
     image: "/images/carousel/lamont-mcleod.webp",
     imageAlt: "Lamont McLeod smiling in his power wheelchair at the foot of a staircase",
     imageFit: "cover",
@@ -18,7 +18,7 @@ const ITEMS: CarouselItemData[] = [
     id: 2,
     title: "The Debt Collector Years",
     description:
-      "He collected debts for a living while living the very patterns he was collecting on. Practicing poverty until he became an expert.",
+      "McLeod's book describes working in debt collection while reflecting on his own spending and borrowing.",
     image: "/images/carousel/debt-collector.webp",
     imageAlt: "Figure in a yellow shirt whose head is made of hundred-dollar bills",
     imageFit: "cover",
@@ -28,7 +28,7 @@ const ITEMS: CarouselItemData[] = [
     id: 3,
     title: "EverRise Press",
     description:
-      "You don't need a cheerleader. You need someone who will read your financial chart the way a doctor reads an X-ray.",
+      "Explore the book, read the author profile, and try the first chapter free with email signup.",
     image: "/images/carousel/everrise-press.webp",
     imageAlt: "EverRise Press LLC emblem",
     imageFit: "contain",

@@ -164,3 +164,14 @@ Three discovery documents for AI crawlers and agents, wired together:
   `npx opennextjs-cloudflare build && npx wrangler deploy --dry-run`).
 - Validate graph changes with https://validator.schema.org/ and
   https://search.google.com/test/rich-results.
+
+## October 22 2026 audit corrections
+
+- Breadcrumbs include only existing Home and detail routes until real collection pages are published. Intermediate items require destinations.
+- Unknown modification times are omitted from the sitemap. Do not use request time as content freshness.
+- Robots is served by `src/app/robots.txt/route.ts`. One group preserves `/admin` and `/api/` exclusions across crawlers. The gated preview is crawlable with `noindex, follow`, so Google can read the indexing directive.
+- Blog schema remains available for future articles but is not emitted by site/corpus endpoints before the blog exists.
+- Book edition publisher and stock availability must come from verified edition/retailer data; do not infer them from the website owner or purchase URL.
+- Shared metadata provides canonical OG URLs and fallback social cards. The layout does not impose a homepage canonical on unrelated routes.
+- `node scripts/seo-check.mjs [base-url]` verifies built/live SEO behavior. Production runs also test both HTTP hosts and their robots paths.
+- Cloudflare Always Use HTTPS was enabled at the zone, separate from the Worker deployment. Keep this in rollback considerations.

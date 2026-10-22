@@ -6,6 +6,8 @@ import { cn } from "@/lib/utils";
 import { env } from "@/lib/env";
 import PostHogProvider from "@/components/providers/PostHogProvider";
 import MetaPixelProvider from "@/components/providers/MetaPixelProvider";
+import { buildMetadata } from "@/lib/seo/metadata";
+import { SITE_URL } from "@/lib/seo/ids";
 
 const geist = Geist({subsets:['latin'],variable:'--font-sans'});
 
@@ -22,28 +24,12 @@ const karla = Karla({
 });
 
 export const metadata: Metadata = {
-  title: "EverRise Press | Books That Hepls You Financially",
-  description: "EverRise Press by Lamont McLeod. We publish books that stops you from practicing poverty.",
-  openGraph: {
-    title: "EverRise Press - Books That Hepls You Financially",
-    description: "You're not losing money. You're practicing poverty until you're an expert.",
-    images: [
-      {
-        url: `${env.NEXT_PUBLIC_SITE_URL}/images/og/everrise-default.png`,
-        width: 1200,
-        height: 630,
-        alt: "EverRise Press",
-      },
-    ],
-  },
-  twitter: {
-    card: "summary_large_image",
-    title: "EverRise Press",
-    description: "You're not losing money. You're practicing poverty until you're an expert.",
-    images: [`${env.NEXT_PUBLIC_SITE_URL}/images/og/everrise-default.png`],
-  },
+  ...buildMetadata("home"),
+  // A route supplies its own canonical; do not inherit the homepage URL.
+  alternates: {},
+  metadataBase: new URL(SITE_URL),
   appleWebApp: {
-    title: "Ever Rise",
+    title: "EverRise Press",
   },
 };
 

@@ -36,18 +36,18 @@ interface StackCardData {
 
 const STACK_CARDS: StackCardData[] = [
   {
-    label: "The Symptom",
-    title: "Monday Morning, Broke Again",
-    body: "You check your balance like it's a horror movie, peeking through your fingers hoping the monster went away. It didn't. Every Friday, the cycle resets.",
+    label: "The Payday Cycle",
+    title: "Waiting for Next Friday",
+    body: "McLeod reflects on spending an allowance before the next one arrived, and how that expectation followed him into working life.",
     image: "/images/stack/img3.jpg",
     alt: "Painting of a man seated in a backyard chair with his head on fire",
     position: "object-[50%_45%]",
     tone: "cream",
   },
   {
-    label: "The Diagnosis",
-    title: "Installed Before Age Ten",
-    body: "A ten-dollar allowance taught you that money always comes. That muscle memory never left your checking account. It compounds.",
+    label: "The Starting Point",
+    title: "A Ten-Dollar Allowance",
+    body: "Penny candy and arcade games are where the story begins. Chapter 1 explores what McLeod learned from spending his weekly allowance.",
     image: "/images/stack/img1.jpg",
     alt: "Grainy silhouette of a person whose head is consumed by orange and blue flame",
     position: "object-[50%_40%]",
@@ -56,16 +56,16 @@ const STACK_CARDS: StackCardData[] = [
   {
     label: "The Hustle",
     title: "Chasing Every Friday",
-    body: "The job hopping hustle: chasing the next paycheck instead of building a foundation. The cage is invisible because you built it yourself.",
+    body: "The book follows McLeod's experience of moving between jobs and expecting the next paycheck to solve the same recurring problems.",
     image: "/images/stack/img2.jpg",
     alt: "Painting of a figure slumped on a rooftop, head burning against a deep blue sky",
     position: "object-[50%_50%]",
     tone: "cream",
   },
   {
-    label: "The Cure",
+    label: "The Reflection",
     title: "The Awakening",
-    body: "The monster isn't your income. It's muscle memory. Chapter 1 shows you exactly where the bleeding started, and reading it is free.",
+    body: "Working in debt collection led McLeod to reconsider his own choices. The book invites readers to reflect on their own money stories.",
     image: "/images/stack/img4.jpg",
     alt: "Classical painting of a collapsed figure whose body opens onto a blue sky with clouds",
     position: "object-[50%_45%]",
@@ -170,15 +170,16 @@ export default async function Home() {
             <div>
               <Reveal>
                 <h1 className="max-w-2xl font-heading text-[clamp(2.25rem,5.5vw,4.5rem)] font-bold leading-[1.06] text-cream text-balance">
-                  <span className="block">Your Financial Heart Attack</span>
-                  <span className="block text-gold">Is Already in Progress.</span>
+                  <span className="block">Books About Money.</span>{" "}
+                  <span className="block text-gold">Stories Behind the Habits.</span>
                 </h1>
               </Reveal>
               <Reveal delay={0.12}>
                 <p className="mt-7 max-w-xl text-lg leading-relaxed text-cream/80 md:text-xl">
-                  You&apos;re not losing money. You&apos;re{" "}
-                  <em>practicing</em> poverty until you&apos;re an expert.
-                  The diagnosis is free.
+                  EverRise Press publishes <em>How To Have a Financial Heart Attack</em>{" "}
+                  by Lamont D. McLeod, a personal account of childhood spending,
+                  payday habits, and working in debt collection. Start with Chapter 1,
+                  free with email signup.
                 </p>
               </Reveal>
               <Reveal delay={0.2}>
@@ -236,9 +237,9 @@ export default async function Home() {
         <div className="mx-auto max-w-6xl px-6">
           <Reveal>
             <h2 className="max-w font-heading text-3xl font-bold leading-tight text-charcoal text-balance md:text-5xl">
-              Three patterns run your checking account.{" "}
+              Inside <em>How To Have a Financial Heart Attack</em>.{" "}
               <span className="text-gold-deep">
-                You built every one before age ten.
+                Three themes from McLeod&apos;s story.
               </span>
             </h2>
           </Reveal>
@@ -258,7 +259,7 @@ export default async function Home() {
       <section className="ambient-dark bg-grain relative overflow-hidden rhythm-section" data-nav-surface="dark">
         <div className="mx-auto max-w-5xl px-6">
           <ScrubStatement
-            text="You don't have a money problem. You have a pattern problem."
+            text="What did your first experiences with money teach you?"
             accentFrom={6}
             className="font-heading text-3xl font-bold leading-snug text-cream md:text-5xl"
           />
@@ -359,8 +360,8 @@ export default async function Home() {
             <div>
               <Reveal>
                 <h2 className="font-heading text-3xl font-bold leading-tight text-charcoal text-balance md:text-5xl">
-                  He doesn&apos;t do advice.{" "}
-                  <span className="text-gold-deep">He does autopsies.</span>
+                  Meet the Author.{" "}
+                  <span className="text-gold-deep">Lamont D. McLeod.</span>
                 </h2>
               </Reveal>
               <Reveal delay={0.12}>
@@ -388,9 +389,9 @@ export default async function Home() {
               </Reveal>
               <Reveal delay={0.2}>
                 <p className="mt-8 max-w-md text-base leading-relaxed text-text-body">
-                  In November 2010, a car accident left him quadriplegic. Thirteen
-                  days later, his mother died. He calls it the moment he stopped
-                  lying to himself about what actually matters.
+                  McLeod draws on his own experiences with an allowance, paychecks,
+                  and debt collection. His author profile brings together his
+                  background and the story behind the book.
                 </p>
               </Reveal>
               <Reveal delay={0.28}>
@@ -401,7 +402,7 @@ export default async function Home() {
                     size="sm"
                     surface="light"
                   >
-                    Read the Full Autopsy
+                    Read the Author Profile
                     <ArrowRight className="size-3.5" />
                   </ReactiveButton>
                 </div>
@@ -420,7 +421,7 @@ export default async function Home() {
         <div className="mx-auto max-w-5xl px-6 text-center">
           <Reveal>
             <h2 className="mx-auto max-w-4xl font-heading text-4xl font-bold leading-tight text-cream text-balance md:text-6xl">
-              You&apos;ve been diagnosed.{" "}
+              Start with{" "}
               <span className="inline-block w-20 overflow-hidden rounded-full border border-gold/40 align-middle shadow-lg shadow-gold/20 md:w-28">
                 {book && (
                   <Image
@@ -432,13 +433,14 @@ export default async function Home() {
                   />
                 )}
               </span>{" "}
-              <span className="text-gold">Now what?</span>
+              <span className="text-gold">Chapter 1.</span>
             </h2>
           </Reveal>
           <Reveal delay={0.12}>
             <p className="mx-auto mt-8 max-w-xl text-lg leading-relaxed text-cream/80">
-              The patterns are visible. The muscle memory is documented.
-              Chapter 1 is free. The cure is up to you.
+              Read how McLeod&apos;s story begins with a ten-dollar allowance.
+              Enter your email to read the chapter free, then decide whether the
+              full book is for you.
             </p>
           </Reveal>
           <Reveal delay={0.24}>

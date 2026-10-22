@@ -141,12 +141,23 @@ npm run db:migrate:remote # Apply to remote D1
 
 ### Polish Backlog (found during development)
 
-- [ ] Fix broken icon paths in `src/app/manifest.json` — currently `/src/app/icon.png/web-app-manifest-*.png`, should be `/web-app-manifest-*.png` (files live in `public/`; found 2026-08-21)
+- [x] Fix broken manifest icon paths (Completed: 2026-10-22) — both icons resolve from public root paths.
 - [x] Worker size limit fix (2026-08-21): archived 1.97 MB `src/app/icon0.svg` (raster PNG wrapped in SVG, inlined into worker bundle) to `Logo-and-images/icon0-archived-favicon.svg` — gzip dropped 3068 KiB → 1245 KiB, first deploy succeeded at `everrisepressllc-website.everrisepressdev.workers.dev`
 
 ---
 
-**Last Updated:** 2026-08-26  
+### SEO recovery work
+
+- [x] **Day one audit and technical corrections** (Completed: 2026-10-22)
+  - Verified GSC MCP and all four submitted canonical pages as indexed; baseline 6 impressions and 0 clicks for Sep 21–Oct 18.
+  - Fixed invalid book/author breadcrumbs, robots warnings, preview noindex, artificial sitemap dates, metadata and social images, and manifest icons.
+  - Made marketing text and navigation visible before hydration; replaced unsupported homepage claims with descriptions grounded in the local EPUB.
+  - Enabled Cloudflare Always Use HTTPS; HTTP apex/www now reach the canonical HTTPS site.
+  - Build, lint, OpenNext build, deployment dry run, and local/live SEO smoke checks passed. Run `node scripts/seo-check.mjs [base-url]` to repeat the checks.
+  - Deployed Worker version `880c78a4-12d5-44dc-8a44-1cf23b141075`. Audit, ten-day plan and owner review inputs: [seo-dev-doc](docs/seo-dev-doc.md).
+- [ ] **Days two through ten** — verify biography/imprint/privacy, revise book and author content, publish two reviewed articles and a discussion guide, improve measured performance and evaluate GSC after recrawling. See the dated plan; these are not automated runs.
+
+**Last Updated:** 2026-10-22
 **Progress:** 8/10 milestones complete (Milestone 6 deferred)  
 **Domain:** `https://everrisepress.com` (live, canonical — site URL via `NEXT_PUBLIC_SITE_URL`)  
 **Next:** Milestone 10 - Polish, Privacy & Launch

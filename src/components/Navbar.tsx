@@ -102,7 +102,7 @@ export default function Navbar({ cta, refreshKey }: NavbarProps) {
   return (
     <>
       <motion.header
-        initial={{ y: -72, opacity: 0 }}
+        initial={false}
         animate={{ y: 0, opacity: 1 }}
         transition={{ type: "spring", stiffness: 200, damping: 26 }}
         className="fixed inset-x-0 top-4 z-50 flex justify-center px-4"

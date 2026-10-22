@@ -166,7 +166,7 @@ export default async function AuthorPage({ params }: { params: Promise<{ slug: s
           <div className="mx-auto max-w-6xl px-6">
             <Reveal>
               <h2 className="font-heading text-3xl font-bold text-center text-cream text-balance md:text-5xl">
-                The <span className="text-gold">Diagnoses</span>
+                Books by <span className="text-gold">{author.name}</span>
               </h2>
             </Reveal>
             <div className="rhythm-gap grid gap-5 lg:grid-cols-2">
@@ -203,7 +203,7 @@ export default async function AuthorPage({ params }: { params: Promise<{ slug: s
                             size="sm"
                             surface="dark"
                           >
-                            Read Chapter 1 Free
+                            Explore the Book
                           </ReactiveButton>
                           {book.formats.length > 0 && (
                             <ReactiveButton

@@ -113,17 +113,17 @@ export default function StatsBento({
             <div className="relative">
               <BentoBadge tone="dark">The weekly cycle</BentoBadge>
               <p className="mt-6 max-w-md font-heading text-4xl font-bold leading-[0.98] tracking-tighter text-cream md:text-6xl">
-                Friday is coming.{" "}
-                <span className="text-gold">So is the crash.</span>
+                Payday arrives.{" "}
+                <span className="text-gold">What happens next?</span>
               </p>
             </div>
             <div className="relative mt-10 flex flex-col gap-6 sm:flex-row sm:items-end sm:justify-between">
               <p className="max-w-xs text-sm leading-relaxed text-cream/60">
-                Every Monday, it&apos;s gone. Every Friday, the cycle resets.
-                The pattern doesn&apos;t break itself. It compounds.
+                McLeod&apos;s story follows the expectation of another paycheck,
+                from his first allowance to his working life.
               </p>
               <span className="group/btn inline-flex w-fit shrink-0 items-center gap-2 rounded-full border border-cream/25 px-5 py-3 text-xs font-bold uppercase tracking-wider text-cream transition-colors duration-300 group-hover:border-gold group-hover:text-gold">
-                The Diagnosis
+                Read Chapter 1
                 <ArrowUpRight className="size-3.5 transition-transform duration-300 group-hover/btn:translate-x-0.5 group-hover/btn:-translate-y-0.5" />
               </span>
             </div>
@@ -133,14 +133,14 @@ export default function StatsBento({
 
       {/* Pattern tile 01 */}
       <PatternTile index="01" title="The Penny Candy Foundation">
-        How a ten-dollar bill and a bag of quarters taught you to be broke
-        before you could read.
+        A ten-dollar allowance, penny candy, and arcade games introduce
+        McLeod&apos;s earliest experiences with spending.
       </PatternTile>
 
       {/* Pattern tile 02 */}
       <PatternTile index="02" title="First Paycheck Syndrome">
-        Why every Monday feels like a financial hangover, and why the raise
-        never fixes it.
+        McLeod recalls his first job and the purchases deducted from his
+        weekly paycheck.
       </PatternTile>
 
       {/* Secondary stat row — cover CTA with mini bars */}
@@ -162,7 +162,7 @@ export default function StatsBento({
                 )}
                 <div className="min-w-0">
                   <p className="font-heading text-2xl font-bold leading-tight text-charcoal md:text-3xl">
-                    The diagnosis is free.
+                    Start with the first chapter.
                   </p>
                   <p className="mt-2 flex items-center gap-2 text-sm font-bold uppercase tracking-wider text-gold-deep">
                     Read Chapter 1 Free
@@ -205,8 +205,8 @@ export default function StatsBento({
                     The Awakening
                   </h3>
                   <p className="mt-3 text-sm leading-relaxed text-text-muted">
-                    The moment you realize you&apos;re the debtor you&apos;ve been
-                    calling. Written by a man who collected the debts he was living.
+                    Read about the author behind the allowance story and his
+                    experience of working in debt collection.
                   </p>
                 </div>
                 <p className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-gold-deep">
@@ -232,7 +232,7 @@ export default function StatsBento({
                   The Job Hopping Hustle
                 </h3>
                 <p className="mt-2 max-w-md text-sm leading-relaxed text-text-muted">
-                  Chasing the next paycheck instead of building a foundation.
+                  McLeod reflects on moving between jobs without changing his spending.
                 </p>
               </div>
             </div>

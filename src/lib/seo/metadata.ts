@@ -24,7 +24,7 @@ export function buildMetadata(type: SeoPageType, data?: unknown): Metadata {
         },
         ...(meta.extraOgImages ?? []),
       ]
-    : undefined;
+    : [{ url: `${SITE_URL}/images/og/everrise-default.png`, width: 1200, height: 630, alt: BRAND_NAME }];
 
   return {
     title,
@@ -33,6 +33,8 @@ export function buildMetadata(type: SeoPageType, data?: unknown): Metadata {
       canonical: `${SITE_URL}${meta.canonicalPath}`,
     },
     openGraph: {
+      url: `${SITE_URL}${meta.canonicalPath}`,
+      siteName: BRAND_NAME,
       type: meta.ogType ?? "website",
       title: meta.ogTitle ?? meta.title,
       description: meta.ogDescription ?? meta.description,
@@ -43,7 +45,7 @@ export function buildMetadata(type: SeoPageType, data?: unknown): Metadata {
       title: meta.twitterTitle ?? meta.ogTitle ?? meta.title,
       description:
         meta.twitterDescription ?? meta.ogDescription ?? meta.description,
-      ...(meta.imageUrl ? { images: [meta.imageUrl] } : {}),
+      images: [meta.imageUrl ?? `${SITE_URL}/images/og/everrise-default.png`],
     },
     ...(meta.noindex ? { robots: { index: false } } : {}),
   };

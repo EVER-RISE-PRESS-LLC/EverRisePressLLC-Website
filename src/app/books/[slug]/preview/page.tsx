@@ -1,4 +1,6 @@
 import { notFound } from "next/navigation";
+import type { Metadata } from "next";
+import { SITE_URL } from "@/lib/seo/ids";
 import { cookies } from "next/headers";
 import { getDatabase } from "@/lib/db/client";
 import { books, authors, bookFormats } from "@/lib/db/schema";
@@ -7,6 +9,19 @@ import { REFERRAL_COOKIE_NAME } from "@/lib/referral";
 import GatedReaderClient from "./GatedReaderClient";
 
 export const dynamic = "force-dynamic";
+
+export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
+  const { slug } = await params;
+  const db = await getDatabase();
+  const [book] = await db.select({ title: books.title }).from(books).where(eq(books.slug, slug)).limit(1);
+  if (!book) notFound();
+  return {
+    title: `Read Chapter 1 of ${book.title} | EverRise Press`,
+    description: "Read the first chapter free with email signup, then explore the full book and available editions.",
+    alternates: { canonical: `${SITE_URL}/books/${slug}/preview` },
+    robots: { index: false, follow: true },
+  };
+}
 
 export default async function BookPreviewPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;

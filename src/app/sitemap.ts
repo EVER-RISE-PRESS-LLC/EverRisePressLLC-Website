@@ -31,9 +31,9 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     for (const item of items) {
       entries.push({
         url: `${SITE_URL}${item.path}`,
-        lastModified: item.lastModified
-          ? new Date(item.lastModified)
-          : new Date(),
+        ...(item.lastModified && !Number.isNaN(Date.parse(item.lastModified))
+          ? { lastModified: new Date(item.lastModified) }
+          : {}),
         ...(item.changeFrequency
           ? { changeFrequency: item.changeFrequency }
           : {}),

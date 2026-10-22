@@ -15,8 +15,9 @@ export default function Reveal({ children, delay = 0, y = 32, className }: Revea
 
   return (
     <motion.div
-      initial={prefersReducedMotion ? false : { opacity: 0, y }}
-      whileInView={{ opacity: 1, y: 0 }}
+      // Keep server-rendered text visible before hydration and without JS.
+      initial={false}
+      whileInView={prefersReducedMotion ? undefined : { y: [Math.min(y, 12), 0] }}
       viewport={{ once: true, margin: "-80px" }}
       transition={{ duration: 0.7, delay, ease: [0.21, 0.47, 0.32, 0.98] }}
       className={className}

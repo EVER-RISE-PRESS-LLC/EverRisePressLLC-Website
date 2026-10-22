@@ -5,7 +5,6 @@ import { authors, bookFormats, books } from "@/lib/db/schema";
 import { eq } from "drizzle-orm";
 import { seoIds } from "./ids";
 import {
-  blogPiece,
   buildBookPiece,
   buildPersonPiece,
   organizationPiece,
@@ -83,9 +82,9 @@ async function fetchAuthors(db: Database): Promise<AuthorSeoData[]> {
 /* Endpoint piece builders                                            */
 /* ------------------------------------------------------------------ */
 
-/** Site-wide entities only: Organization + WebSite + Blog collection. */
+/** Site-wide entities for published sections only. */
 export async function getSitePieces(): Promise<GraphEntity[]> {
-  return [organizationPiece(), websitePiece(), blogPiece()];
+  return [organizationPiece(), websitePiece()];
 }
 
 /** Every book as a full page graph (Book + WebPage + BreadcrumbList). */
@@ -123,7 +122,6 @@ export async function getCorpusPieces(): Promise<GraphEntity[]> {
   return [
     organizationPiece(),
     websitePiece(),
-    blogPiece(),
     ...authorData.map(buildPersonPiece),
     ...bookData.map(buildBookPiece),
   ];

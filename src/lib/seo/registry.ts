@@ -149,10 +149,8 @@ function safeDate(value: string | null | undefined): Date | undefined {
 const HOME_CRUMB: SeoCrumbs = { name: "Home", url: `${SITE_URL}/` };
 
 /**
- * BreadcrumbList piece. Built with buildPiece (rather than the library's
- * buildBreadcrumbList) because collection crumbs ("Books", "Authors") have
- * no index page yet and therefore no URL — the library builder emits an
- * undefined `item` for url-less middle crumbs.
+ * Every intermediate breadcrumb must resolve to a real page. Collection
+ * pages are omitted until they exist; an unlinked middle crumb is invalid.
  */
 function breadcrumbListPiece(pageUrl: string, crumbs: SeoCrumbs[]): GraphEntity {
   return buildPiece<WithContext<BreadcrumbList>>({
@@ -180,7 +178,7 @@ export function organizationPiece(): GraphEntity {
     url: SITE_URL,
     logo: `${SITE_URL}/images/logo.png`,
     description:
-      "Independent digital publishing house. We don't do financial advice. We do financial autopsies.",
+      "Independent publisher of books about money, spending habits, and personal experience.",
   });
 }
 
@@ -191,7 +189,7 @@ export function websitePiece(): GraphEntity {
       url: `${SITE_URL}/`,
       name: BRAND_NAME,
       description:
-        "Independent digital publishing house delivering transformative financial and personal development content.",
+        "Books, author profiles, and free first-chapter previews from EverRise Press.",
       publisher: { "@id": seoIds.organization },
       inLanguage: "en-US",
     },
@@ -222,7 +220,7 @@ export function buildPersonPiece(author: AuthorSeoData): GraphEntity {
     "@id": seoIds.person(author.slug),
     name: author.name,
     url: `${SITE_URL}/authors/${author.slug}`,
-    image: author.avatarUrl ? `${SITE_URL}${author.avatarUrl}` : undefined,
+    image: author.avatarUrl ? new URL(author.avatarUrl, SITE_URL).href : undefined,
     jobTitle: author.title ?? undefined,
     description: cleanDashes(author.bio).slice(0, 500),
     worksFor: { "@id": seoIds.organization },
@@ -238,11 +236,16 @@ export function buildBookPiece(book: BookSeoData): GraphEntity {
     name: book.subtitle ? `${book.title}: ${book.subtitle}` : book.title,
     url: `${SITE_URL}/books/${book.slug}`,
     description: cleanDashes(book.synopsis),
-    image: `${SITE_URL}${book.coverImageUrl}`,
+    image: new URL(book.coverImageUrl, SITE_URL).href,
     inLanguage: "en-US",
     datePublished: book.publishedAt || undefined,
-    publisher: { "@id": seoIds.organization },
-    author: book.author ? { "@id": seoIds.person(book.author.slug) } : undefined,
+    // Edition publisher is not stored in D1; do not infer it from the site owner.
+    author: book.author ? {
+      "@type": "Person",
+      "@id": seoIds.person(book.author.slug),
+      name: book.author.name,
+      url: `${SITE_URL}/authors/${book.author.slug}`,
+    } : undefined,
     workExample: book.formats.map((format) => ({
       "@type": "Book" as const,
       bookFormat: FORMAT_TYPE_MAP[format.formatType] || ("https://schema.org/EBook" as const),
@@ -251,7 +254,6 @@ export function buildBookPiece(book: BookSeoData): GraphEntity {
         "@type": "Offer" as const,
         price: format.retailPrice.toString(),
         priceCurrency: format.currency,
-        availability: "https://schema.org/InStock" as const,
         url: format.purchaseUrl,
       },
     })),
@@ -286,24 +288,19 @@ export const seoRegistry: Record<SeoPageType, RegistryEntry> = {
     },
     metadata() {
       return {
-        title: `${BRAND_NAME} | Books made for people who want to take control of their finances`,
+        title: `${BRAND_NAME} | Books on Money and Spending Habits`,
         description:
-          "You're practicing poverty without knowing. Ever Rise is an independent publishing house that diagnoses the patterns keeping you broke.",
+          "Explore How To Have a Financial Heart Attack by Lamont D. McLeod. Read about the book, meet the author, and try Chapter 1 free with email signup.",
         canonicalPath: "/",
         imageUrl: `${SITE_URL}/images/og/everrise-default.png`,
         imageAlt: BRAND_NAME,
         ogTitle: BRAND_NAME,
-        ogDescription:
-          "You're practicing poverty without knowing. Ever Rise is an independent publishing house that diagnoses the patterns keeping you broke.",
         twitterTitle: BRAND_NAME,
-        twitterDescription:
-          "You're not losing money. You're practicing poverty until you're an expert.",
       };
     },
     sitemapEntries: async () => [
       {
         path: "/",
-        lastModified: new Date().toISOString(),
         changeFrequency: "weekly",
         priority: 1,
       },
@@ -338,19 +335,21 @@ export const seoRegistry: Record<SeoPageType, RegistryEntry> = {
       const book = data as BookSeoData;
       return [
         HOME_CRUMB,
-        { name: "Books" },
         { name: book.title, url: `${SITE_URL}/books/${book.slug}` },
       ];
     },
     metadata(data) {
       const book = data as BookSeoData;
-      const ogDescription = cleanDashes(book.synopsis).slice(0, 160);
+      const description = book.slug === "how-to-have-a-financial-heart-attack"
+        ? "Lamont D. McLeod reflects on childhood spending, payday habits, and debt collection. Explore the book and read Chapter 1 free with email signup."
+        : `Explore ${book.title}${book.author ? ` by ${book.author.name}` : ""}. Read about the book, compare editions, and try the first chapter.`;
       return {
         title: book.title,
-        description:
-          "You aren't just losing money. You're practicing poverty until you're an expert. The diagnosis is free.",
+        description,
         canonicalPath: `/books/${book.slug}`,
-        imageUrl: `${SITE_URL}/images/og/${book.slug}.png`,
+        imageUrl: book.slug === "how-to-have-a-financial-heart-attack"
+          ? `${SITE_URL}/images/og/${book.slug}.png`
+          : `${SITE_URL}/images/og/everrise-default.png`,
         imageAlt: book.title,
         extraOgImages: [
           {
@@ -362,9 +361,9 @@ export const seoRegistry: Record<SeoPageType, RegistryEntry> = {
         ],
         ogType: "book",
         ogTitle: book.title,
-        ogDescription,
+        ogDescription: description,
         twitterTitle: book.title,
-        twitterDescription: ogDescription,
+        twitterDescription: description,
       };
     },
     sitemapEntries: async (db) => {
@@ -373,7 +372,7 @@ export const seoRegistry: Record<SeoPageType, RegistryEntry> = {
         .from(books);
       return rows.map((book) => ({
         path: `/books/${book.slug}`,
-        lastModified: book.updatedAt ?? new Date().toISOString(),
+        lastModified: book.updatedAt ?? undefined,
         changeFrequency: "weekly",
         priority: 0.9,
       }));
@@ -461,17 +460,20 @@ export const seoRegistry: Record<SeoPageType, RegistryEntry> = {
       const author = data as AuthorSeoData;
       return [
         HOME_CRUMB,
-        { name: "Authors" },
         { name: author.name, url: `${SITE_URL}/authors/${author.slug}` },
       ];
     },
     metadata(data) {
       const author = data as AuthorSeoData;
-      const description = cleanDashes(author.bio).slice(0, 160);
+      const description = author.slug === "lamont-mcleod"
+        ? "Meet Lamont D. McLeod, author of How To Have a Financial Heart Attack. Explore his background, book, and free first-chapter preview."
+        : `Explore ${author.name}'s background, author profile, and books on EverRise Press.`;
       return {
         title: author.name,
         description,
         canonicalPath: `/authors/${author.slug}`,
+        imageUrl: `${SITE_URL}/images/og/everrise-default.png`,
+        imageAlt: BRAND_NAME,
         ogType: "profile",
         ogTitle: author.name,
       };
@@ -482,7 +484,7 @@ export const seoRegistry: Record<SeoPageType, RegistryEntry> = {
         .from(authors);
       return rows.map((author) => ({
         path: `/authors/${author.slug}`,
-        lastModified: author.updatedAt ?? new Date().toISOString(),
+        lastModified: author.updatedAt ?? undefined,
         changeFrequency: "monthly",
         priority: 0.7,
       }));
@@ -531,7 +533,6 @@ export const seoRegistry: Record<SeoPageType, RegistryEntry> = {
     sitemapEntries: async () => [
       {
         path: "/privacy",
-        lastModified: new Date().toISOString(),
         changeFrequency: "yearly",
         priority: 0.1,
       },

@@ -231,8 +231,7 @@ export default async function BookPage({ params }: { params: Promise<{ slug: str
         <div className="mx-auto max-w-3xl px-6">
           <Reveal>
             <h2 className="font-heading text-3xl font-bold text-center text-charcoal text-balance md:text-4xl">
-              You Aren&apos;t Just Losing Money.{" "}
-              <span className="text-gold-deep">You&apos;re Practicing Poverty.</span>
+              About <span className="text-gold-deep">the Book</span>
             </h2>
           </Reveal>
           <Reveal delay={0.12}>
