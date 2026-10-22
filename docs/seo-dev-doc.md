@@ -61,6 +61,8 @@ These dates are a work schedule, not autonomous scheduled runs. No daily automat
 
 Released on 22 October 2026 as Worker version 880c78a4-12d5-44dc-8a44-1cf23b141075. Build, TypeScript, lint, OpenNext packaging, a deployment dry run, and local and live integration checks passed. Compressed Worker size is 2221.69 KiB. Both HTTP hosts now redirect to HTTPS, including the previously failing www robots path. The shared smoke script is scripts/seo-check.mjs.
 
+Lint finishes with zero errors and 14 existing warnings. Generated `.wrangler/` bundles are excluded, matching the existing `.next/` and `.open-next/` exclusions; linting the temporary 10 MB preview bundle had exhausted Node's default heap. This lint configuration change does not affect the deployed runtime.
+
 The live checks cover four public pages, canonical destinations, descriptions, social cards, one H1 per page, valid JSON-LD, real breadcrumb destinations, initial HTML visibility, preview noindex, true 404s, stable sitemap dates, manifest assets and HTTP host redirects. Browser checks confirm the chapter signup entry; no subscriber or purchase was submitted.
 
 Google's live Rich Results Test detected one valid Breadcrumbs item on the book page after deployment, with a successful crawl at 20:32 on 22 October. This verifies the live correction; historical Search Console reports still await a recrawl. Result: https://search.google.com/test/rich-results/result?id=WYiS2-pnDuzaL7h0mbnAvg
