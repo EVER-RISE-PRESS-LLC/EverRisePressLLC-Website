@@ -1,4 +1,5 @@
 import { env } from "@/lib/env";
+import { readPrivacyConsent } from "./privacy-consent";
 
 const POSTHOG_KEY =
   process.env.POSTHOG_API_KEY ||
@@ -22,7 +23,7 @@ function getPostHogDistinctIdFromCookies(cookieHeader: string | null): string | 
     const value = cookie.slice(eqIndex + 1);
     try {
       const parsed = JSON.parse(decodeURIComponent(value));
-      return typeof parsed.distinct_id === "string" ? parsed.distinct_id : null;
+      return typeof parsed.distinct_id === "string" && !parsed.distinct_id.includes("@") ? parsed.distinct_id : null;
     } catch {
       return null;
     }
@@ -39,10 +40,12 @@ export function getAnonymousId(
 }
 
 export async function captureServerEvent(
+  cookieHeader: string | null,
   distinctId: string,
   event: string,
   properties: ServerEventProperties = {}
 ): Promise<void> {
+  if (!readPrivacyConsent(cookieHeader).analytics) return;
   try {
     const body = JSON.stringify({
       api_key: POSTHOG_KEY,

@@ -3,14 +3,14 @@ VALUES (
   'e3028670-bf30-4247-8c24-54d87c8dcc42',
   'lamont-mcleod',
   'Lamont D. McLeod',
-  'Founder',
-  'Lamont D. McLeod is the founder of EverRise Press and HMD Publishing, an independent digital publishing house dedicated to delivering transformative financial and personal development content.
+  'Author and founder of EverRise Press',
+  'Lamont D. McLeod is the author of How To Have a Financial Heart Attack: A New Standard for Wealth and Responsibility and the founder of EverRise Press.
 
-Lamont''s journey is one of profound resilience. In November 2010, he survived a life-altering motor vehicle accident that resulted in a C5–C6 spinal cord injury and quadriplegia. Just thirteen days later, he lost his mother — a period that demanded extraordinary physical and personal adaptation all at once.
+The book draws on his experiences with a childhood allowance, payday spending, and work in debt collection. It asks readers to reflect on the habits behind their own spending.
 
-Rather than defining him by limitation, these experiences forged a "Client to CEO" philosophy. Lamont brings firsthand understanding of what it means to depend on caregivers, navigate accessibility barriers, and maintain independence while living with a significant disability. This perspective became the foundation for his entrepreneurial work, including his role as CEO of Agape Family Healthcare Services.
+His wider work includes real estate, home care, and public speaking. On his official website, McLeod shares his background and the work of the organizations he is involved with.
 
-Today, Lamont channels that same determination into publishing. His debut book, How To Have a Financial Heart Attack, traces the path from childhood penny candy spending to a career in debt collections — exposing the invisible patterns that keep people trapped in financial cycles. It is a visceral wake-up call for anyone building their life on the sand of living for the weekend.',
+Explore the book below, read the first chapter free with email signup, or visit lamontdmcleod.com for his personal story and speaking work.',
   '/images/authors/lamont-mcleod.jpg',
   '{"facebook":"https://www.facebook.com/realestatebroker.lamontmcleod","linkedin":"https://www.linkedin.com/in/afhcs/"}',
   CURRENT_TIMESTAMP,

@@ -10,6 +10,7 @@ import {
   normalizePartnerSlug,
 } from "@/lib/referral";
 import { captureServerEvent, getAnonymousId } from "@/lib/posthog";
+import { readPrivacyConsent } from "@/lib/privacy-consent";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -53,6 +54,11 @@ export async function GET(
         .limit(1)
         .then((rows) => rows[0]);
 
+  const cookieHeader = request.headers.get("cookie");
+  if (!readPrivacyConsent(cookieHeader).analytics) {
+    const destination = book ? `/books/${book.slug}` : "/";
+    return NextResponse.redirect(new URL(destination, request.url), 302);
+  }
   const ip = request.headers.get("CF-Connecting-IP");
 
   await db.insert(referralClicks).values({
@@ -66,7 +72,7 @@ export async function GET(
 
   const { distinctId } = getAnonymousId(request.headers.get("cookie"));
 
-  const phCapture = captureServerEvent(distinctId, "referral_link_visited", {
+  const phCapture = captureServerEvent(cookieHeader, distinctId, "referral_link_visited", {
     partner_slug: partner.slug,
     partner_name: partner.name,
     book_slug: book?.slug ?? null,

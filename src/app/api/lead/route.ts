@@ -7,7 +7,8 @@ import { verifyTurnstileToken } from "@/lib/turnstile";
 import { REFERRAL_COOKIE_NAME, normalizePartnerSlug } from "@/lib/referral";
 import { captureServerEvent, getAnonymousId } from "@/lib/posthog";
 import { sendMetaLeadEvent } from "@/lib/meta";
-import { SignJWT } from "jose";
+import { CHAPTER_ACCESS_COOKIE, CHAPTER_ACCESS_MAX_AGE, createChapterAccessToken } from "@/lib/chapter-access";
+import { readPrivacyConsent } from "@/lib/privacy-consent";
 
 export const runtime = "nodejs";
 
@@ -31,9 +32,10 @@ export async function POST(request: NextRequest) {
 
     const { env, ctx } = await getCloudflareContext({ async: true });
     const secretKey = env.TURNSTILE_SECRET_KEY || process.env.TURNSTILE_SECRET_KEY;
+    const jwtSecret = env.JWT_SECRET || process.env.JWT_SECRET;
 
-    if (!secretKey) {
-      console.error("TURNSTILE_SECRET_KEY not configured");
+    if (!secretKey || !jwtSecret) {
+      console.error("Chapter verification or signing key is not configured");
       return NextResponse.json(
         { error: "Verification service unavailable." },
         { status: 500 }
@@ -72,7 +74,9 @@ export async function POST(request: NextRequest) {
       .limit(1)
       .then((rows) => rows[0]);
 
-    const referralSlug = request.cookies.get(REFERRAL_COOKIE_NAME)?.value ?? null;
+    const cookieHeader = request.headers.get("cookie");
+    const consent = readPrivacyConsent(cookieHeader);
+    const referralSlug = consent.analytics ? request.cookies.get(REFERRAL_COOKIE_NAME)?.value ?? null : null;
     const partner = referralSlug
       ? await db
           .select()
@@ -103,8 +107,7 @@ export async function POST(request: NextRequest) {
 
     const { distinctId } = getAnonymousId(request.headers.get("cookie"));
 
-    const phCapture = captureServerEvent(distinctId, "lead_generated", {
-      email,
+    const phCapture = captureServerEvent(cookieHeader, distinctId, "lead_generated", {
       book_slug: book.slug,
       partner_slug: partner?.slug ?? null,
       source_utm: partner?.slug ?? null,
@@ -114,6 +117,7 @@ export async function POST(request: NextRequest) {
     }
 
     const metaCapture = sendMetaLeadEvent({
+      cookieHeader,
       email,
       ip: request.headers.get("CF-Connecting-IP"),
       userAgent: request.headers.get("user-agent"),
@@ -127,24 +131,15 @@ export async function POST(request: NextRequest) {
       ctx.waitUntil(metaCapture);
     }
 
-    const jwtSecret = new TextEncoder().encode(
-      env.JWT_SECRET ||
-        process.env.JWT_SECRET ||
-        "everrisepress-jwt-secret-change-in-production"
-    );
-
-    const token = await new SignJWT({ email, bookSlug })
-      .setProtectedHeader({ alg: "HS256" })
-      .setExpirationTime("7d")
-      .sign(jwtSecret);
+    const token = await createChapterAccessToken(bookSlug, jwtSecret);
 
     const response = NextResponse.json({ success: true });
 
-    response.cookies.set("chapter_access", token, {
+    response.cookies.set(CHAPTER_ACCESS_COOKIE, token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
       sameSite: "lax",
-      maxAge: 60 * 60 * 24 * 7,
+      maxAge: CHAPTER_ACCESS_MAX_AGE,
       path: "/",
     });
 

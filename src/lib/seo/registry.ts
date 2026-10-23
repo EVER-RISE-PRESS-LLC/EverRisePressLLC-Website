@@ -21,6 +21,7 @@ import type { Database } from "@/lib/db";
 import { authors, bookFormats, books } from "@/lib/db/schema";
 import { cleanDashes } from "@/lib/utils";
 import { BRAND_NAME, seoIds, SITE_URL, type SeoIds } from "./ids";
+import { PUBLISHER_CONTACT, TRUST_REVIEW_DATE } from "../publisher";
 
 /* ------------------------------------------------------------------ */
 /* Content data shapes                                                */
@@ -76,7 +77,7 @@ export interface ArticleSeoData {
 /* Registry contract                                                  */
 /* ------------------------------------------------------------------ */
 
-export type SeoPageType = "home" | "book" | "author" | "privacy" | "article";
+export type SeoPageType = "home" | "book" | "author" | "about" | "privacy" | "article";
 
 export interface SeoCrumbs {
   name: string;
@@ -175,6 +176,7 @@ export function organizationPiece(): GraphEntity {
     "@id": seoIds.organization,
     name: BRAND_NAME,
     legalName: "EverRise Press LLC",
+    email: PUBLISHER_CONTACT,
     url: SITE_URL,
     logo: `${SITE_URL}/images/logo.png`,
     description:
@@ -505,6 +507,28 @@ export const seoRegistry: Record<SeoPageType, RegistryEntry> = {
     },
   },
 
+  about: {
+    buildPieces() {
+      const url = `${SITE_URL}/about`;
+      return [
+        { ...buildWebPage({ url, name: "About EverRise Press", isPartOf: { "@id": seoIds.website }, about: { "@id": seoIds.organization }, mainEntity: { "@id": seoIds.organization }, breadcrumb: { "@id": seoIds.breadcrumb(url) }, inLanguage: "en-US", dateModified: new Date(TRUST_REVIEW_DATE) }, seoIds.factory), "@type": "AboutPage" },
+        breadcrumbListPiece(url, this.buildBreadcrumbs({})),
+      ];
+    },
+    buildBreadcrumbs() {
+      return [HOME_CRUMB, { name: "About and contact", url: `${SITE_URL}/about` }];
+    },
+    metadata() {
+      return {
+        title: "About & Contact | EverRise Press",
+        description: "Meet Lamont D. McLeod and the press behind this site. Check book credits, explore the free chapter, and contact us with questions or corrections.",
+        canonicalPath: "/about",
+      };
+    },
+    sitemapEntries: async () => [{ path: "/about", lastModified: TRUST_REVIEW_DATE, changeFrequency: "monthly", priority: 0.5 }],
+    llmsSection: async () => `## Publisher and contact\n- About: ${SITE_URL}/about\n- Contact: ${PUBLISHER_CONTACT}\n- Privacy: ${SITE_URL}/privacy`,
+  },
+
   privacy: {
     buildPieces() {
       return [
@@ -526,13 +550,14 @@ export const seoRegistry: Record<SeoPageType, RegistryEntry> = {
       return {
         title: "Privacy Policy",
         description:
-          "What EverRise Press collects, why we collect it, and how to unsubscribe or request deletion.",
+          "See how chapter signup, cookies, analytics, and advertising work on this site. Choose optional tracking or contact us about your personal data.",
         canonicalPath: "/privacy",
       };
     },
     sitemapEntries: async () => [
       {
         path: "/privacy",
+        lastModified: TRUST_REVIEW_DATE,
         changeFrequency: "yearly",
         priority: 0.1,
       },
@@ -648,6 +673,7 @@ export const seoPageTypes: SeoPageType[] = [
   "home",
   "book",
   "author",
+  "about",
   "privacy",
   "article",
 ];

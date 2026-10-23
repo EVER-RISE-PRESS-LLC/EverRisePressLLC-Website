@@ -5,6 +5,7 @@ import { books, referralPartners, retailerClicks } from "@/lib/db/schema";
 import { and, eq } from "drizzle-orm";
 import { REFERRAL_COOKIE_NAME, hashIp, normalizePartnerSlug } from "@/lib/referral";
 import { captureServerEvent, getAnonymousId } from "@/lib/posthog";
+import { readPrivacyConsent } from "@/lib/privacy-consent";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -12,6 +13,8 @@ export const dynamic = "force-dynamic";
 const VALID_FORMATS = new Set(["EBOOK", "PAPERBACK", "HARDCOVER", "AUDIOBOOK"]);
 
 export async function POST(request: NextRequest) {
+  const cookieHeader = request.headers.get("cookie");
+  if (!readPrivacyConsent(cookieHeader).analytics) return new NextResponse(null, { status: 204 });
   try {
     const body = (await request.json().catch(() => null)) as {
       bookSlug?: string;
@@ -69,7 +72,7 @@ export async function POST(request: NextRequest) {
     });
 
     const { distinctId } = getAnonymousId(request.headers.get("cookie"));
-    const phCapture = captureServerEvent(distinctId, "retailer_redirect_click", {
+    const phCapture = captureServerEvent(cookieHeader, distinctId, "retailer_redirect_click", {
       book_slug: bookSlug,
       retailer,
       format_type: formatType,

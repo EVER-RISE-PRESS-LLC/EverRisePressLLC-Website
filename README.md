@@ -135,7 +135,7 @@ npm run db:migrate:remote # Apply to remote D1
   - **Speed & performance optimization plan** (added 2026-08-26, part of M10):
     - HTML edge caching for mostly-static marketing pages (all pages are force-dynamic → every request hits D1; use Cloudflare Cache API / stale-while-revalidate with DB-triggered invalidation)
     - D1 query batching — homepage/book/author pages run 2–3 sequential awaits; parallelize and use D1 `batch()` to cut round-trips
-    - Third-party script tuning — PostHog/GA4/Meta load client-side on every page; defer/prioritize, keep them off the reader modal hot path
+    - Third-party script tuning — optional PostHog/GA4/Meta tracking now requires the matching visitor consent; further bundle and loading work remains
     - LCP polish — fix dev LCP candidate warning on scroll-stack images, confirm hero cover `priority`, audit `public/images/stack/*` file sizes
     - Worker bundle diet — 2226 KiB gzip today; recheck after any new dep (R2 ISR unavailable on account)
 
@@ -155,7 +155,15 @@ npm run db:migrate:remote # Apply to remote D1
   - Enabled Cloudflare Always Use HTTPS; HTTP apex/www now reach the canonical HTTPS site.
   - Build, lint, OpenNext build, deployment dry run, and local/live SEO smoke checks passed. Run `node scripts/seo-check.mjs [base-url]` to repeat the checks.
   - Deployed Worker version `880c78a4-12d5-44dc-8a44-1cf23b141075`. Audit, ten-day plan and owner review inputs: [seo-dev-doc](docs/seo-dev-doc.md).
-- [ ] **Days two through ten** — verify biography/imprint/privacy, revise book and author content, publish two reviewed articles and a discussion guide, improve measured performance and evaluate GSC after recrawling. See the dated plan; these are not automated runs.
+- [x] **Day two implementation and fact checks** (Completed: 2026-10-24)
+  - Published `/about` with contact/corrections routes, verified book credits, AboutPage schema, sitemap and internal links.
+  - Replaced unsupported biography assertions with a short, sourced profile; saved the production biography backup outside Git. Repeatable content update: `scripts/seo-day2-author.sql`.
+  - Rewrote privacy around actual D1, Turnstile, analytics and Meta processing. Added separate opt-in choices and withdrawal controls; signup does not automatically send email or subscribe to a series.
+  - Verified chapter cookies on the server, withheld locked chapter HTML, and removed email from new access tokens and PostHog lead properties.
+  - Build/TypeScript, lint (zero errors; four existing warnings), dry run, five security/consent tests, local reader integration, and five-page live SEO checks passed. Worker version `af5fab53-1552-4451-bc31-9b6cd61d43e8`.
+  - Cloudflare routing verified for contact and privacy addresses. Owner review remains open for mailbox monitoring, business relationship wording, biography approval, and retention policy. See [seo-dev-doc](docs/seo-dev-doc.md).
+- [ ] **Day two owner sign-off** — the implemented corrections are live; business and editorial confirmations are listed in the review document.
+- [ ] **Days three through ten** — revise book content with author input, publish two reviewed articles and a discussion guide, improve measured performance and evaluate GSC after recrawling. See the dated plan; these are not automated runs.
 
 ### Interface and sharing refinement
 
@@ -164,7 +172,7 @@ npm run db:migrate:remote # Apply to remote D1
 - [x] **Production verification** — deployed Worker `74a0e681-cffb-4f1e-8bdb-11fbcb55f756`; build, TypeScript, lint, live SEO smoke checks and social crawler image checks passed. Compressed Worker: 2,044.83 KiB.
 - Direction, generation prompt and validation notes: [Visual refinement](docs/visual-refinement.md).
 
-**Last Updated:** 2026-10-22
+**Last Updated:** 2026-10-24
 **Progress:** 8/10 milestones complete (Milestone 6 deferred)  
 **Domain:** `https://everrisepress.com` (live, canonical — site URL via `NEXT_PUBLIC_SITE_URL`)  
 **Next:** Milestone 10 - Polish, Privacy & Launch

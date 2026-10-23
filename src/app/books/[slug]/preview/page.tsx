@@ -2,6 +2,8 @@ import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import { SITE_URL } from "@/lib/seo/ids";
 import { cookies } from "next/headers";
+import { getCloudflareContext } from "@opennextjs/cloudflare";
+import { CHAPTER_ACCESS_COOKIE, hasChapterAccess } from "@/lib/chapter-access";
 import { getDatabase } from "@/lib/db/client";
 import { books, authors, bookFormats } from "@/lib/db/schema";
 import { eq } from "drizzle-orm";
@@ -50,6 +52,12 @@ export default async function BookPreviewPage({ params }: { params: Promise<{ sl
 
   const cookieStore = await cookies();
   const partnerSlug = cookieStore.get(REFERRAL_COOKIE_NAME)?.value ?? null;
+  const { env } = await getCloudflareContext({ async: true });
+  const hasAccess = await hasChapterAccess(
+    cookieStore.get(CHAPTER_ACCESS_COOKIE)?.value,
+    book.slug,
+    env.JWT_SECRET || process.env.JWT_SECRET,
+  );
 
   return (
     <GatedReaderClient
@@ -58,7 +66,8 @@ export default async function BookPreviewPage({ params }: { params: Promise<{ sl
       bookSubtitle={book.subtitle}
       bookCoverUrl={book.coverImageUrl}
       chapterTitle={book.chapterOneTitle}
-      chapterBody={book.chapterOneBody}
+      chapterBody={hasAccess ? book.chapterOneBody : ""}
+      hasAccess={hasAccess}
       authorName={author?.name || "Unknown"}
       authorSlug={author?.slug || ""}
       purchaseUrl={formats[0]?.purchaseUrl || ""}

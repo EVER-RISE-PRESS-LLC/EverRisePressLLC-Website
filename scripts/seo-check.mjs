@@ -3,7 +3,7 @@ import assert from "node:assert/strict";
 const base = (process.argv[2] ?? "https://everrisepress.com").replace(/\/$/, "");
 const canonicalOrigin = "https://everrisepress.com";
 const headers = { "user-agent": "EverRisePress-SEO-Audit/1.0" };
-const paths = ["/", "/books/how-to-have-a-financial-heart-attack", "/authors/lamont-mcleod", "/privacy"];
+const paths = ["/", "/books/how-to-have-a-financial-heart-attack", "/authors/lamont-mcleod", "/privacy", "/about"];
 const results = [];
 async function get(path) {
   const r = await fetch(new URL(path, base), { headers });
@@ -28,6 +28,11 @@ for (const path of paths) {
   const graphs = [...body.matchAll(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/g)].map(m => JSON.parse(m[1]));
   assert.ok(graphs.length, path + " structured data");
   const nodes = graphs.flatMap(g => g["@graph"] ?? [g]);
+  if (path === "/about") {
+    assert.ok(nodes.some(n => n["@type"] === "AboutPage"), "AboutPage schema");
+    assert.match(body, /mailto:info@everrisepress\.com/, "publisher contact");
+    assert.match(body, /mailto:privacy@everrisepress\.com/, "privacy contact");
+  }
   for (const crumb of nodes.filter(n => n["@type"] === "BreadcrumbList")) {
     assert.ok(crumb.itemListElement.length >= 2, path + " breadcrumb length");
     crumb.itemListElement.forEach((c, i) => {

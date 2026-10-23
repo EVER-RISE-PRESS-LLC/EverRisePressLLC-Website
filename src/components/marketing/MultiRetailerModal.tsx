@@ -5,6 +5,7 @@ import Image from "next/image";
 import { Dialog } from "radix-ui";
 import ReactiveButton from "@/components/ui/ReactiveButton";
 import { gtagEvent } from "@/lib/gtag";
+import { browserConsent } from "@/lib/privacy-consent";
 import { ArrowUpRight, X, ArrowRight } from "lucide-react";
 
 interface BookFormat {
@@ -96,6 +97,7 @@ export default function MultiRetailerModal({
   const [isOpen, setIsOpen] = useState(false);
 
   function trackRetailerClick(format: BookFormat) {
+    if (!browserConsent().analytics) return;
     gtagEvent("retailer_redirect_click", {
       book_slug: bookSlug,
       retailer: format.distributor,

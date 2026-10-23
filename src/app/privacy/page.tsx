@@ -1,106 +1,69 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { buildMetadata } from "@/lib/seo/metadata";
 import SeoJsonLd from "@/components/seo/SeoJsonLd";
 import Navbar from "@/components/Navbar";
 import SiteFooter from "@/components/SiteFooter";
+import { PRIVACY_CONTACT } from "@/lib/publisher";
 
 export const metadata: Metadata = buildMetadata("privacy");
 
-const SECTIONS = [
-  {
-    title: "Overview",
-    body: [
-      "EverRise Press LLC (\u201cwe\u201d, \u201cus\u201d) publishes books and offers a free first-chapter reading experience. This policy explains what personal data we collect through everrisepress.com, why we collect it, and the choices you have.",
-      "We collect the minimum needed to deliver the free chapter and follow up by email. We do not sell your personal information.",
-    ],
-  },
-  {
-    title: "What We Collect",
-    body: [
-      "Email address. Required to unlock the free Chapter 1 preview and to deliver the related reading sequence.",
-      "Reading context. We record which book you unlocked and, if you arrived through a partner link, which partner referred you. We also store referral parameters (such as utm_source) attached to your visit.",
-      "Bot-verification result. Our forms run Cloudflare Turnstile, which shares a one-time verification token with Cloudflare to confirm you are human. Turnstile does not show you ads or track you across sites.",
-    ],
-  },
-  {
-    title: "How We Use It",
-    body: [
-      "To unlock the free chapter and remember your access on return visits.",
-      "To send you the reading sequence for the book you unlocked, delivered through our email service provider, Mailchimp. Every email includes an unsubscribe link.",
-      "To understand which pages and referrals work, in aggregate, so we can improve the site.",
-    ],
-  },
-  {
-    title: "Cookies",
-    body: [
-      "chapter_access: a short-lived, signed cookie set after you unlock a chapter, so you do not have to re-enter your email. It contains no personal data beyond your access status.",
-      "No advertising or cross-site tracking cookies are set by us.",
-    ],
-  },
-  {
-    title: "Sharing",
-    body: [
-      "Mailchimp stores your email address on our behalf to deliver the reading sequence. Their processing is governed by their own privacy terms.",
-      "Retailers such as Amazon, Draft2Digital, and Bookshop.org are separate companies. If you click through to buy, their policies apply to anything you do on their sites.",
-      "We disclose personal data only when required by law.",
-    ],
-  },
-  {
-    title: "Your Rights",
-    body: [
-      "You can unsubscribe from our emails at any time using the link in any message.",
-      "You can request a copy of your data or ask us to delete it by emailing privacy@everrisepress.com. We will respond within 30 days.",
-      "If you are in the EU or UK, you may also lodge a complaint with your local data protection authority.",
-    ],
-  },
-  {
-    title: "Data Retention",
-    body: [
-      "We keep your email address and reading history until you unsubscribe or request deletion. Aggregate, anonymized statistics may be retained longer.",
-    ],
-  },
-  {
-    title: "Changes",
-    body: [
-      "If we change this policy, we will post the updated version on this page with a new effective date.",
-    ],
-  },
-];
+function Section({ title, children }: { title: string; children: React.ReactNode }) {
+  return <section className="space-y-4"><h2 className="font-heading text-2xl font-semibold text-charcoal">{title}</h2>{children}</section>;
+}
 
 export default function PrivacyPage() {
-  return (
-    <main id="page-content" tabIndex={-1} className="w-full max-w-full overflow-x-hidden bg-cream text-charcoal">
-      <SeoJsonLd type="privacy" />
-      <Navbar />
-      <section
-        className="ambient-cream relative rhythm-top pb-20 md:pb-28"
-        data-nav-surface="light"
-      >
-        <div className="mx-auto max-w-3xl px-6">
-          <h1 className="font-heading text-4xl font-bold leading-tight text-charcoal text-balance md:text-5xl">
-            Privacy Policy
-          </h1>
-          <p className="mt-4 text-sm uppercase tracking-wider text-text-muted">
-            Effective August 2026
-          </p>
-
-          <div className="rhythm-gap space-y-12">
-            {SECTIONS.map((section) => (
-              <div key={section.title}>
-                <h2 className="font-heading text-2xl font-bold text-charcoal">
-                  {section.title}
-                </h2>
-                <div className="mt-4 space-y-4 text-base leading-relaxed text-text-body">
-                  {section.body.map((paragraph, i) => (
-                    <p key={i}>{paragraph}</p>
-                  ))}
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-      <SiteFooter />
-    </main>
-  );
+  return <main id="page-content" tabIndex={-1} className="w-full bg-cream text-charcoal">
+    <SeoJsonLd type="privacy" />
+    <Navbar />
+    <article className="mx-auto max-w-3xl px-6 pb-20 pt-28 md:pb-28 md:pt-36">
+      <h1 className="font-heading text-4xl font-bold leading-tight md:text-5xl">Privacy Policy</h1>
+      <p className="mt-4 text-sm text-text-muted">Updated October 24, 2026</p>
+      <p className="mt-6 text-lg leading-relaxed">EverRise Press LLC runs everrisepress.com. This policy explains the free-chapter signup, site measurement, and your choices. You can use the site and unlock the chapter without allowing optional analytics or advertising.</p>
+      <div className="mt-12 space-y-12 text-base leading-relaxed text-text-body">
+        <Section title="Chapter signup and email">
+          <p>When you unlock a chapter, we save your email address, the book, and the signup date in our Cloudflare database. If you allow analytics and arrive through a tracked partner link, we may also save the partner and referral details.</p>
+          <p>The chapter opens on this site after signup. The current form does not send the chapter by email or subscribe you to an automated email series. Authorized site administrators can view and export signup records.</p>
+        </Section>
+        <Section title="Your privacy choices">
+          <p>Google Analytics, PostHog, and Meta tracking stay off until you choose the relevant option. Choose Essential only to decline both categories. The Privacy choices link in the footer lets you change your decision.</p>
+          <p>Changing your choice stops future optional tracking on this browser. It does not erase information already collected. Clearing your browser&apos;s site data removes the saved choice and may also remove your chapter access.</p>
+        </Section>
+        <Section title="Analytics and referrals">
+          <p>If you allow analytics, Google Analytics and PostHog receive page visits and selected events, such as a chapter unlock or a retailer click. This can include browser and device details, page addresses, and a browser identifier. Session recording is disabled in our PostHog setup.</p>
+          <p>With analytics allowed, we also save partner-link and retailer-click records in our database. These can include the book, partner or retailer, date, country, browser information, referring page, and a hashed IP address. Hashing changes the IP address into a code; it does not make every record anonymous.</p>
+        </Section>
+        <Section title="Advertising measurement">
+          <p>If you allow advertising, Meta can receive page views and chapter-signup events. For a signup, our server can send Meta a hashed email address, IP address, browser details, page address, and Meta browser identifiers when available. Meta uses this information to match and measure advertising activity.</p>
+          <p>Advertising is optional and is not required to read the chapter.</p>
+        </Section>
+        <Section title="Cookies and browser storage">
+          <ul className="list-disc space-y-3 pl-6">
+            <li><strong>Privacy choice:</strong> a cookie remembers your analytics and advertising settings for up to 180 days.</li>
+            <li><strong>Chapter access:</strong> a signed cookie lasts up to seven days. New cookies contain the book identifier and token dates, without your email. Older cookies may include the email until they expire.</li>
+            <li><strong>Partner referral:</strong> when analytics is allowed, a partner cookie lasts up to 30 days. We ignore it while analytics is declined.</li>
+            <li><strong>Optional provider storage:</strong> Google Analytics, PostHog, and Meta can use cookies or local storage when their category is allowed. Their lifetimes vary by provider and browser. Local storage can remain until cleared.</li>
+            <li><strong>Administration:</strong> signed-in site administrators have a separate login cookie lasting up to seven days.</li>
+          </ul>
+          <p>A cookie&apos;s expiry does not delete records already saved in a database or by a service provider.</p>
+        </Section>
+        <Section title="Hosting and form protection">
+          <p>Cloudflare hosts the site and database. Cloudflare Turnstile checks browser and network signals to protect the signup form from automated abuse. These security functions can process technical information even when optional tracking is declined.</p>
+          <p>See <a className="underline underline-offset-4" href="https://www.cloudflare.com/privacypolicy/">Cloudflare&apos;s privacy policy</a> and the <a className="underline underline-offset-4" href="https://www.cloudflare.com/turnstile-privacy-policy/">Turnstile Privacy Addendum</a>.</p>
+        </Section>
+        <Section title="Service providers and retailers">
+          <p>Cloudflare, Google, PostHog, and Meta process the information described above for the features you use or allow. Their systems may process data outside your country. More detail is available in <a className="underline underline-offset-4" href="https://policies.google.com/privacy">Google&apos;s privacy policy</a>, <a className="underline underline-offset-4" href="https://posthog.com/privacy">PostHog&apos;s privacy policy</a>, and <a className="underline underline-offset-4" href="https://www.facebook.com/privacy/policy/">Meta&apos;s privacy policy</a>.</p>
+          <p>Book purchases happen on separate retailer websites. Their checkout, payment, delivery, and privacy terms apply there. This site does not collect your payment-card details.</p>
+        </Section>
+        <Section title="Retention and requests">
+          <p>The site currently keeps signup and referral records until they are manually deleted; there is no automatic deletion schedule. Provider-held analytics and advertising data have separate retention settings. Removing a browser cookie does not remove those records.</p>
+          <p>To ask about your data or request a copy, correction, or deletion, email <a className="break-words underline underline-offset-4" href={`mailto:${PRIVACY_CONTACT}`}>{PRIVACY_CONTACT}</a>. Include the email you used for the chapter. We may need to confirm that a request relates to your own information.</p>
+        </Section>
+        <Section title="Contact and policy updates">
+          <p>For book questions or website corrections, visit <Link className="underline underline-offset-4" href="/about#contact">About and contact</Link>. We will update the date on this page when this policy changes.</p>
+        </Section>
+      </div>
+    </article>
+    <SiteFooter />
+  </main>;
 }

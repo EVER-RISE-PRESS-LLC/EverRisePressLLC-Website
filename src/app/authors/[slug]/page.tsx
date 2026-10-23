@@ -112,6 +112,7 @@ export default async function AuthorPage({ params }: { params: Promise<{ slug: s
               {socialLinks && (
                 <Reveal delay={0.2}>
                   <div className="mt-6 flex justify-center gap-6 md:justify-start">
+                    {author.slug === "lamont-mcleod" && <a href="https://lamontdmcleod.com/" className="text-sm text-cream/75 transition-colors hover:text-gold">Official website</a>}
                     {socialLinks.facebook && (
                       <a
                         href={socialLinks.facebook}

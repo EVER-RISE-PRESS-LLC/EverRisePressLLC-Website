@@ -70,3 +70,86 @@ Google's live Rich Results Test detected one valid Breadcrumbs item on the book 
 A post-release mobile PageSpeed run scored 82, with LCP 3.9 seconds, FCP 1.7 seconds, TBT 60 ms and CLS 0.078. Before: performance 59, LCP 7.9 seconds, TBT 430 ms, CLS 0. These are individual lab runs with variation, not a controlled causal experiment or a field Core Web Vitals pass. LCP still needs work. Report: https://pagespeed.web.dev/analysis/https-everrisepress-com/uzvui5kvwm?form_factor=mobile
 
 Remaining review items: database biography and retailer synopsis; publisher/imprint/date reconciliation; privacy and actual email processing; new article/guide approval. The old invalid homepage sitemap submission is still an administrative cleanup item. Source and evidence are retained in the adjacent seo-audit-2026-10-22 workspace folder. A formatted review copy is ../seo-dev-doc.docx relative to the repository root.
+
+## Day two implementation 24 October 2026
+
+Day two was carried out on 24 October, rather than the original 23 October slot. The day numbers remain the work sequence. No future days have been scheduled automatically. The site changes are live; owner sign-off remains open for the business and editorial questions below.
+
+Published `/about` as one contact and publisher page. It explains the site, book, free chapter, author background, edition credits, and corrections route. It links to the book, preview, author, privacy policy, official author website and Apple Books record. The footer, sitemap and structured-data registry now include this page. AboutPage and valid two-level breadcrumbs identify its purpose without claiming a legal relationship to HMD that has not been confirmed.
+
+The production biography has been replaced with a short account based on the manuscript and the author's official website. Removed the HMD founder claim, unverified November/13-day personal-history details, invented statements about his beliefs, and universal claims about readers being broke. The prior database row is backed up in the private workspace evidence folder. The seed biography is aligned with the change; `scripts/seo-day2-author.sql` records the targeted content update. The full book-page rewrite and an original author contribution remain day-three work.
+
+### Verified facts and their limits
+
+| Detail | Evidence checked | Public treatment |
+| --- | --- | --- |
+| Author name and EverRise founder role | Official author website and affiliations page | Lamont D. McLeod; author and founder of EverRise Press |
+| Real estate, home care and speaking | Official author website | General background only; no invented qualifications or credentials |
+| Allowance, payday and debt-collection subjects | Local EPUB manuscript, checked on day one and revisited on day two | Describe the contents as McLeod's experiences, not a diagnosis of every reader |
+| HMD Publishing | Apple Books names HMD as publisher; manuscript credits HMDPublishing.com for book design; official affiliations page discusses publishing rights | Attribute the edition credit to its source; do not call Lamont HMD's founder or claim ownership between the businesses |
+| Publication date | Apple Books and current site database both say July 20, 2026 | No date change needed. March 9 in EPUB metadata is an export timestamp, not proof of publication |
+| ISBNs | Ebook 9781835567173; paperback 9781835566930; valid checksums and matching retailer records | Existing ISBNs retained; price/stock claims still require the retailer's current listing |
+| Public contact | Cloudflare Email Routing enabled; info@ has an active forward to a verified address; active catch-all covers privacy@ | Publish info@everrisepress.com and privacy@everrisepress.com. Routing is verified; delivery and human monitoring were not tested |
+
+Sources: [official author website](https://lamontdmcleod.com/), [affiliations](https://lamontdmcleod.com/affiliations), [author story](https://lamontdmcleod.com/story), [Apple Books](https://books.apple.com/us/book/how-to-have-a-financial-heart-attack-a-new/id6793190934), [ebook ISBN record](https://www.adlibris.com/sv/bok/how-to-have-a-financial-heart-attack-a-new-standard-for-wealth-and-responsibility-9781835567173), [paperback ISBN record](https://www.akademibokhandeln.se/bok/how-to-have-a-financial-heart-attack/9781835566930). Retailer records corroborate edition facts; they do not establish the businesses' legal ownership.
+
+### Privacy and chapter access
+
+The old privacy text promised a Mailchimp email sequence and denied advertising tracking despite configured analytics and Meta code. The deployed policy now describes the actual signup record, admin viewing/export, service providers, optional tracking, cookie lifetimes and retention. The form explicitly says that the chapter opens on this site and links to the policy. No email series or Mailchimp integration has been added.
+
+Analytics and advertising default off. Visitors can choose Essential only, either category separately, or Allow all. The footer reopens the settings. Browser GA4/PostHog and Meta, server PostHog/Meta events, referral logging and retailer-click logging respect their respective choices. Turning a category off reloads the page and stops those tools; this does not erase previously collected data. Partner attribution and measured conversion totals will now cover consenting visits only. Anonymous attribution cookies are not treated as proof of anonymity, and hashed IPs/emails are described accurately.
+
+PostHog no longer identifies signups by email or includes the email in lead-event properties. Existing browser identifiers from the previous setup are cleared when the visitor first chooses. Session recording remains disabled. The chapter works with optional tracking declined.
+
+The reader previously tried to read an HttpOnly cookie in client JavaScript. It now verifies the signed cookie on the server, checks its book and expiry, and sends the chapter only after a successful check. New seven-day cookies hold the book identifier and token dates, without email. Existing correctly signed cookies remain valid until expiry; older email-containing cookies are disclosed in the policy. Production preview responses use private/no-store caching.
+
+Signup and referral records currently have no automatic deletion schedule. The policy states this actual behavior. Choosing a retention period, implementing deletion jobs, or erasing existing records needs an explicit operational decision. No subscriber records were deleted or exported during this task.
+
+### Editorial and metadata review
+
+Working audience: readers checking the book, author, publisher and signup terms. Focus for About: EverRise Press; secondary intent: contact, book credits and corrections. These are branded service intents, not search-volume claims.
+
+| Content SEO criterion | Result |
+| --- | --- |
+| Search intent | Pass: identifies the press and gives a direct contact route |
+| Focus phrase | Pass: EverRise Press appears in title, H1 and opening; no forced repetition |
+| Experience and trust | Pass for sourced statements; owner sign-off still requested for fuller biography and business relationship |
+| Original usefulness | Pass: manuscript and edition credits, precise signup terms, corrections and privacy contacts |
+| Freshness and accuracy | Pass: visible review date and stable lastmod tied to this release; changing prices deferred to retailers |
+| Internal linking | Pass: book, author, preview, privacy and About are connected; no empty blog page published |
+
+| Readability criterion | Review |
+| --- | --- |
+| Structure and topic order | Pass: identity/book/credits/contact; privacy groups data by feature |
+| Paragraph structure | Pass: one topic per paragraph; measured maximum 38 words on About and 47 on privacy |
+| Opening | Pass: names the site and explains the page's purpose immediately |
+| Sentence length | Pass: roughly 12 words per sentence in the measured body copy |
+| Passive voice | Limited to factual states such as recording disabled; no hidden actor in signup handling |
+| Difficult words | Caution: analytics, advertising, identifiers and provider names add complexity; hashing is explained in plain language |
+| Filler and hedging | Pass: unsupported slogans and sweeping reader judgments removed from the biography |
+| Transitions | Pass: descriptive headings carry changes of subject |
+| Variation | Pass: connected short paragraphs and a cookie list suited to comparison |
+| Heading hierarchy | Pass: one H1 and descriptive H2 sections |
+
+Estimated Flesch Reading Ease: About 56.8; privacy 44.7. Calculated with the standard formula and a heuristic vowel-group syllable count, so proper names, addresses and abbreviations affect the estimate. This is not a certified readability score. Technical terms remain where needed for accuracy; the copy uses short sentences and explains the data flows directly. The calculation and extracted prose are in the evidence folder.
+
+Metadata review passes front-loading, concrete wording, active phrasing, distinct title/description purpose, and sensible search-result length. About title: 32 characters; description: 145. Privacy title: 31 characters; description: 143. Search engines may still rewrite or truncate snippets. No fabricated reviews, credentials or keyword-volume claims were added.
+
+### Verification and release
+
+Released as Worker `af5fab53-1552-4451-bc31-9b6cd61d43e8`. Next.js/TypeScript and OpenNext builds passed. Lint has zero errors and four pre-existing warnings. Wrangler dry run passed. Five tests cover token scope/expiry/tampering/legacy access and independent consent categories. Local HTTP integration verifies locked versus authorized chapter output and consent guards without writing leads. Mobile (390 px) and desktop (1280 px) browser checks cover About/privacy layout, consent choices, withdrawal, and dialog dismissal. The initial dialog's outline-button contrast was corrected before release.
+
+The live smoke test passes all five public pages, status/canonical/meta/social tags, JSON-LD, AboutPage, breadcrumb URLs, initial HTML visibility, sitemap stability, robots, preview noindex, missing-page 404s, manifest images and HTTP redirects. Live checks also confirm the revised biography and private/no-store preview responses. No real signup, CAPTCHA completion, purchase or outbound email was performed.
+
+GSC MCP read access works as a Full user. Before resubmission, the registered sitemap had zero warnings/errors and a last download on October 22. The live sitemap now includes `/about`. The MCP resubmission call returned HTTP 403 Insufficient Permission; this does not remove the existing sitemap registration or prove an indexing failure. The new page's Google indexing has not yet been confirmed.
+
+Evidence: `../seo-day2-2026-10-24/` contains source captures, the prior biography, sanitized email-routing checks, local/live smoke results, access tests, build/lint/deployment logs and document render checks. Runtime credentials are not included in this repository.
+
+### Owner decisions for review
+
+1. Confirm who monitors info@everrisepress.com and privacy@everrisepress.com and can handle corrections/data requests. The technical forwarding routes are working; no delivery test was sent.
+2. Approve the short published biography or provide corrections. Confirm the exact EverRise/HMD relationship and approved sensitive personal-history wording before a fuller story is published. No HMD ownership or founder claim will be inferred from a retailer credit.
+3. Choose how long signup/referral records should be kept and who handles deletion requests. The current policy discloses manual retention. Also confirm whether you want a separate, clearly described future email subscription; the present chapter form does not add one.
+4. For day three, confirm the approved manuscript edition and supply one short approved personal example or excerpt that may be published. Full book-page copy and original blog material will use that input rather than inventing author testimony.
+
+The deployed default requires opt-in for optional analytics and advertising. This is reversible and keeps the free chapter available to visitors who decline. These implementation results do not imply that mailbox monitoring, publisher contracts, author sign-off or Google indexing have been confirmed.

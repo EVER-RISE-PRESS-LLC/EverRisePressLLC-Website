@@ -1,9 +1,9 @@
 import type { Metadata } from "next";
-import { GoogleAnalytics } from "@next/third-parties/google";
 import { Spectral, Karla } from "next/font/google";
 import "./globals.css";
 import { cn } from "@/lib/utils";
-import { env } from "@/lib/env";
+import PrivacyPreferences from "@/components/privacy/PrivacyPreferences";
+import OptionalAnalytics from "@/components/privacy/OptionalAnalytics";
 import PostHogProvider from "@/components/providers/PostHogProvider";
 import MetaPixelProvider from "@/components/providers/MetaPixelProvider";
 import { buildMetadata } from "@/lib/seo/metadata";
@@ -40,10 +40,11 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       suppressHydrationWarning
     >
       <body className="min-h-full flex flex-col">
-        <GoogleAnalytics gaId={env.NEXT_PUBLIC_GA_ID} />
+        <OptionalAnalytics />
         <PostHogProvider>
           <MetaPixelProvider>{children}</MetaPixelProvider>
         </PostHogProvider>
+        <PrivacyPreferences />
       </body>
     </html>
   );

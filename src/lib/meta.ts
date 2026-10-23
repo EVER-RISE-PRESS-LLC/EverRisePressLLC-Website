@@ -1,4 +1,5 @@
 import { env } from "@/lib/env";
+import { readPrivacyConsent } from "./privacy-consent";
 
 const META_PIXEL_ID =
   process.env.NEXT_PUBLIC_META_PIXEL_ID || env.NEXT_PUBLIC_META_PIXEL_ID;
@@ -11,6 +12,7 @@ export async function sha256Hex(value: string): Promise<string> {
 }
 
 interface MetaLeadEventParams {
+  cookieHeader: string | null;
   email: string;
   ip: string | null;
   userAgent: string | null;
@@ -20,6 +22,7 @@ interface MetaLeadEventParams {
 }
 
 export async function sendMetaLeadEvent({
+  cookieHeader,
   email,
   ip,
   userAgent,
@@ -27,6 +30,7 @@ export async function sendMetaLeadEvent({
   fbc,
   fbp,
 }: MetaLeadEventParams): Promise<void> {
+  if (!readPrivacyConsent(cookieHeader).advertising) return;
   const accessToken = process.env.META_CAPI_TOKEN;
   if (!accessToken || !META_PIXEL_ID) {
     console.warn("Meta CAPI not configured — skipping server event");

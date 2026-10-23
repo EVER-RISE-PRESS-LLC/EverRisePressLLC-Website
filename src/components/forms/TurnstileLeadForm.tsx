@@ -3,10 +3,10 @@
 import { useState, useCallback } from "react";
 import { Turnstile } from "@marsidev/react-turnstile";
 import { env } from "@/lib/env";
-import { trackEvent, identifyUser } from "@/components/providers/PostHogProvider";
-import { trackMetaEvent } from "@/components/providers/MetaPixelProvider";
+import { trackEvent } from "@/components/providers/PostHogProvider";
 import { gtagEvent } from "@/lib/gtag";
 import ReactiveButton from "@/components/ui/ReactiveButton";
+import Link from "next/link";
 
 interface TurnstileLeadFormProps {
   bookSlug: string;
@@ -59,12 +59,10 @@ export default function TurnstileLeadForm({
         if (data.success) {
           const props = { book_slug: bookSlug, partner_slug: partnerSlug ?? null };
           trackEvent("chapter_unlock_success", props);
-          identifyUser(email, props);
           gtagEvent("generate_lead", {
             book_slug: bookSlug,
             partner_slug: partnerSlug ?? undefined,
           });
-          trackMetaEvent("Lead", { content_name: bookSlug });
           onSuccess();
         } else {
           throw new Error("Verification failed. Try again.");
@@ -99,7 +97,7 @@ export default function TurnstileLeadForm({
           type="email"
           name="email"
           autoComplete="email"
-          aria-describedby={error ? "chapter-form-error" : undefined}
+          aria-describedby={error ? "chapter-privacy-note chapter-form-error" : "chapter-privacy-note"}
           aria-invalid={Boolean(error)}
           value={email}
           onChange={(e) => setEmail(e.target.value)}
@@ -136,8 +134,9 @@ export default function TurnstileLeadForm({
         {isSubmitting ? "Unlocking..." : "Unlock Chapter 1"}
       </ReactiveButton>
 
-      <p className="text-text-muted text-xs text-center">
-        Complete the verification, then unlock your free chapter.
+      <p id="chapter-privacy-note" className="text-text-muted text-sm leading-relaxed text-center">
+        We store your email and the book you unlock. Read the chapter here after signup.
+        {" "}<Link href="/privacy" className="underline underline-offset-4">How we use your data</Link>.
       </p>
     </form>
   );

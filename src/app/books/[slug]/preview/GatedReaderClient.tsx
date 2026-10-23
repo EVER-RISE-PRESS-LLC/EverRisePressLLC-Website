@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import TurnstileLeadForm from "@/components/forms/TurnstileLeadForm";
@@ -21,6 +21,7 @@ interface GatedReaderClientProps {
   purchaseUrl: string;
   retailPrice: number;
   partnerSlug: string | null;
+  hasAccess: boolean;
 }
 
 export default function GatedReaderClient({
@@ -35,13 +36,9 @@ export default function GatedReaderClient({
   purchaseUrl,
   retailPrice,
   partnerSlug,
+  hasAccess,
 }: GatedReaderClientProps) {
-  const [isUnlocked, setIsUnlocked] = useState(() => {
-    if (typeof document !== "undefined") {
-      return document.cookie.includes("chapter_access");
-    }
-    return false;
-  });
+  const isUnlocked = hasAccess;
   const trackedOpen = useRef(false);
 
   useEffect(() => {
@@ -59,7 +56,8 @@ export default function GatedReaderClient({
   }, [isUnlocked, bookSlug, partnerSlug]);
 
   const handleSuccess = () => {
-    setIsUnlocked(true);
+    // The server verifies the HttpOnly cookie and returns the chapter on reload.
+    window.location.reload();
   };
 
   return (

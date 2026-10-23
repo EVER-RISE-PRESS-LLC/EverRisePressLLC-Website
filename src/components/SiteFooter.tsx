@@ -1,6 +1,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import { BookOpen, UserRound, ShieldCheck } from "lucide-react";
+import { PrivacySettingsButton } from "@/components/privacy/PrivacyPreferences";
 
 interface SiteFooterProps {
   /** Optional extra links per page. */
@@ -11,6 +12,7 @@ export default function SiteFooter({ extraLinks = [] }: SiteFooterProps) {
   const links = [
     { label: "Home", href: "/", icon: BookOpen },
     { label: "Author", href: "/authors/lamont-mcleod", icon: UserRound },
+    { label: "About & contact", href: "/about", icon: UserRound },
     { label: "Privacy", href: "/privacy", icon: ShieldCheck },
   ];
 
@@ -54,6 +56,7 @@ export default function SiteFooter({ extraLinks = [] }: SiteFooterProps) {
               {link.label}
             </Link>
           ))}
+          <PrivacySettingsButton />
         </nav>
       </div>
       <div className="border-t border-cream/10">
