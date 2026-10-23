@@ -74,7 +74,7 @@ export default async function Home() {
             </div>
             <div className="press-actions">
               <ReactiveButton href={`${BOOK_PATH}/preview`} surface="light">Read Chapter 1 Free<ArrowRight size={17}/></ReactiveButton>
-              {formats.length > 0 && <ReactiveButton href={formats[0].purchaseUrl} external variant="outline" surface="light">Get the Book for ${formats[0].retailPrice}</ReactiveButton>}
+              {formats.length > 0 && <ReactiveButton href={`/books/${book.slug}#editions`} variant="outline" surface="light">Compare editions</ReactiveButton>}
             </div>
           </div>
         </div>

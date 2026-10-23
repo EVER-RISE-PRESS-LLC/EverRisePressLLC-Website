@@ -6,7 +6,7 @@ import { getCloudflareContext } from "@opennextjs/cloudflare";
 import { CHAPTER_ACCESS_COOKIE, hasChapterAccess } from "@/lib/chapter-access";
 import { getDatabase } from "@/lib/db/client";
 import { books, authors, bookFormats } from "@/lib/db/schema";
-import { eq } from "drizzle-orm";
+import { and, eq } from "drizzle-orm";
 import { REFERRAL_COOKIE_NAME } from "@/lib/referral";
 import GatedReaderClient from "./GatedReaderClient";
 
@@ -45,10 +45,17 @@ export default async function BookPreviewPage({ params }: { params: Promise<{ sl
     .limit(1)
     .then((rows) => rows[0]);
 
-  const formats = await db
-    .select()
-    .from(bookFormats)
-    .where(eq(bookFormats.bookId, book.id));
+  // The priced CTA names the specific US eBook listing checked on 2026-10-24.
+  const [appleEbook] = await db.select().from(bookFormats).where(and(
+    eq(bookFormats.bookId, book.id),
+    eq(bookFormats.formatType, "EBOOK"),
+    eq(bookFormats.distributor, "APPLE_BOOKS"),
+    eq(bookFormats.currency, "USD"),
+  )).limit(1);
+  const ebookOffer = appleEbook ? {
+    purchaseUrl: appleEbook.purchaseUrl,
+    price: new Intl.NumberFormat("en-US", { style: "currency", currency: "USD" }).format(appleEbook.retailPrice),
+  } : null;
 
   const cookieStore = await cookies();
   const partnerSlug = cookieStore.get(REFERRAL_COOKIE_NAME)?.value ?? null;
@@ -70,8 +77,7 @@ export default async function BookPreviewPage({ params }: { params: Promise<{ sl
       hasAccess={hasAccess}
       authorName={author?.name || "Unknown"}
       authorSlug={author?.slug || ""}
-      purchaseUrl={formats[0]?.purchaseUrl || ""}
-      retailPrice={formats[0]?.retailPrice || 0}
+      ebookOffer={ebookOffer}
       partnerSlug={partnerSlug}
     />
   );

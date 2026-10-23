@@ -33,6 +33,25 @@ for (const path of paths) {
     assert.match(body, /monitored inbox/, "confirmed contact inbox");
     assert.match(body, /mailto:privacy@everrisepress\.com/, "privacy contact");
   }
+  if (path === paths[1]) {
+    assert.match(body, /Friday was coming, and Friday meant money\./, "existing sample quotation");
+    assert.match(body, /The Awakening Begins/, "actual manuscript chapter title");
+    const chapterSection = body.match(/<section id="chapters"[\s\S]*?<\/section>/)?.[0];
+    assert.equal((chapterSection?.match(/<li\b/g) ?? []).length, 15, "all manuscript chapters visible in HTML");
+    const book = nodes.find(n => n["@type"] === "Book");
+    assert.equal(book?.publisher?.name, "HMD Publishing", "verified edition publisher");
+    assert.equal(book.workExample.length, 2, "two editions, not four retailers");
+    assert.deepEqual(book.workExample.map(e => e.isbn).sort(), ["9781835566930", "9781835567173"]);
+    assert.ok(book.workExample.every(e => !e.offers), "no unverified fixed-price offer");
+    assert.ok(!body.includes("PRACTICING POVERTY"), "old synopsis removed");
+    assert.match(body, /href="\/authors\/lamont-mcleod"/, "book links to author");
+  }
+  if (path === paths[2]) {
+    const person = nodes.find(n => n["@type"] === "Person");
+    assert.ok(person?.sameAs?.includes("https://lamontdmcleod.com"), "official author identity link");
+    assert.ok(!body.includes("Looking for a Cheerleader"), "unsupported author pitch removed");
+    assert.match(body, /href="\/books\/how-to-have-a-financial-heart-attack"/, "author links to book");
+  }
   assert.match(body, /Google Analytics, PostHog, and Meta load by default/, path + " footer tracking disclosure");
   assert.ok(!body.includes('class="press-privacy-banner"'), path + " no automatic consent banner");
   for (const crumb of nodes.filter(n => n["@type"] === "BreadcrumbList")) {
@@ -68,9 +87,20 @@ for (const icon of manifest.icons) {
   const r = await fetch(new URL(icon.src, base), { headers });
   assert.equal(r.status, 200, icon.src);
   assert.match(r.headers.get("content-type"), /image\/png/);
+  await r.arrayBuffer();
 }
 const schema = JSON.parse((await get("/schema/site.json")).body);
 assert.ok(!(schema["@graph"] ?? []).some(n => n["@type"] === "Blog"), "no unpublished blog collection");
+const catalog = await get("/llms.txt");
+assert.equal(catalog.status, 200);
+assert.ok(!catalog.body.includes("/blog/"), "no unpublished blog link in discovery file");
+assert.match(catalog.body, /Free sample with email signup/, "sample access disclosed in discovery file");
+for (const path of ["/schema/books.json", "/schema.json"]) {
+  const corpus = JSON.parse((await get(path)).body);
+  const book = corpus["@graph"].find(n => n["@type"] === "Book");
+  assert.equal(book?.workExample?.length, 2, path + " edition consistency");
+  assert.equal(book?.publisher?.name, "HMD Publishing", path + " publisher consistency");
+}
 if (base === canonicalOrigin) {
   for (const host of ["everrisepress.com", "www.everrisepress.com"]) {
     for (const path of ["/", "/robots.txt"]) {
@@ -78,9 +108,11 @@ if (base === canonicalOrigin) {
       const r = await fetch(url, { headers, redirect: "manual" });
       assert.ok([301, 308].includes(r.status), url + " permanent HTTPS redirect");
       assert.ok(r.headers.get("location")?.startsWith("https://"));
+      await r.text();
       const final = await fetch(url, { headers });
       assert.equal(final.url, canonicalOrigin + path);
       assert.equal(final.status, 200);
+      await final.text();
     }
   }
 }

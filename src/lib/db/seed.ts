@@ -4,28 +4,24 @@ import { authors, books, bookFormats } from "./schema";
 export async function seed(d1: D1Database) {
   const db = getDb(d1);
 
-  console.log("Seeding database with System 4 voice...");
+  console.log("Seeding database with reviewed book and author content...");
 
-  const LAMONT_BIO = `Lamont D. McLeod doesn't do financial advice. He does financial autopsies.
+  const LAMONT_BIO = `Lamont D. McLeod is the author of How To Have a Financial Heart Attack: A New Standard for Wealth and Responsibility and the founder of EverRise Press.
 
-In November 2010, a car accident left him quadriplegic. Thirteen days later, his mother died. Most people would call that a tragedy. Lamont calls it the moment he stopped lying to himself about what actually matters.
+The book draws on his experiences with a childhood allowance, payday spending, and work in debt collection. It asks readers to reflect on the habits behind their own spending.
 
-Before the accident, he was the guy calling you about your credit card debt. The irony wasn't lost on him — he was collecting on the same patterns he was living. Every Friday, the paycheck came. Every Monday, it was gone. He was practicing poverty until he became an expert.
+In November 2010, a car accident left McLeod quadriplegic. His mother died thirteen days later.
 
-Now he's the founder of EverRise Press and HMD Publishing. His debut book, *How To Have a Financial Heart Attack*, is the diagnosis nobody wants but everybody needs. It's not a get-rich-quick scheme. It's a mirror. And most people don't like what they see.
+His wider work includes real estate, home care, and public speaking. On his official website, McLeod shares his background and the work of the organizations he is involved with.
 
-Lamont doesn't believe in motivation. He believes in pattern interrupts. You're not broke because you're lazy. You're broke because you learned to be broke before you could read. And unlearning is harder than any budget app.
-
-He lives what he teaches. Every day is a choice between the patterns that got him here and the systems that will get him where he's going. No inspiration porn. No disability platitudes. Just the brutal math of what works and what doesn't.
-
-If you're looking for a cheerleader, keep scrolling. If you're ready to see your financial chart the way a doctor reads an X-ray, pull up a chair. The diagnosis is free. The cure is up to you.`;
+Explore the book below, read the first chapter free with email signup, or visit lamontdmcleod.com for his personal story and speaking work.`;
 
   const [author] = await db
     .insert(authors)
     .values({
       slug: "lamont-mcleod",
       name: "Lamont D. McLeod",
-      title: "Founder",
+      title: "Author and founder of EverRise Press",
       bio: LAMONT_BIO,
       avatarUrl: "/images/authors/lamont-mcleod.jpg",
       socialLinks: {
@@ -47,13 +43,11 @@ If you're looking for a cheerleader, keep scrolling. If you're ready to see your
 
 <p>We would line up and drive one by one. Those were some of the best days of my life. I would blow my entire 10 bucks because I had no concept of saving or the 4-quadrant method or anything. My child-size brain could only conceive that by doing my chores, I would receive a fresh new $10 bill next Friday, like clockwork. This repeated behavior stuck in my head. This muscle memory, this financial amnesia, this belief that money is infinite as long as you show up, it's the same mentality that would cost me tens of thousands of dollars in my twenties and thirties. But we'll get to that.</p>`;
 
-  const synopsis = `YOU AREN'T JUST LOSING MONEY—YOU'RE PRACTICING POVERTY UNTIL YOU'RE AN EXPERT.
+  const synopsis = `How To Have a Financial Heart Attack follows Lamont D. McLeod from a ten-dollar childhood allowance to payday spending and work in debt collection. He looks back at choices he repeated and advice he struggled to put into practice.
 
-Most financial disasters aren't sudden; they are built through years of muscle memory and financial amnesia. In this raw, mentorship-driven guide, Lamont D. McLeod traces the path from childhood allowance spent on penny candy to a high-stakes career in debt collections, where he realized he was the very debtor he was calling.
+The story moves through early jobs, borrowed money, a move to Atlanta, and conversations with a colleague named Craig. McLeod describes earning more while still spending what came in. Learning about money gives him questions to work through, but changing his habits takes more than knowing the answers.
 
-McLeod exposes the invisible cage of the job-hopping hustle and the dangerous belief that money is infinite as long as Friday is coming. Through the wisdom of his mentor, Craig, he reveals a sobering truth: every dollar wasted today is a day of freedom lost tomorrow.
-
-This book is a visceral wake-up call for anyone building their life on the sand of living for the weekend. It is time to stop the cycle of heart-racing stress and start building a foundation that can actually withstand life.`;
+Its fifteen short chapters focus on personal experiences and reflection. Read the opening chapter to decide whether McLeod’s direct, conversational style is for you.`;
 
   const [book] = await db
     .insert(books)

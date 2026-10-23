@@ -74,6 +74,7 @@ async function fetchAuthors(db: Database): Promise<AuthorSeoData[]> {
     title: author.title,
     bio: author.bio,
     avatarUrl: author.avatarUrl,
+    updatedAt: author.updatedAt,
     socialLinks: author.socialLinks as AuthorSeoData["socialLinks"],
   }));
 }

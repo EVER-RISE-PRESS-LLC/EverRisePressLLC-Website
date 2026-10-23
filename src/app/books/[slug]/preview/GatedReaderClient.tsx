@@ -8,6 +8,9 @@ import { trackEvent } from "@/components/providers/PostHogProvider";
 import { gtagEvent } from "@/lib/gtag";
 import Navbar from "@/components/Navbar";
 import SiteFooter from "@/components/SiteFooter";
+import ReactiveButton from "@/components/ui/ReactiveButton";
+import { ArrowUpRight } from "lucide-react";
+import { FINANCIAL_HEART_ATTACK_SLUG } from "@/lib/book-editorial";
 
 interface GatedReaderClientProps {
   bookSlug: string;
@@ -18,8 +21,7 @@ interface GatedReaderClientProps {
   chapterBody: string;
   authorName: string;
   authorSlug: string;
-  purchaseUrl: string;
-  retailPrice: number;
+  ebookOffer: { purchaseUrl: string; price: string } | null;
   partnerSlug: string | null;
   hasAccess: boolean;
 }
@@ -33,8 +35,7 @@ export default function GatedReaderClient({
   chapterBody,
   authorName,
   authorSlug,
-  purchaseUrl,
-  retailPrice,
+  ebookOffer,
   partnerSlug,
   hasAccess,
 }: GatedReaderClientProps) {
@@ -96,67 +97,21 @@ export default function GatedReaderClient({
             />
           </article>
 
-          <section
-            className="ambient-dark bg-grain relative overflow-hidden rhythm-section"
-            data-nav-surface="dark"
-          >
-            <div className="max-w-3xl mx-auto px-6 text-center">
-              <p className="text-gold font-sans text-xs uppercase tracking-[0.2em] mb-4">
-                End of Free Preview
-              </p>
-              <h2 className="font-heading text-3xl md:text-5xl font-bold mb-6">
-                That Was Just the <span className="text-gold">Surface.</span>
-              </h2>
-              <p className="text-cream/70 text-lg leading-relaxed mb-10 max-w-xl mx-auto">
-                You&apos;ve seen where the pattern started. The rest of the book shows you
-                exactly how it snowballed, and what to do about it. 14 more chapters.
-                Every one a mirror.
-              </p>
-
-              <div className="flex flex-col sm:flex-row gap-4 justify-center mb-10">
-                {purchaseUrl ? (
-                  <a
-                    href={purchaseUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex items-center justify-center px-10 py-5 bg-gold text-charcoal font-sans font-bold text-sm uppercase tracking-wider rounded-md hover:bg-gold-hover transition-colors duration-300 active:scale-[0.98]"
-                  >
-                    Get the Full Book for ${retailPrice}
-                  </a>
-                ) : (
-                  <Link
-                    href={`/books/${bookSlug}`}
-                    className="inline-flex items-center justify-center px-10 py-5 bg-gold text-charcoal font-sans font-bold text-sm uppercase tracking-wider rounded-md hover:bg-gold-hover transition-colors duration-300 active:scale-[0.98]"
-                  >
-                    Get the Full Book for ${retailPrice}
-                  </Link>
-                )}
-                <Link
-                  href={`/books/${bookSlug}`}
-                  className="inline-flex items-center justify-center px-10 py-5 border border-cream/25 text-cream font-sans font-bold text-sm uppercase tracking-wider rounded-md hover:border-gold hover:text-gold transition-colors duration-300 active:scale-[0.98]"
-                >
-                  See All Formats
-                </Link>
+          <section id="get-the-book" className="rhythm-section bg-gold text-charcoal" data-nav-surface="light" aria-labelledby="continue-reading-title">
+            <div className="mx-auto grid max-w-6xl items-center gap-10 px-6 md:grid-cols-[minmax(0,1fr)_minmax(0,1.6fr)] md:gap-14">
+              <div className="order-2 flex items-center gap-6 md:order-none md:flex-col md:items-start lg:items-center">
+                <Image src={bookCoverUrl} alt={`${bookTitle} book cover`} width={240} height={360} sizes="(max-width: 767px) 112px, 240px" className="press-book-jacket h-auto w-28! shrink-0 md:w-60!" />
+                <p className="max-w-60 text-base leading-relaxed">{bookTitle}<br /><Link href={`/authors/${authorSlug}`} className="mt-2 inline-flex min-h-11 items-center text-sm underline hover:no-underline">By {authorName}</Link></p>
               </div>
-
-              <div className="flex items-center justify-center gap-4 pt-8 border-t border-cream/10">
-                <div className="w-10 h-10 rounded-full overflow-hidden border-2 border-gold">
-                  <Image
-                    src="/images/authors/lamont-mcleod.jpg"
-                    alt={authorName}
-                    width={40}
-                    height={40}
-                    className="object-cover w-full h-full"
-                  />
-                </div>
-                <div className="text-left">
-                  <p className="text-cream text-sm font-semibold">{authorName}</p>
-                  <Link
-                    href={`/authors/${authorSlug}`}
-                    className="text-gold text-xs hover:text-gold-hover transition-colors"
-                  >
-                    Read the author&apos;s full story
-                  </Link>
+              <div className="order-1 min-w-0 md:order-none">
+                <h2 id="continue-reading-title" className="max-w-xl font-heading text-4xl font-bold leading-[1.08] text-balance md:text-5xl lg:text-6xl">Keep reading the full story.</h2>
+                <p className="mt-6 max-w-xl text-lg leading-relaxed">{bookSlug === FINANCIAL_HEART_ATTACK_SLUG ? "Follow McLeod through early jobs, borrowed money, and life in Atlanta in the remaining fourteen chapters." : "You have reached the end of the free preview. Explore the full book to keep reading."}</p>
+                <div className="mt-8 max-w-xl">
+                  {ebookOffer ? <>
+                    <ReactiveButton href={ebookOffer.purchaseUrl} external surface="light" size="lg" className="press-purchase-button w-full">Get the Full Book for {ebookOffer.price}<ArrowUpRight className="size-5" aria-hidden /></ReactiveButton>
+                    <p className="mt-3 text-sm leading-relaxed">eBook on Apple Books · US price. Final price may vary by country.</p>
+                  </> : <ReactiveButton href={`/books/${bookSlug}#editions`} surface="light" size="lg" className="press-purchase-button w-full">Get the full book<ArrowUpRight className="size-5" aria-hidden /></ReactiveButton>}
+                  <Link href={`/books/${bookSlug}#editions`} className="mt-5 inline-flex min-h-11 items-center text-base font-semibold underline hover:no-underline">See all formats and retailers</Link>
                 </div>
               </div>
             </div>
@@ -184,7 +139,7 @@ export default function GatedReaderClient({
 
               <div className="md:col-span-3">
                 <p className="text-gold font-sans text-xs uppercase tracking-[0.2em] mb-3">
-                  The Diagnosis: Chapter 1
+                  Chapter 1
                 </p>
                 <h1 className="font-heading text-3xl md:text-4xl font-bold text-charcoal mb-3 leading-tight">
                   {chapterTitle}
@@ -193,8 +148,8 @@ export default function GatedReaderClient({
                   <p className="text-text-muted italic mb-6">{bookSubtitle}</p>
                 )}
                 <p className="text-text-body text-lg leading-relaxed mb-8">
-                  Most people don&apos;t like what they see. That&apos;s the point. Enter your email,
-                  complete the verification, and start reading immediately.
+                  Read how a weekly allowance and trips to the candy store began McLeod&apos;s story.
+                  Enter your email and complete the verification to open the free chapter on this site.
                 </p>
 
                 <div className="bg-white rounded-lg border border-charcoal/10 p-6 md:p-8">

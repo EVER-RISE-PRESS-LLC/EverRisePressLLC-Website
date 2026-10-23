@@ -25,13 +25,11 @@ VALUES (
   'how-to-have-a-financial-heart-attack',
   'How To Have a Financial Heart Attack',
   'A New Standard for Wealth and Responsibility',
-  'YOU AREN''T JUST LOSING MONEY—YOU''RE PRACTICING POVERTY UNTIL YOU''RE AN EXPERT.
+  'How To Have a Financial Heart Attack follows Lamont D. McLeod from a ten-dollar childhood allowance to payday spending and work in debt collection. He looks back at choices he repeated and advice he struggled to put into practice.
 
-Most financial disasters aren''t sudden; they are built through years of muscle memory and financial amnesia. In this raw, mentorship-driven guide, Lamont D. McLeod traces the path from childhood allowance spent on penny candy to a high-stakes career in debt collections, where he realized he was the very debtor he was calling.
+The story moves through early jobs, borrowed money, a move to Atlanta, and conversations with a colleague named Craig. McLeod describes earning more while still spending what came in. Learning about money gives him questions to work through, but changing his habits takes more than knowing the answers.
 
-McLeod exposes the invisible cage of the job-hopping hustle and the dangerous belief that money is infinite as long as Friday is coming. Through the wisdom of his mentor, Craig, he reveals a sobering truth: every dollar wasted today is a day of freedom lost tomorrow.
-
-This book is a visceral wake-up call for anyone building their life on the sand of living for the weekend. It is time to stop the cycle of heart-racing stress and start building a foundation that can actually withstand life.',
+Its fifteen short chapters focus on personal experiences and reflection. Read the opening chapter to decide whether McLeod’s direct, conversational style is for you.',
   '/images/books/financial-heart-attack-cover.webp',
   'The Penny Candy Foundation',
   '<p>IT all started in my childhood. Receiving a weekly allowance, a whopping 10 bucks a week for chores: keeping my room clean, washing dishes, even though my legs would burn from standing in place so long, or at least that was the excuse that I''d tell my parents. Cleaning my bathroom. I didn''t mind wiping the mirrors, wiping the sink, sweeping, and even cleaning the tub. But the amount of time it took to convince myself to clean my toilet seemed to take an act of Congress. The amount of Ajax and Scrubbing Bubbles I used to clean the inside and outside of the bowl seemed to disappear. I would wear that toilet wire handle scrubber out. I would imagine that I was sword fighting. Yes, I had a big imagination. The amount of chemicals floating around, I''m surprised I never fainted.</p>

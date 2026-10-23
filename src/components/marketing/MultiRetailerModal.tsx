@@ -6,6 +6,7 @@ import { Dialog } from "radix-ui";
 import ReactiveButton from "@/components/ui/ReactiveButton";
 import { gtagEvent } from "@/lib/gtag";
 import { browserConsent } from "@/lib/privacy-consent";
+import { FORMAT_LABELS } from "@/lib/book-editorial";
 import { ArrowUpRight, X, ArrowRight } from "lucide-react";
 
 interface BookFormat {
@@ -24,6 +25,7 @@ interface MultiRetailerModalProps {
   bookSlug?: string;
   coverImageUrl?: string;
   triggerText?: string;
+  surface?: "light" | "dark";
 }
 
 interface RetailerMeta {
@@ -78,13 +80,6 @@ const RETAILER_META: Record<string, RetailerMeta> = {
   },
 };
 
-const FORMAT_LABELS: Record<string, string> = {
-  EBOOK: "eBook",
-  PAPERBACK: "Paperback",
-  HARDCOVER: "Hardcover",
-  AUDIOBOOK: "Audiobook",
-};
-
 const FORMAT_ORDER = ["EBOOK", "PAPERBACK", "HARDCOVER", "AUDIOBOOK"];
 
 export default function MultiRetailerModal({
@@ -92,7 +87,8 @@ export default function MultiRetailerModal({
   bookTitle,
   bookSlug,
   coverImageUrl,
-  triggerText = "Choose Your Format",
+  triggerText = "Choose a retailer",
+  surface = "dark",
 }: MultiRetailerModalProps) {
   const [isOpen, setIsOpen] = useState(false);
 
@@ -128,10 +124,10 @@ export default function MultiRetailerModal({
         href={formats[0].purchaseUrl}
         external
         variant="outline"
-        surface="dark"
+        surface={surface}
         onClick={() => trackRetailerClick(formats[0])}
       >
-        Buy Now for ${formats[0].retailPrice}
+        View at {RETAILER_META[formats[0].distributor]?.name ?? "the retailer"}
         <ArrowUpRight className="size-4" />
       </ReactiveButton>
     );
@@ -145,7 +141,7 @@ export default function MultiRetailerModal({
   return (
     <Dialog.Root open={isOpen} onOpenChange={setIsOpen}>
       <Dialog.Trigger asChild>
-        <ReactiveButton variant="outline" size="lg" surface="dark">{triggerText}<ArrowUpRight className="size-4"/></ReactiveButton>
+        <ReactiveButton variant="outline" surface={surface}>{triggerText}<ArrowUpRight className="size-4" aria-hidden /></ReactiveButton>
       </Dialog.Trigger>
       <Dialog.Portal>
         <Dialog.Overlay className="press-dialog-overlay"/>
@@ -169,12 +165,12 @@ export default function MultiRetailerModal({
                   return <a key={format.id} href={format.purchaseUrl} target="_blank" rel="noopener noreferrer" onClick={() => trackRetailerClick(format)} className="flex items-center gap-3 rounded-md border border-charcoal/20 bg-white p-3 text-charcoal transition-colors hover:border-gold-deep hover:bg-cream">
                     {meta.logo && <Image src={meta.logo} alt={meta.logoAlt} width={64} height={40} className="h-10 w-16 shrink-0 object-contain"/>}
                     <span className="min-w-0 flex-1"><span className="block text-sm font-bold">{meta.name}</span><span className="mt-1 block text-xs text-text-muted">{meta.tagline}</span></span>
-                    <span className="shrink-0 text-sm font-bold">${format.retailPrice}</span><ArrowRight size={16} aria-hidden/>
+                    <ArrowRight size={16} className="shrink-0" aria-hidden/>
                   </a>;
                 })}
               </div>
             </div>)}
-            <p className="mt-6 text-xs text-text-muted">Opens the retailer in a new tab.</p>
+            <p className="mt-6 text-sm leading-relaxed text-text-muted">Links open in a new tab. Check the retailer for current prices, availability, and delivery options.</p>
           </div>
         </Dialog.Content>
       </Dialog.Portal>

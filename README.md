@@ -135,7 +135,7 @@ npm run db:migrate:remote # Apply to remote D1
   - **Speed & performance optimization plan** (added 2026-08-26, part of M10):
     - HTML edge caching for mostly-static marketing pages (all pages are force-dynamic → every request hits D1; use Cloudflare Cache API / stale-while-revalidate with DB-triggered invalidation)
     - D1 query batching — homepage/book/author pages run 2–3 sequential awaits; parallelize and use D1 `batch()` to cut round-trips
-    - Third-party script tuning — optional PostHog/GA4/Meta tracking now requires the matching visitor consent; further bundle and loading work remains
+    - Third-party script tuning — PostHog/GA4/Meta run automatically at the owner’s request and honor saved opt-outs; further bundle and loading work remains
     - LCP polish — fix dev LCP candidate warning on scroll-stack images, confirm hero cover `priority`, audit `public/images/stack/*` file sizes
     - Worker bundle diet — 2226 KiB gzip today; recheck after any new dep (R2 ISR unavailable on account)
 
@@ -164,7 +164,14 @@ npm run db:migrate:remote # Apply to remote D1
   - Cloudflare routing verified. Owner confirmed privacy@everrisepress.com is monitored, approved the biography, and clarified HMD’s publishing/distribution services. Retention and day-three editorial input remain open. See [seo-dev-doc](docs/seo-dev-doc.md).
 - [x] **Day two owner decisions received** — contact, biography, HMD service wording and automatic tracking confirmed on 2026-10-24; the review document records these decisions and the remaining retention/editorial input.
   - Follow-up deployed as Worker `3ac6f904-7e43-49b9-9c7b-005877185e75`; build, five access/tracking tests, local/live SEO checks and desktop/mobile footer verification passed. Saved opt-outs remain honored.
-- [ ] **Days three through ten** — revise book content with author input, publish two reviewed articles and a discussion guide, improve measured performance and evaluate GSC after recrawling. See the dated plan; these are not automated runs.
+- [x] **Day three book, author and preview improvements** (Completed: 2026-10-24)
+  - Rewrote the book synopsis from the manuscript, added all 15 actual chapter titles, six notes, reader-fit guidance, a quotation from the existing sample, and a verified two-edition ISBN table.
+  - Improved author introduction, book presentation and internal links; retained the approved biography and added the official website to Person sameAs. Aligned both seed files with reviewed content.
+  - Rebuilt the end-of-preview CTA as a separate gold section with the cover, a prominent $4.99 Apple Books US eBook button, and a secondary all-formats link. Other retailers show current prices at their own sites.
+  - Updated metadata, edition schema and discovery text; removed duplicate edition entries, unverified fixed-price schema offers and an unpublished blog link. Targeted D1 update: `scripts/seo-day3-content.sql`.
+  - Build/TypeScript, lint (zero errors; four existing warnings), dry run, five access/tracking tests, local reader integration and local/live SEO checks passed. Desktop/mobile UI and retailer dialog verified. Worker `c8b79011-ca60-4ec3-827f-04200cbf547b`.
+  - GSC still reports book and author indexed on older crawls; About is unknown to Google. No fresh indexing or traffic gain is claimed. Review sources, limits and next inputs in [seo-dev-doc](docs/seo-dev-doc.md).
+- [ ] **Days four through ten** — build the blog foundation, publish two reviewed articles and a discussion guide, improve measured performance and evaluate GSC after recrawling. See the dated plan; these are not automated runs.
 
 ### Interface and sharing refinement
 

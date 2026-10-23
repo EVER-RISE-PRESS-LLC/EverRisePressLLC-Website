@@ -158,7 +158,7 @@ Evidence: `../seo-day2-2026-10-24/` contains source captures, the prior biograph
 ### Remaining owner input
 
 1. Choose how long signup/referral records should be kept and who handles deletion requests. The current policy discloses manual retention. Any future newsletter or automated series needs its own purpose and signup terms; the present chapter form does not add one.
-2. For day three, confirm the approved manuscript edition and supply one short approved personal example or excerpt that may be published. Book-page copy and original blog material will use that input rather than inventing author testimony.
+2. Day three now uses a short sentence from the existing published Chapter 1 sample and the manuscript contents list. Before a new first-person article is published, supply or approve its personal example, quotations and byline. No new testimony will be invented.
 
 The confirmed decisions are recorded as owner statements, alongside the independently checked sources. Google indexing of the new About page remains unconfirmed.
 
@@ -170,3 +170,93 @@ Applied the owner’s answers on 24 October 2026 and deployed Worker `3ac6f904-7
 Browser verification confirms automatic GA, PostHog and Meta script loading for a fresh local visit, no initial banner, both settings enabled by default, and no vendor scripts after choosing Essential only. A pre-existing production opt-out remains off after this release. The footer notice was checked at 390 px and 1280 px; it follows the copyright on both. No real lead, purchase, CAPTCHA or outbound email was submitted.
 
 The updated Word review document records the resolved decisions and two remaining inputs. Follow-up evidence is in `../seo-day2-2026-10-24/owner-followup/`; the original day-two evidence remains intact.
+
+
+## Day three implementation — 24 October 2026
+
+Day three rewrites the book and author pages using the existing EPUB, the already published Chapter 1 sample, retailer edition records, and the owner-approved biography. It also includes the owner's follow-up request to make the end-of-preview purchase section clearly distinct from the footer. No new interview answer or personal testimony has been invented. The original ten-day plan remains the work sequence; day four has not been started or scheduled automatically.
+
+### Published content and buying path
+
+- The book page now opens with the actual subject: a childhood allowance, payday spending, and work in debt collection. A new three-paragraph synopsis replaces the syndicated retailer blurb in D1 and both seed implementations; the homepage and author book section inherit it.
+- Added a reader-fit explanation, a short quotation already present in the existing public sample, the full fifteen-chapter contents list, and six manuscript-based chapter notes. Corrected the former generic chapter label to the actual title, The Awakening Begins.
+- Added a visible edition table: eBook ISBN 9781835567173 and paperback ISBN 9781835566930, English, July 20, 2026. The page attributes the HMD Publishing credit to the Apple Books record and links to the owner-confirmed service relationship on About.
+- Added practical answers about the free sample, the kind of book, and where buying takes place. The page describes personal experience and reflection without promising a complete budgeting course, a financial cure, or results for every reader.
+- The author page preserves the approved biography and improves the introduction, book section, official-site links and reading/contact routes. The official author website is also included in Person sameAs.
+- The retailer chooser now works on light and dark sections and directs readers to each retailer for current price and availability. Repeated store records produce two editions in Book schema. Unverified fixed-price offers and the unpublished blog link are removed from machine-readable output.
+- The end-of-preview CTA is a full gold section with the real cover, a large charcoal purchase button and a quieter all-formats link. The requested Get the Full Book for $4.99 button points to the checked Apple Books US eBook listing; the format, store and country-price qualification are visible beside the action. The price uses that format's database row, so future price changes must be checked and updated there.
+- The free chapter keeps its existing email/Turnstile flow and server-verified access cookie. The signup explanation now states plainly that the chapter opens on the site. Existing tracking defaults and opt-outs remain in effect.
+
+### Source ledger and editorial limits
+
+| Claim or content | Evidence and treatment |
+| --- | --- |
+| All fifteen chapter titles | Exact match against the local EPUB table of contents, recorded with a manuscript SHA-256 in the evidence folder. No placeholder chapter names. |
+| Six chapter notes and new synopsis | Read the relevant manuscript chapters, including allowance, parents' budgeting, first paycheck, job changes, debt collection and Craig. Describe the author's experiences; do not generalize them to every reader. |
+| Selected quotation | “Friday was coming, and Friday meant money.” The same sentence appears in both the EPUB and the pre-existing public Chapter 1 sample. No additional private passage was released. |
+| Author biography | Owner-approved facts from day two, preserved verbatim in D1. New introductory copy identifies the book and its subjects. |
+| Edition facts | Apple Books and ebook/paperback ISBN retailer records agree with the existing database. HMD is an edition publisher credit, distinct from the website organization. |
+| $4.99 primary CTA | Apple Books US showed $4.99 on this review. The action names the US eBook and opens that retailer; other retailers and countries may differ. No universal paperback or regional price claim. |
+
+Sources: [Apple Books US listing](https://books.apple.com/us/book/how-to-have-a-financial-heart-attack-a-new/id6793190934), [ebook ISBN record](https://www.adlibris.com/sv/bok/how-to-have-a-financial-heart-attack-a-new-standard-for-wealth-and-responsibility-9781835567173), [paperback ISBN record](https://www.akademibokhandeln.se/bok/how-to-have-a-financial-heart-attack/9781835566930), [additional paperback record](https://www.buscalibre.com.ar/libro-how-to-have-a-financial-heart-attack/9781835566930/p/68522719), [official author website](https://lamontdmcleod.com/), [Book structured-data vocabulary](https://schema.org/Book). The official website and personal history also rely on the owner confirmation recorded on day two.
+
+### Readability review
+
+The working audience is a US English-speaking reader considering this book or checking the author. This is an assumption based on the book and USD retail links, not measured audience research. Prose-first review precedes metadata and content SEO checks.
+
+| Criterion | Result |
+| --- | --- |
+| Structure and topic order | Pass: identify the book, explain the story and reader fit, show a sample and contents, then editions and questions. |
+| Paragraph structure | Pass: one subject per short paragraph; edition data uses a table. |
+| Opening paragraph | Pass: immediately describes what the book covers and whose experience it follows. |
+| Sentence length | Pass: short or medium sentences; names and book titles account for some longer clauses. |
+| Passive voice | Pass: McLeod, the reader, or the retailer is named when their action matters. |
+| Difficult words | Caution: the exact title, subtitle, chapter names and approved biography include longer words. Retain accurate names; surrounding instructions use plain language. |
+| Filler and hedging | Pass: removed universal judgments, medical metaphors and unsupported promises from the edited sales copy. |
+| Transitions | Pass: descriptive headings and in-page links carry the reading sequence. |
+| Variation | Pass: connected paragraphs, a quotation, contents list and edition table serve different reading tasks. |
+| Heading hierarchy | Pass: one H1 per page, descriptive H2 sections, H3 chapter entries and book titles. |
+
+Estimated Flesch Reading Ease for rendered paragraphs: book 55.7 (541 words); author 58.2 (257 words). These are heuristic estimates using the standard formula with vowel-group syllables, not certified scores. Names and abbreviations affect results. Headings, chapter titles and footer disclosures are excluded. Extracted prose and the calculation are saved in `content-review.json` and `content-review.py` in the evidence folder.
+
+### Metadata review
+
+| Page | Rendered title | Description characters |
+| --- | --- | --- |
+| Book | How To Have a Financial Heart Attack \| EverRise Press (53 characters) | 151 |
+| Author | Lamont D. McLeod \| EverRise Press (33 characters) | 132 |
+
+The metadata checks pass front-loading, concrete wording, filler removal, active phrasing, distinct title/description purpose, familiar language around proper titles, practical snippet length and one idea per field. The book description adds the chapter guide, editions and email sample; the author description explains the profile's purpose. Search engines may rewrite or truncate snippets. Person descriptions now end at a complete paragraph rather than being cut mid-sentence.
+
+### Content SEO review
+
+Derived focus queries: **How To Have a Financial Heart Attack** for branded book research and buying; **Lamont D. McLeod** for author navigation. No search-volume or ranking claim is made. Verdict: **Ready for these branded intents**, with original author contributions still needed for the upcoming articles.
+
+| Criterion | Result |
+| --- | --- |
+| Search intent | Pass: book details and buying/sample routes for book search; identity and work for author search. |
+| Focus phrase | Pass: exact title or author name in metadata, H1 and relevant copy; no forced repetition in every heading. |
+| Experience and trust | Pass within scope: manuscript examples, approved biography, visible edition sources and contact route. No financial-adviser credential or invented review. External authority remains limited and is not fabricated. |
+| Helpfulness and originality | Pass: fuller manuscript-based contents, reader-fit information, edition table and honest sample terms add information beyond the retailer blurb. |
+| Freshness | Pass: visible review date and release-linked D1 timestamps. Store prices remain a maintenance item; the sole priced CTA names the checked retailer and market. |
+| Internal linking | Pass: book, author, sample, editions and About connect with descriptive anchors. No empty blog collection is exposed. |
+
+### Search Console check
+
+GSC MCP read access works. The book and author URLs are still submitted and indexed with correct Google canonicals. Their last crawl times are October 11 and October 16 respectively, before the recent fixes. Their historical breadcrumb errors therefore do not demonstrate a regression in the current markup. The About URL is currently unknown to Google; it is present in the registered sitemap. A fresh crawl and increased search visibility have not yet been confirmed. The previously denied sitemap resubmission was not retried.
+
+### Verification and release
+
+Released as Worker `c8b79011-ca60-4ec3-827f-04200cbf547b` on October 24 in Asia/Dhaka. Next.js/TypeScript and OpenNext builds pass. Lint reports zero errors and four pre-existing warnings. Wrangler dry run passes; compressed deployed Worker is 1,895.76 KiB. All five chapter-access/tracking tests pass. The local reader integration verifies the locked page withholds chapter text, a valid local fixture unlocks it, the $4.99 Apple Books CTA is present, and preview responses remain private/no-store. No real signup, CAPTCHA, purchase, outbound message or lead write was performed.
+
+Local and live five-page SEO smoke checks pass: canonical/status/metadata/social tags, one H1, valid JSON-LD, real breadcrumb URLs, all fifteen chapter titles, exactly two ISBN editions, HMD publisher credit, official author sameAs, stable sitemap dates, preview noindex, robots, missing-page 404s, manifest assets and HTTPS redirects. The schema endpoints agree with the page. The smoke test now consumes response bodies and exits cleanly.
+
+Desktop (1280 px) and mobile (390 px) browser review covers the book, author, and unlocked preview CTA. The retailer dialog opens and closes with Escape, returns focus to its trigger, and fits the mobile viewport. In-page anchors and native question disclosures work. A final adjustment gives keyboard focus a dark outline on the gold CTA. Existing motion and reduced-motion rules remain shared. The Impeccable detector reported no findings. Visual inspection, rather than that detector alone, established the layout result.
+
+Production D1 was backed up before the targeted two-row update. Post-update checks confirm the new synopsis and preserve the exact approved biography and original chapter body. The update script records an actual UTC timestamp (`2026-10-23T20:06:34Z`), corresponding to October 24 locally. No reader records were accessed. Both seed files now use the reviewed content. Evidence is in `../seo-day3-2026-10-24/`; no credentials are stored in Git.
+
+### Next owner review and day four
+
+The day-three selected excerpt uses a sentence already published in the existing sample, so an additional interview was not required to complete these page improvements. Please review the new synopsis and reader-fit wording in this document and on the live book page. Before a new article is published in Lamont's voice, supply or approve the personal example, quotation and byline; the proposed payday essay and discussion guide still need that editorial input. The retention-period decision from day two also remains open.
+
+Day four is the blog foundation: article template, author/source/date fields, related reading, canonical and Article/Breadcrumb schema, draft exclusion and publication-aware sitemap/navigation. The two articles and reading guide remain later steps. No new article or empty index page was published as part of day three.

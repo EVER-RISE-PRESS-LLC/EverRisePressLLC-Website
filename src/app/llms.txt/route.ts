@@ -32,7 +32,6 @@ export async function GET() {
     `- API catalog (RFC 9727): ${SITE_URL}/.well-known/api-catalog`,
     `- Organization: ${SITE_URL}/#organization`,
     `- WebSite: ${SITE_URL}/#website`,
-    `- Blog: ${SITE_URL}/blog/#blog`,
     ...bookRows.map(
       (book) => `- Book "${book.title}": ${SITE_URL}/books/${book.slug}#book`
     ),
@@ -43,7 +42,7 @@ export async function GET() {
 
   const markdown = `# EverRise Press LLC
 
-> Modern independent publishing house founded by Lamont D. McLeod. Debut title: *How To Have a Financial Heart Attack*.
+> Independent publishing house founded by Lamont D. McLeod. Featured book: *How To Have a Financial Heart Attack*.
 
 ${sections.join("\n\n")}
 

@@ -21,7 +21,8 @@ import type { Database } from "@/lib/db";
 import { authors, bookFormats, books } from "@/lib/db/schema";
 import { cleanDashes } from "@/lib/utils";
 import { BRAND_NAME, seoIds, SITE_URL, type SeoIds } from "./ids";
-import { PUBLISHER_CONTACT, TRUST_REVIEW_DATE } from "../publisher";
+import { AUTHOR_SITE, PUBLISHER_CONTACT, TRUST_REVIEW_DATE } from "../publisher";
+import { FINANCIAL_HEART_ATTACK_SLUG, financialHeartAttackEditorial, FORMAT_LABELS, uniqueEditions } from "../book-editorial";
 
 /* ------------------------------------------------------------------ */
 /* Content data shapes                                                */
@@ -59,6 +60,7 @@ export interface AuthorSeoData {
   bio: string;
   avatarUrl: string | null;
   socialLinks: Record<string, string> | null;
+  updatedAt?: string | null;
 }
 
 export interface ArticleSeoData {
@@ -213,9 +215,10 @@ export function blogPiece(): GraphEntity {
 
 /** Full Person entity for an author (author page + /schema.json corpus). */
 export function buildPersonPiece(author: AuthorSeoData): GraphEntity {
-  const sameAs = author.socialLinks
-    ? Object.values(author.socialLinks).filter((url): url is string => Boolean(url))
-    : [];
+  const sameAs = [...new Set([
+    ...(author.socialLinks ? Object.values(author.socialLinks).filter(Boolean) : []),
+    ...(author.slug === "lamont-mcleod" ? [AUTHOR_SITE] : []),
+  ])];
 
   return buildPiece<WithContext<Person>>({
     "@type": "Person",
@@ -224,7 +227,7 @@ export function buildPersonPiece(author: AuthorSeoData): GraphEntity {
     url: `${SITE_URL}/authors/${author.slug}`,
     image: author.avatarUrl ? new URL(author.avatarUrl, SITE_URL).href : undefined,
     jobTitle: author.title ?? undefined,
-    description: cleanDashes(author.bio).slice(0, 500),
+    description: cleanDashes(author.bio).split("\n\n")[0],
     worksFor: { "@id": seoIds.organization },
     sameAs: sameAs.length > 0 ? sameAs : undefined,
   });
@@ -241,23 +244,20 @@ export function buildBookPiece(book: BookSeoData): GraphEntity {
     image: new URL(book.coverImageUrl, SITE_URL).href,
     inLanguage: "en-US",
     datePublished: book.publishedAt || undefined,
-    // Edition publisher is not stored in D1; do not infer it from the site owner.
+    // Confirmed edition credit; keep it distinct from the website's organization.
+    publisher: book.slug === FINANCIAL_HEART_ATTACK_SLUG ? { "@type": "Organization", name: "HMD Publishing" } : undefined,
     author: book.author ? {
       "@type": "Person",
       "@id": seoIds.person(book.author.slug),
       name: book.author.name,
       url: `${SITE_URL}/authors/${book.author.slug}`,
     } : undefined,
-    workExample: book.formats.map((format) => ({
+    workExample: uniqueEditions(book.formats).map((format) => ({
       "@type": "Book" as const,
+      name: book.title,
       bookFormat: FORMAT_TYPE_MAP[format.formatType] || ("https://schema.org/EBook" as const),
       isbn: format.isbn || undefined,
-      offers: {
-        "@type": "Offer" as const,
-        price: format.retailPrice.toString(),
-        priceCurrency: format.currency,
-        url: format.purchaseUrl,
-      },
+      inLanguage: "en-US",
     })),
   });
 }
@@ -342,8 +342,8 @@ export const seoRegistry: Record<SeoPageType, RegistryEntry> = {
     },
     metadata(data) {
       const book = data as BookSeoData;
-      const description = book.slug === "how-to-have-a-financial-heart-attack"
-        ? "Lamont D. McLeod reflects on childhood spending, payday habits, and debt collection. Explore the book and read Chapter 1 free with email signup."
+      const description = book.slug === FINANCIAL_HEART_ATTACK_SLUG
+        ? financialHeartAttackEditorial.metaDescription
         : `Explore ${book.title}${book.author ? ` by ${book.author.name}` : ""}. Read about the book, compare editions, and try the first chapter.`;
       return {
         title: book.title,
@@ -394,7 +394,7 @@ export const seoRegistry: Record<SeoPageType, RegistryEntry> = {
           .select({
             bookSlug: books.slug,
             formatType: bookFormats.formatType,
-            retailPrice: bookFormats.retailPrice,
+            isbn: bookFormats.isbn,
           })
           .from(bookFormats)
           .innerJoin(books, eq(bookFormats.bookId, books.id)),
@@ -404,7 +404,7 @@ export const seoRegistry: Record<SeoPageType, RegistryEntry> = {
       for (const format of formatRows) {
         const list = formatsByBook.get(format.bookSlug) ?? [];
         const isDuplicate = list.some(
-          (f) => f.formatType === format.formatType && f.retailPrice === format.retailPrice
+          (f) => f.formatType === format.formatType && f.isbn === format.isbn
         );
         if (!isDuplicate) list.push(format);
         formatsByBook.set(format.bookSlug, list);
@@ -416,16 +416,17 @@ export const seoRegistry: Record<SeoPageType, RegistryEntry> = {
           const formatsSummary = formatsList
             .map(
               (f) =>
-                `${f.formatType.charAt(0) + f.formatType.slice(1).toLowerCase()} ($${f.retailPrice})`
+                `${FORMAT_LABELS[f.formatType] ?? f.formatType}${f.isbn ? ` (ISBN ${f.isbn})` : ""}`
             )
             .join(", ");
-          const synopsis = book.synopsis.replace(/\s+/g, " ").slice(0, 280).trim();
+          const synopsis = book.synopsis.split("\n\n")[0].replace(/\s+/g, " ").trim();
           return [
             `### ${book.title}${book.subtitle ? ` — ${book.subtitle}` : ""}`,
             `- Slug: ${book.slug}`,
             `- URL: ${SITE_URL}/books/${book.slug}`,
             `- Formats: ${formatsSummary || "Coming soon"}`,
-            `- Free sample: ${SITE_URL}/books/${book.slug}/preview`,
+            `- Free sample with email signup: ${SITE_URL}/books/${book.slug}/preview`,
+            ...(book.slug === FINANCIAL_HEART_ATTACK_SLUG ? ["- Edition publisher credit: HMD Publishing. EverRise Press uses publishing and distribution services through HMD."] : []),
             `- About: ${synopsis}`,
           ].join("\n");
         })
@@ -450,6 +451,7 @@ export const seoRegistry: Record<SeoPageType, RegistryEntry> = {
             breadcrumb: { "@id": seoIds.breadcrumb(url) },
             about: { "@id": seoIds.person(author.slug) },
             mainEntity: { "@id": seoIds.person(author.slug) },
+            dateModified: safeDate(author.updatedAt),
             inLanguage: "en-US",
           },
           seoIds.factory,

@@ -151,6 +151,8 @@ html { scroll-padding-top: 100px; scrollbar-color: #8a6a1e #eee8dc; }
 }
 .press-button[data-size="sm"] { padding: 10px 16px; min-height: 44px; font-size: 13px; }
 .press-button[data-size="lg"] { padding: 17px 26px; min-height: 56px; font-size: 15px; }
+.press-button.press-purchase-button[data-size="lg"] { min-height: 64px; padding: 18px 24px; font-size: 18px; }
+#get-the-book :focus-visible { outline-color: var(--charcoal); }
 .press-button[data-variant="solid"][data-surface="dark"] { background: var(--gold); color: var(--charcoal); }
 .press-button[data-variant="solid"][data-surface="light"] { background: var(--charcoal); color: var(--cream); }
 .press-button[data-variant="outline"][data-surface="dark"] { color: var(--cream); border-color: #aaa18c; }
