@@ -56,13 +56,21 @@ export default function SiteFooter({ extraLinks = [] }: SiteFooterProps) {
               {link.label}
             </Link>
           ))}
-          <PrivacySettingsButton />
         </nav>
       </div>
       <div className="border-t border-cream/10">
-        <div className="mx-auto flex max-w-6xl flex-col items-center justify-between gap-2 px-6 py-5 text-xs text-cream/60 md:flex-row">
-          <p>&copy; {new Date().getFullYear()} EverRise Press LLC. All rights reserved.</p>
-          <p>Read. Reflect. Start a conversation.</p>
+        <div className="mx-auto max-w-6xl px-6 py-5">
+          <div className="flex flex-col items-center justify-between gap-2 text-xs text-cream/60 md:flex-row">
+            <p>&copy; {new Date().getFullYear()} EverRise Press LLC. All rights reserved.</p>
+            <p>Read. Reflect. Start a conversation.</p>
+          </div>
+          <div className="mt-4 max-w-3xl text-center text-sm leading-relaxed text-cream/75 md:text-left">
+            <p>Google Analytics, PostHog, and Meta load by default to measure visits and advertising. They may use cookies and device information. You can change these settings below.</p>
+            <div className="mt-1 flex flex-wrap items-center justify-center gap-x-5 md:justify-start">
+              <Link href="/privacy" className="inline-flex min-h-11 items-center underline underline-offset-4 hover:text-gold">Privacy policy</Link>
+              <PrivacySettingsButton />
+            </div>
+          </div>
         </div>
       </div>
     </footer>

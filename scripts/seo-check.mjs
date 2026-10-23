@@ -30,9 +30,11 @@ for (const path of paths) {
   const nodes = graphs.flatMap(g => g["@graph"] ?? [g]);
   if (path === "/about") {
     assert.ok(nodes.some(n => n["@type"] === "AboutPage"), "AboutPage schema");
-    assert.match(body, /mailto:info@everrisepress\.com/, "publisher contact");
+    assert.match(body, /monitored inbox/, "confirmed contact inbox");
     assert.match(body, /mailto:privacy@everrisepress\.com/, "privacy contact");
   }
+  assert.match(body, /Google Analytics, PostHog, and Meta load by default/, path + " footer tracking disclosure");
+  assert.ok(!body.includes('class="press-privacy-banner"'), path + " no automatic consent banner");
   for (const crumb of nodes.filter(n => n["@type"] === "BreadcrumbList")) {
     assert.ok(crumb.itemListElement.length >= 2, path + " breadcrumb length");
     crumb.itemListElement.forEach((c, i) => {

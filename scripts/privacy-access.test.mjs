@@ -36,9 +36,9 @@ test("existing signed cookies continue to work without using their legacy email 
   assert.equal(await hasChapterAccess(legacy, "book-one", secret), true);
 });
 
-test("tracking defaults off for missing, malformed, or lookalike consent cookies", () => {
+test("tracking starts by default when no valid preference is saved", () => {
   for (const header of [null, undefined, "", "everrise_privacy=true", "everrise_privacy=v1.1.1extra", "everrise_privacy=v2.1.1", "other_everrise_privacy=v1.1.1", "everrise_privacy=v1.2.1"]) {
-    assert.deepEqual(readPrivacyConsent(header), { analytics: false, advertising: false });
+    assert.deepEqual(readPrivacyConsent(header), { analytics: true, advertising: true });
     assert.equal(consentCookieValue(header), "");
   }
 });

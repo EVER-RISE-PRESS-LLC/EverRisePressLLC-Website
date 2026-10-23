@@ -157,12 +157,13 @@ npm run db:migrate:remote # Apply to remote D1
   - Deployed Worker version `880c78a4-12d5-44dc-8a44-1cf23b141075`. Audit, ten-day plan and owner review inputs: [seo-dev-doc](docs/seo-dev-doc.md).
 - [x] **Day two implementation and fact checks** (Completed: 2026-10-24)
   - Published `/about` with contact/corrections routes, verified book credits, AboutPage schema, sitemap and internal links.
-  - Replaced unsupported biography assertions with a short, sourced profile; saved the production biography backup outside Git. Repeatable content update: `scripts/seo-day2-author.sql`.
-  - Rewrote privacy around actual D1, Turnstile, analytics and Meta processing. Added separate opt-in choices and withdrawal controls; signup does not automatically send email or subscribe to a series.
+  - Replaced unsupported biography assertions with a short, sourced profile; owner-approved personal-history facts are included. Saved production biography backups outside Git. Repeatable content update: `scripts/seo-day2-author.sql`.
+  - Rewrote privacy around actual D1, Turnstile, analytics and Meta processing. Tracking runs automatically at the owner’s request, with disclosure below the footer copyright and separate opt-out controls; signup does not automatically send email or subscribe to a series.
   - Verified chapter cookies on the server, withheld locked chapter HTML, and removed email from new access tokens and PostHog lead properties.
   - Build/TypeScript, lint (zero errors; four existing warnings), dry run, five security/consent tests, local reader integration, and five-page live SEO checks passed. Worker version `af5fab53-1552-4451-bc31-9b6cd61d43e8`.
-  - Cloudflare routing verified for contact and privacy addresses. Owner review remains open for mailbox monitoring, business relationship wording, biography approval, and retention policy. See [seo-dev-doc](docs/seo-dev-doc.md).
-- [ ] **Day two owner sign-off** — the implemented corrections are live; business and editorial confirmations are listed in the review document.
+  - Cloudflare routing verified. Owner confirmed privacy@everrisepress.com is monitored, approved the biography, and clarified HMD’s publishing/distribution services. Retention and day-three editorial input remain open. See [seo-dev-doc](docs/seo-dev-doc.md).
+- [x] **Day two owner decisions received** — contact, biography, HMD service wording and automatic tracking confirmed on 2026-10-24; the review document records these decisions and the remaining retention/editorial input.
+  - Follow-up deployed as Worker `3ac6f904-7e43-49b9-9c7b-005877185e75`; build, five access/tracking tests, local/live SEO checks and desktop/mobile footer verification passed. Saved opt-outs remain honored.
 - [ ] **Days three through ten** — revise book content with author input, publish two reviewed articles and a discussion guide, improve measured performance and evaluate GSC after recrawling. See the dated plan; these are not automated runs.
 
 ### Interface and sharing refinement

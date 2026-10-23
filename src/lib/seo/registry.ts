@@ -550,7 +550,7 @@ export const seoRegistry: Record<SeoPageType, RegistryEntry> = {
       return {
         title: "Privacy Policy",
         description:
-          "See how chapter signup, cookies, analytics, and advertising work on this site. Choose optional tracking or contact us about your personal data.",
+          "Learn how this site uses chapter signup data, cookies, analytics, and advertising. Manage tracking settings or contact us about your data.",
         canonicalPath: "/privacy",
       };
     },

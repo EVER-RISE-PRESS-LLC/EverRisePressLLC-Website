@@ -35,7 +35,9 @@ These dates are a work schedule, not autonomous scheduled runs. No daily automat
 4. **The questions I ignored at my first collection job** — Later author interview, only with direct answers or an approved transcript. This is a possible follow-on essay, not a third generic payday post. Choose its final angle from reader questions and avoid duplicating article one.
 5. **Meet the publisher and contact** — One useful About page identifying EverRise Press, the verified relationship to HMD Publishing, editorial standards, contact and corrections process. Avoid an unverified address or qualifications.
 
-## Owner review needed
+## Owner review from the original audit
+
+Status updated 24 October: the owner confirmed the monitored privacy inbox, approved the biography and clarified HMD’s publishing/distribution role. The owner chose automatic tracking with a footer disclosure. The latest decisions and remaining inputs are recorded at the end of this document; the list below preserves the original audit questions.
 
 - Confirm primary country/audience and whether the desired reader is a first-time budgeter, a reflective memoir reader, or a book-club reader. Working assumption: US English-speaking adults; USD retailers support this assumption but do not prove demand.
 - An EPUB manuscript is already in BOOK/ and was checked for the day-one descriptions. Confirm it is the approved edition and identify passages that can be quoted publicly.
@@ -73,11 +75,11 @@ Remaining review items: database biography and retailer synopsis; publisher/impr
 
 ## Day two implementation 24 October 2026
 
-Day two was carried out on 24 October, rather than the original 23 October slot. The day numbers remain the work sequence. No future days have been scheduled automatically. The site changes are live; owner sign-off remains open for the business and editorial questions below.
+Day two was carried out on 24 October, rather than the original 23 October slot. The day numbers remain the work sequence. No future days have been scheduled automatically. The initial site changes are live. The owner subsequently confirmed the contact inbox, biography, publishing-service relationship and automatic tracking preference. The follow-up below records those decisions; retention and day-three editorial input remain open.
 
-Published `/about` as one contact and publisher page. It explains the site, book, free chapter, author background, edition credits, and corrections route. It links to the book, preview, author, privacy policy, official author website and Apple Books record. The footer, sitemap and structured-data registry now include this page. AboutPage and valid two-level breadcrumbs identify its purpose without claiming a legal relationship to HMD that has not been confirmed.
+Published `/about` as one contact and publisher page. It explains the site, book, free chapter, author background, edition credits, and corrections route. It links to the book, preview, author, privacy policy, official author website and Apple Books record. The footer, sitemap and structured-data registry now include this page. AboutPage and valid two-level breadcrumbs identify its purpose. Following the owner’s clarification, the page explains that EverRise Press uses publishing and distribution services through HMD to list the book on Amazon and other retailers.
 
-The production biography has been replaced with a short account based on the manuscript and the author's official website. Removed the HMD founder claim, unverified November/13-day personal-history details, invented statements about his beliefs, and universal claims about readers being broke. The prior database row is backed up in the private workspace evidence folder. The seed biography is aligned with the change; `scripts/seo-day2-author.sql` records the targeted content update. The full book-page rewrite and an original author contribution remain day-three work.
+The biography uses a short account based on the manuscript and the author’s official website. The owner approved the November 2010 accident and his mother’s death thirteen days later; these facts are restored in the follow-up. The unsupported HMD founder claim, invented statements about his beliefs, and universal claims about readers being broke remain removed. The prior database row is backed up in the private workspace evidence folder. The seed biography is aligned with the change; `scripts/seo-day2-author.sql` records the targeted content update. The full book-page rewrite and an original author contribution remain day-three work.
 
 ### Verified facts and their limits
 
@@ -86,10 +88,11 @@ The production biography has been replaced with a short account based on the man
 | Author name and EverRise founder role | Official author website and affiliations page | Lamont D. McLeod; author and founder of EverRise Press |
 | Real estate, home care and speaking | Official author website | General background only; no invented qualifications or credentials |
 | Allowance, payday and debt-collection subjects | Local EPUB manuscript, checked on day one and revisited on day two | Describe the contents as McLeod's experiences, not a diagnosis of every reader |
-| HMD Publishing | Apple Books names HMD as publisher; manuscript credits HMDPublishing.com for book design; official affiliations page discusses publishing rights | Attribute the edition credit to its source; do not call Lamont HMD's founder or claim ownership between the businesses |
+| HMD Publishing | Owner confirms publishing/distribution services through HMD; Apple Books names HMD as publisher; manuscript credits HMDPublishing.com for book design | Explain the service relationship and attribute edition credits; no HMD founder or business-ownership claim |
+| Personal history | Owner approved the existing November 2010 accident and mother’s death thirteen days later | Publish the approved facts in the short biography without invented emotional quotations |
 | Publication date | Apple Books and current site database both say July 20, 2026 | No date change needed. March 9 in EPUB metadata is an export timestamp, not proof of publication |
 | ISBNs | Ebook 9781835567173; paperback 9781835566930; valid checksums and matching retailer records | Existing ISBNs retained; price/stock claims still require the retailer's current listing |
-| Public contact | Cloudflare Email Routing enabled; info@ has an active forward to a verified address; active catch-all covers privacy@ | Publish info@everrisepress.com and privacy@everrisepress.com. Routing is verified; delivery and human monitoring were not tested |
+| Public contact | Cloudflare Email Routing enabled; active catch-all covers privacy@; owner confirms that inbox is monitored | Use privacy@everrisepress.com for reader questions, corrections and data requests. No test email was sent |
 
 Sources: [official author website](https://lamontdmcleod.com/), [affiliations](https://lamontdmcleod.com/affiliations), [author story](https://lamontdmcleod.com/story), [Apple Books](https://books.apple.com/us/book/how-to-have-a-financial-heart-attack-a-new/id6793190934), [ebook ISBN record](https://www.adlibris.com/sv/bok/how-to-have-a-financial-heart-attack-a-new-standard-for-wealth-and-responsibility-9781835567173), [paperback ISBN record](https://www.akademibokhandeln.se/bok/how-to-have-a-financial-heart-attack/9781835566930). Retailer records corroborate edition facts; they do not establish the businesses' legal ownership.
 
@@ -97,7 +100,7 @@ Sources: [official author website](https://lamontdmcleod.com/), [affiliations](h
 
 The old privacy text promised a Mailchimp email sequence and denied advertising tracking despite configured analytics and Meta code. The deployed policy now describes the actual signup record, admin viewing/export, service providers, optional tracking, cookie lifetimes and retention. The form explicitly says that the chapter opens on this site and links to the policy. No email series or Mailchimp integration has been added.
 
-Analytics and advertising default off. Visitors can choose Essential only, either category separately, or Allow all. The footer reopens the settings. Browser GA4/PostHog and Meta, server PostHog/Meta events, referral logging and retailer-click logging respect their respective choices. Turning a category off reloads the page and stops those tools; this does not erase previously collected data. Partner attribution and measured conversion totals will now cover consenting visits only. Anonymous attribution cookies are not treated as proof of anonymity, and hashed IPs/emails are described accurately.
+At the owner’s request, analytics and advertising run by default. The initial opt-in banner is removed. A notice directly below the footer copyright names Google Analytics, PostHog and Meta and explains their use of cookies and device information. Privacy choices remains available in the footer to turn either category off; previously saved preferences are honored. Browser GA4/PostHog and Meta, server PostHog/Meta events, referral logging and retailer-click logging respect those settings. Saving changes reloads the page and stops future tracking for disabled categories; it does not erase information already collected. Clearing site data removes the preferences and restores the default. Hashing IPs or emails is not described as making them anonymous.
 
 PostHog no longer identifies signups by email or includes the email in lead-event properties. Existing browser identifiers from the previous setup are cleared when the visitor first chooses. Session recording remains disabled. The chapter works with optional tracking declined.
 
@@ -113,7 +116,7 @@ Working audience: readers checking the book, author, publisher and signup terms.
 | --- | --- |
 | Search intent | Pass: identifies the press and gives a direct contact route |
 | Focus phrase | Pass: EverRise Press appears in title, H1 and opening; no forced repetition |
-| Experience and trust | Pass for sourced statements; owner sign-off still requested for fuller biography and business relationship |
+| Experience and trust | Pass: sourced background plus owner-approved personal history, publishing-service relationship and monitored contact |
 | Original usefulness | Pass: manuscript and edition credits, precise signup terms, corrections and privacy contacts |
 | Freshness and accuracy | Pass: visible review date and stable lastmod tied to this release; changing prices deferred to retailers |
 | Internal linking | Pass: book, author, preview, privacy and About are connected; no empty blog page published |
@@ -121,9 +124,9 @@ Working audience: readers checking the book, author, publisher and signup terms.
 | Readability criterion | Review |
 | --- | --- |
 | Structure and topic order | Pass: identity/book/credits/contact; privacy groups data by feature |
-| Paragraph structure | Pass: one topic per paragraph; measured maximum 38 words on About and 47 on privacy |
+| Paragraph structure | Pass: one topic per paragraph; tracking defaults, saved choices and retention are explained separately |
 | Opening | Pass: names the site and explains the page's purpose immediately |
-| Sentence length | Pass: roughly 12 words per sentence in the measured body copy |
+| Sentence length | Pass: short connected sentences; technical details remain where needed for an accurate disclosure |
 | Passive voice | Limited to factual states such as recording disabled; no hidden actor in signup handling |
 | Difficult words | Caution: analytics, advertising, identifiers and provider names add complexity; hashing is explained in plain language |
 | Filler and hedging | Pass: unsupported slogans and sweeping reader judgments removed from the biography |
@@ -131,13 +134,13 @@ Working audience: readers checking the book, author, publisher and signup terms.
 | Variation | Pass: connected short paragraphs and a cookie list suited to comparison |
 | Heading hierarchy | Pass: one H1 and descriptive H2 sections |
 
-Estimated Flesch Reading Ease: About 56.8; privacy 44.7. Calculated with the standard formula and a heuristic vowel-group syllable count, so proper names, addresses and abbreviations affect the estimate. This is not a certified readability score. Technical terms remain where needed for accuracy; the copy uses short sentences and explains the data flows directly. The calculation and extracted prose are in the evidence folder.
+Initial day-two draft Flesch Reading Ease estimates: About 56.8; privacy 44.7. These historical estimates precede the owner-requested tracking and publisher edits. Calculated with the standard formula and a heuristic vowel-group syllable count, so proper names, addresses and abbreviations affect the estimate. This is not a certified readability score. Technical terms remain where needed for accuracy; the copy uses short sentences and explains the data flows directly. The calculation and extracted prose are in the evidence folder.
 
-Metadata review passes front-loading, concrete wording, active phrasing, distinct title/description purpose, and sensible search-result length. About title: 32 characters; description: 145. Privacy title: 31 characters; description: 143. Search engines may still rewrite or truncate snippets. No fabricated reviews, credentials or keyword-volume claims were added.
+Metadata review passes front-loading, concrete wording, active phrasing, distinct title/description purpose, and sensible search-result length. About title: 32 characters; description: 145. Privacy title: 31 characters; description: 138. Search engines may still rewrite or truncate snippets. No fabricated reviews, credentials or keyword-volume claims were added.
 
 ### Verification and release
 
-Released as Worker `af5fab53-1552-4451-bc31-9b6cd61d43e8`. Next.js/TypeScript and OpenNext builds passed. Lint has zero errors and four pre-existing warnings. Wrangler dry run passed. Five tests cover token scope/expiry/tampering/legacy access and independent consent categories. Local HTTP integration verifies locked versus authorized chapter output and consent guards without writing leads. Mobile (390 px) and desktop (1280 px) browser checks cover About/privacy layout, consent choices, withdrawal, and dialog dismissal. The initial dialog's outline-button contrast was corrected before release.
+Initial day-two release: Worker `af5fab53-1552-4451-bc31-9b6cd61d43e8`. The following checks describe that release; owner-follow-up verification is recorded separately below. Next.js/TypeScript and OpenNext builds passed. Lint has zero errors and four pre-existing warnings. Wrangler dry run passed. Five tests cover token scope/expiry/tampering/legacy access and independent consent categories. Local HTTP integration verifies locked versus authorized chapter output and consent guards without writing leads. Mobile (390 px) and desktop (1280 px) browser checks cover About/privacy layout, consent choices, withdrawal, and dialog dismissal. The initial dialog's outline-button contrast was corrected before release.
 
 The live smoke test passes all five public pages, status/canonical/meta/social tags, JSON-LD, AboutPage, breadcrumb URLs, initial HTML visibility, sitemap stability, robots, preview noindex, missing-page 404s, manifest images and HTTP redirects. Live checks also confirm the revised biography and private/no-store preview responses. No real signup, CAPTCHA completion, purchase or outbound email was performed.
 
@@ -145,11 +148,25 @@ GSC MCP read access works as a Full user. Before resubmission, the registered si
 
 Evidence: `../seo-day2-2026-10-24/` contains source captures, the prior biography, sanitized email-routing checks, local/live smoke results, access tests, build/lint/deployment logs and document render checks. Runtime credentials are not included in this repository.
 
-### Owner decisions for review
+### Owner decisions received on 24 October
 
-1. Confirm who monitors info@everrisepress.com and privacy@everrisepress.com and can handle corrections/data requests. The technical forwarding routes are working; no delivery test was sent.
-2. Approve the short published biography or provide corrections. Confirm the exact EverRise/HMD relationship and approved sensitive personal-history wording before a fuller story is published. No HMD ownership or founder claim will be inferred from a retailer credit.
-3. Choose how long signup/referral records should be kept and who handles deletion requests. The current policy discloses manual retention. Also confirm whether you want a separate, clearly described future email subscription; the present chapter form does not add one.
-4. For day three, confirm the approved manuscript edition and supply one short approved personal example or excerpt that may be published. Full book-page copy and original blog material will use that input rather than inventing author testimony.
+- **Contact confirmed:** use privacy@everrisepress.com for reader questions, corrections and privacy requests; the owner confirms it is monitored. The code’s publisher contact and Organization email use this address.
+- **Biography approved:** the owner approved Lamont’s biography, including the November 2010 accident and his mother’s death thirteen days later. These facts are included without restoring unsupported beliefs or universal claims about readers.
+- **Publishing relationship clarified:** EverRise Press uses publishing/distribution services through HMD to list the book on Amazon and other retailers. This is a service relationship; no HMD founder or company-ownership claim is inferred.
+- **Tracking preference confirmed:** preserve automatic tracking and disclose it accurately after the copyright. The initial consent banner is removed; saved opt-outs and the footer settings remain functional.
 
-The deployed default requires opt-in for optional analytics and advertising. This is reversible and keeps the free chapter available to visitors who decline. These implementation results do not imply that mailbox monitoring, publisher contracts, author sign-off or Google indexing have been confirmed.
+### Remaining owner input
+
+1. Choose how long signup/referral records should be kept and who handles deletion requests. The current policy discloses manual retention. Any future newsletter or automated series needs its own purpose and signup terms; the present chapter form does not add one.
+2. For day three, confirm the approved manuscript edition and supply one short approved personal example or excerpt that may be published. Book-page copy and original blog material will use that input rather than inventing author testimony.
+
+The confirmed decisions are recorded as owner statements, alongside the independently checked sources. Google indexing of the new About page remains unconfirmed.
+
+
+### Owner follow-up release verification
+
+Applied the owner’s answers on 24 October 2026 and deployed Worker `3ac6f904-7e43-49b9-9c7b-005877185e75`. Build/TypeScript, lint (zero errors and four pre-existing warnings), Wrangler dry run, all five access/tracking tests, local server preference guards, and local/live five-page SEO checks pass. Live content checks confirm the approved biography, publishing-service wording, monitored contact and Organization email.
+
+Browser verification confirms automatic GA, PostHog and Meta script loading for a fresh local visit, no initial banner, both settings enabled by default, and no vendor scripts after choosing Essential only. A pre-existing production opt-out remains off after this release. The footer notice was checked at 390 px and 1280 px; it follows the copyright on both. No real lead, purchase, CAPTCHA or outbound email was submitted.
+
+The updated Word review document records the resolved decisions and two remaining inputs. Follow-up evidence is in `../seo-day2-2026-10-24/owner-followup/`; the original day-two evidence remains intact.

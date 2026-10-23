@@ -16,12 +16,12 @@ function subscribe(callback: () => void) {
 
 export function usePrivacyConsent() {
   const isAdmin = usePathname().startsWith("/admin");
-  const value = useSyncExternalStore(subscribe, () => consentCookieValue(document.cookie), () => "");
-  return { chosen: isAdmin || Boolean(value), analytics: !isAdmin && value[3] === "1", advertising: !isAdmin && value[5] === "1" };
+  const value = useSyncExternalStore(subscribe, () => consentCookieValue(document.cookie) || "default", () => "");
+  return { chosen: isAdmin || (Boolean(value) && value !== "default"), analytics: !isAdmin && (value === "default" || value[3] === "1"), advertising: !isAdmin && (value === "default" || value[5] === "1") };
 }
 
 export function PrivacySettingsButton() {
-  return <button type="button" className="min-h-11 text-sm text-cream/70 transition-colors hover:text-gold" onClick={() => window.dispatchEvent(new Event(PRIVACY_OPEN_EVENT))}>Privacy choices</button>;
+  return <button type="button" className="inline-flex min-h-11 items-center text-sm text-cream/75 underline underline-offset-4 transition-colors hover:text-gold" onClick={() => window.dispatchEvent(new Event(PRIVACY_OPEN_EVENT))}>Privacy choices</button>;
 }
 
 function removeOptionalStorage(consent: PrivacyConsent) {
@@ -73,20 +73,12 @@ export default function PrivacyPreferences() {
   }
 
   return <>
-    {!consent.chosen && !open && <section aria-label="Privacy choices" className="press-privacy-banner">
-      <div><h2 className="font-heading text-xl font-semibold">Your privacy choices</h2><p className="mt-2 text-sm leading-relaxed">Choose whether to allow analytics and advertising tools. Essential features work either way. <Link href="/privacy" className="underline underline-offset-4">Read our privacy policy</Link>.</p></div>
-      <div className="flex flex-wrap gap-2">
-        <ReactiveButton size="sm" variant="outline" surface="light" disabled={saving} onClick={() => save({ analytics: false, advertising: false })}>Essential only</ReactiveButton>
-        <ReactiveButton size="sm" variant="outline" surface="light" disabled={saving} onClick={() => window.dispatchEvent(new Event(PRIVACY_OPEN_EVENT))}>Choose settings</ReactiveButton>
-        <ReactiveButton size="sm" disabled={saving} onClick={() => save({ analytics: true, advertising: true })}>Allow all</ReactiveButton>
-      </div>
-    </section>}
     <Dialog.Root open={open} onOpenChange={setOpen}>
       <Dialog.Portal>
         <Dialog.Overlay className="press-dialog-overlay" />
         <Dialog.Content className="press-retailer-dialog p-6 md:p-8" onCloseAutoFocus={event => { event.preventDefault(); returnFocus.current?.focus(); }}>
           <div className="flex items-start justify-between gap-4"><Dialog.Title className="font-heading text-2xl font-semibold">Privacy choices</Dialog.Title><Dialog.Close asChild><button type="button" aria-label="Close privacy choices" className="flex size-11 items-center justify-center rounded-md hover:bg-charcoal/10"><X size={20}/></button></Dialog.Close></div>
-          <Dialog.Description className="mt-2 text-sm leading-relaxed text-text-body">Essential features provide chapter access and protect forms. Optional tools stay off until you choose them. Change your choice here at any time.</Dialog.Description>
+          <Dialog.Description className="mt-2 text-sm leading-relaxed text-text-body">Analytics and advertising tools run by default. Turn either category off here. Essential features provide chapter access and protect forms regardless of these settings.</Dialog.Description>
           <div className="my-6 space-y-5">
             <label className="flex cursor-pointer items-start gap-3"><input type="checkbox" className="mt-1 size-5 shrink-0 accent-charcoal" checked={analytics} onChange={event => setAnalytics(event.target.checked)}/><span><strong className="block">Analytics</strong><span className="mt-1 block text-sm leading-relaxed text-text-body">Google Analytics and PostHog measure visits, chapter unlocks, and retailer clicks. This includes partner referral measurement.</span></span></label>
             <label className="flex cursor-pointer items-start gap-3"><input type="checkbox" className="mt-1 size-5 shrink-0 accent-charcoal" checked={advertising} onChange={event => setAdvertising(event.target.checked)}/><span><strong className="block">Advertising</strong><span className="mt-1 block text-sm leading-relaxed text-text-body">Meta measures ad visits and chapter signups. After signup, this can include a hashed email address and device information.</span></span></label>

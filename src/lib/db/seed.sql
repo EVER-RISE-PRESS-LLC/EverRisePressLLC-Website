@@ -8,6 +8,8 @@ VALUES (
 
 The book draws on his experiences with a childhood allowance, payday spending, and work in debt collection. It asks readers to reflect on the habits behind their own spending.
 
+In November 2010, a car accident left McLeod quadriplegic. His mother died thirteen days later.
+
 His wider work includes real estate, home care, and public speaking. On his official website, McLeod shares his background and the work of the organizations he is involved with.
 
 Explore the book below, read the first chapter free with email signup, or visit lamontdmcleod.com for his personal story and speaking work.',

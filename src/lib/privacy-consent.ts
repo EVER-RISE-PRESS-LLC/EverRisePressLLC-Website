@@ -16,12 +16,13 @@ export function consentCookieValue(cookieHeader: string | null | undefined): str
 
 export function readPrivacyConsent(cookieHeader: string | null | undefined): PrivacyConsent {
   const value = consentCookieValue(cookieHeader);
-  return { analytics: value[3] === "1", advertising: value[5] === "1" };
+  // Tracking runs by default; keep honoring explicit browser preferences.
+  return value ? { analytics: value[3] === "1", advertising: value[5] === "1" } : { analytics: true, advertising: true };
 }
 
 export function browserConsent(): PrivacyConsent {
   if (typeof location !== "undefined" && location.pathname.startsWith("/admin")) return { analytics: false, advertising: false };
-  return readPrivacyConsent(typeof document === "undefined" ? "" : document.cookie);
+  return typeof document === "undefined" ? { analytics: false, advertising: false } : readPrivacyConsent(document.cookie);
 }
 
 export function savePrivacyConsent(consent: PrivacyConsent) {
