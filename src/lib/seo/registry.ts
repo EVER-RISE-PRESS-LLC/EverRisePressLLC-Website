@@ -1,7 +1,8 @@
+import { getPublishedArticles } from "@/lib/blog/catalog";
+import type { BlogArticle } from "@/lib/blog/model";
 import type { GraphEntity } from "@jdevalk/seo-graph-core";
 import {
   buildArticle,
-  buildBreadcrumbList,
   buildImageObject,
   buildPiece,
   buildWebPage,
@@ -13,7 +14,6 @@ import type {
   BreadcrumbList,
   Organization,
   Person,
-  WebSite,
   WithContext,
 } from "schema-dts";
 import { asc, eq } from "drizzle-orm";
@@ -72,14 +72,15 @@ export interface ArticleSeoData {
   imageUrl?: string;
   section?: string;
   wordCount?: number;
-  author: BookAuthorRefData;
+  author: { name: string; url: string; type: "Person" | "Organization" };
+  imageAlt?: string;
 }
 
 /* ------------------------------------------------------------------ */
 /* Registry contract                                                  */
 /* ------------------------------------------------------------------ */
 
-export type SeoPageType = "home" | "book" | "author" | "about" | "privacy" | "article";
+export type SeoPageType = "home" | "book" | "author" | "about" | "privacy" | "blog" | "article";
 
 export interface SeoCrumbs {
   name: string;
@@ -101,6 +102,9 @@ export interface SeoMetadataInput {
   twitterTitle?: string;
   twitterDescription?: string;
   noindex?: boolean;
+  publishedTime?: string;
+  modifiedTime?: string;
+  author?: { name: string; url: string };
 }
 
 export interface SeoSitemapEntry {
@@ -201,15 +205,15 @@ export function websitePiece(): GraphEntity {
   );
 }
 
-export function blogPiece(): GraphEntity {
+export function blogPiece(articles: BlogArticle[] = getPublishedArticles()): GraphEntity {
   return buildPiece<WithContext<Blog>>({
     "@type": "Blog",
     "@id": seoIds.blog,
     name: `${BRAND_NAME} Blog`,
-    url: `${SITE_URL}/blog/`,
+    url: `${SITE_URL}/blog`,
     publisher: { "@id": seoIds.organization },
     inLanguage: "en-US",
-    hasPart: [],
+    hasPart: articles.map(article => ({ "@id": seoIds.article(`${SITE_URL}/blog/${article.slug}`) })),
   });
 }
 
@@ -566,107 +570,57 @@ export const seoRegistry: Record<SeoPageType, RegistryEntry> = {
     ],
   },
 
-  /**
-   * PRE-WIRED for the future blog. No posts table exists yet — adding one
-   * later is a data-query job, not schema work. See docs/seo-system.md.
-   */
+  blog: {
+    buildPieces(data) {
+      const articles = (data as { articles: BlogArticle[] }).articles;
+      if (!articles.length) return [];
+      const url = `${SITE_URL}/blog`;
+      return [blogPiece(articles), buildWebPage({ url, name: "EverRise Press Blog", isPartOf: { "@id": seoIds.website }, mainEntity: { "@id": seoIds.blog }, breadcrumb: { "@id": seoIds.breadcrumb(url) }, inLanguage: "en-US" }, seoIds.factory, "CollectionPage"), breadcrumbListPiece(url, this.buildBreadcrumbs(data))];
+    },
+    buildBreadcrumbs() { return [HOME_CRUMB, { name: "Blog", url: `${SITE_URL}/blog` }]; },
+    metadata(data) {
+      const articles = (data as { articles: BlogArticle[] }).articles;
+      return { title: "Blog: Money, Books and Reading", description: "Read articles from EverRise Press about spending habits, books, and personal experience. Explore sources, reading ideas, and the stories behind the book.", canonicalPath: "/blog", noindex: !articles.length };
+    },
+    sitemapEntries: async () => {
+      const articles = getPublishedArticles();
+      return articles.length ? [{ path: "/blog", lastModified: new Date(Math.max(...articles.map(article => Date.parse(article.updatedAt!)))).toISOString(), changeFrequency: "weekly", priority: 0.6 }] : [];
+    },
+  },
+
   article: {
     buildPieces(data) {
       const article = data as ArticleSeoData;
       const url = `${SITE_URL}/blog/${article.slug}`;
-      const authorId = seoIds.person(article.author.slug);
-
+      const authorUrl = new URL(article.author.url, SITE_URL).href;
+      const siteAuthor = article.author.type === "Organization" && article.author.url === "/about" && article.author.name === BRAND_NAME;
+      const authorId = siteAuthor ? seoIds.organization : `${authorUrl}#${article.author.type === "Person" ? "person" : "organization"}`;
+      const published = safeDate(article.publishedAt);
+      const modified = safeDate(article.updatedAt);
+      if (!published || !modified) throw new Error("Article schema requires real publication and update dates");
+      const imageUrl = new URL(article.imageUrl ?? "/images/og/everrise-default.png", SITE_URL).href;
       return [
         blogPiece(),
-        buildWebPage(
-          {
-            url,
-            name: article.title,
-            isPartOf: { "@id": seoIds.website },
-            breadcrumb: { "@id": seoIds.breadcrumb(url) },
-            author: { "@id": authorId },
-            datePublished: safeDate(article.publishedAt),
-            dateModified: safeDate(article.updatedAt),
-            primaryImage: article.imageUrl
-              ? { "@id": seoIds.primaryImage(url) }
-              : undefined,
-            inLanguage: "en-US",
-          },
-          seoIds.factory
-        ),
-        buildArticle(
-          {
-            url,
-            isPartOf: [{ "@id": seoIds.webPage(url) }, { "@id": seoIds.blog }],
-            author: { "@id": authorId },
-            publisher: { "@id": seoIds.organization },
-            headline: article.title,
-            description: article.description,
-            datePublished: safeDate(article.publishedAt) ?? new Date(),
-            dateModified: safeDate(article.updatedAt),
-            image: article.imageUrl
-              ? { "@id": seoIds.primaryImage(url) }
-              : undefined,
-            articleSection: article.section,
-            wordCount: article.wordCount,
-            inLanguage: "en-US",
-          },
-          seoIds.factory,
-          "BlogPosting"
-        ),
-        ...(article.imageUrl
-          ? [
-              buildImageObject(
-                {
-                  pageUrl: url,
-                  url: article.imageUrl,
-                  width: 1200,
-                  height: 630,
-                },
-                seoIds.factory
-              ),
-            ]
-          : []),
-        buildPiece<WithContext<Person>>({
-          "@type": "Person",
-          "@id": authorId,
-          name: article.author.name,
-          url: `${SITE_URL}/authors/${article.author.slug}`,
-        }),
-        buildBreadcrumbList(
-          {
-            url,
-            items: [
-              { name: "Home", url: `${SITE_URL}/` },
-              { name: "Blog", url: `${SITE_URL}/blog/` },
-              { name: article.title, url },
-            ],
-          },
-          seoIds.factory
-        ),
+        buildWebPage({ url, name: article.title, isPartOf: { "@id": seoIds.website }, mainEntity: { "@id": seoIds.article(url) }, breadcrumb: { "@id": seoIds.breadcrumb(url) }, author: { "@id": authorId }, datePublished: published, dateModified: modified, primaryImage: { "@id": seoIds.primaryImage(url) }, inLanguage: "en-US" }, seoIds.factory),
+        { ...buildArticle({ url, isPartOf: [{ "@id": seoIds.webPage(url) }, { "@id": seoIds.blog }], author: { "@id": authorId }, publisher: { "@id": seoIds.organization }, headline: article.title, description: article.description, datePublished: published, dateModified: modified, image: { "@id": seoIds.primaryImage(url) }, articleSection: article.section, wordCount: article.wordCount, inLanguage: "en-US" }, seoIds.factory, "BlogPosting"), url, mainEntityOfPage: { "@id": seoIds.webPage(url) } },
+        buildImageObject({ pageUrl: url, url: imageUrl, width: 1200, height: 630, caption: article.imageAlt }, seoIds.factory),
+        ...(!siteAuthor ? [buildPiece({ "@type": article.author.type, "@id": authorId, name: article.author.name, url: authorUrl })] : []),
+        breadcrumbListPiece(url, this.buildBreadcrumbs(data)),
       ];
     },
     buildBreadcrumbs(data) {
       const article = data as ArticleSeoData;
-      return [
-        HOME_CRUMB,
-        { name: "Blog", url: `${SITE_URL}/blog/` },
-        { name: article.title, url: `${SITE_URL}/blog/${article.slug}` },
-      ];
+      return [HOME_CRUMB, { name: "Blog", url: `${SITE_URL}/blog` }, { name: article.title, url: `${SITE_URL}/blog/${article.slug}` }];
     },
     metadata(data) {
       const article = data as ArticleSeoData;
-      return {
-        title: article.title,
-        description: article.description,
-        canonicalPath: `/blog/${article.slug}`,
-        imageUrl: article.imageUrl,
-        ogType: "article",
-        ogTitle: article.title,
-      };
+      return { title: article.title, description: article.description, canonicalPath: `/blog/${article.slug}`, imageUrl: new URL(article.imageUrl ?? "/images/og/everrise-default.png", SITE_URL).href, imageAlt: article.imageAlt, ogType: "article", ogTitle: article.title, publishedTime: article.publishedAt, modifiedTime: article.updatedAt ?? undefined, author: { name: article.author.name, url: new URL(article.author.url, SITE_URL).href } };
     },
-    sitemapEntries: async () => [],
-    llmsSection: async () => null,
+    sitemapEntries: async () => getPublishedArticles().map(article => ({ path: `/blog/${article.slug}`, lastModified: article.updatedAt!, changeFrequency: "monthly", priority: 0.7 })),
+    llmsSection: async () => {
+      const articles = getPublishedArticles();
+      return articles.length ? `## Articles\n\n- Blog: ${SITE_URL}/blog\n${articles.map(article => `- ${article.title}: ${SITE_URL}/blog/${article.slug} — ${article.description}`).join("\n")}` : null;
+    },
   },
 };
 
@@ -677,5 +631,6 @@ export const seoPageTypes: SeoPageType[] = [
   "author",
   "about",
   "privacy",
+  "blog",
   "article",
 ];

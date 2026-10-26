@@ -171,7 +171,12 @@ npm run db:migrate:remote # Apply to remote D1
   - Updated metadata, edition schema and discovery text; removed duplicate edition entries, unverified fixed-price schema offers and an unpublished blog link. Targeted D1 update: `scripts/seo-day3-content.sql`.
   - Build/TypeScript, lint (zero errors; four existing warnings), dry run, five access/tracking tests, local reader integration and local/live SEO checks passed. Desktop/mobile UI and retailer dialog verified. Worker `c8b79011-ca60-4ec3-827f-04200cbf547b`.
   - GSC still reports book and author indexed on older crawls; About is unknown to Google. No fresh indexing or traffic gain is claimed. Review sources, limits and next inputs in [seo-dev-doc](docs/seo-dev-doc.md).
-- [ ] **Days four through ten** — build the blog foundation, publish two reviewed articles and a discussion guide, improve measured performance and evaluate GSC after recrawling. See the dated plan; these are not automated runs.
+- [x] **Blog and article foundation** (Completed: 2026-10-27)
+  - Built `/blog` and `/blog/[slug]` using the existing reading design, plus staff review pages at `/admin/articles`.
+  - Added validated file-based content, source/byline/review/date fields, accessible content blocks, related reading and publication-aware homepage/navigation/sitemap/schema discovery.
+  - Both planned articles remain unpublished briefs. Public draft URLs return 404; the empty blog is noindex and excluded from navigation and sitemap. No new CMS or D1 migration.
+  - Six publishing-model tests, existing chapter/tracking tests, positive/negative HTTP integration, authenticated local staff preview and responsive browser checks passed. Publishing workflow: [Blog runbook](docs/blog-publishing.md).
+- [ ] **Remaining content and measurement work** — publish two reviewed articles and a discussion guide, improve measured performance and evaluate GSC after recrawling. See the dated plan; these are not automated runs.
 
 ### Interface and sharing refinement
 
@@ -180,7 +185,7 @@ npm run db:migrate:remote # Apply to remote D1
 - [x] **Production verification** — deployed Worker `74a0e681-cffb-4f1e-8bdb-11fbcb55f756`; build, TypeScript, lint, live SEO smoke checks and social crawler image checks passed. Compressed Worker: 2,044.83 KiB.
 - Direction, generation prompt and validation notes: [Visual refinement](docs/visual-refinement.md).
 
-**Last Updated:** 2026-10-24
+**Last Updated:** 2026-10-27
 **Progress:** 8/10 milestones complete (Milestone 6 deferred)  
 **Domain:** `https://everrisepress.com` (live, canonical — site URL via `NEXT_PUBLIC_SITE_URL`)  
 **Next:** Milestone 10 - Polish, Privacy & Launch

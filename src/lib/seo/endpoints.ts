@@ -1,3 +1,5 @@
+import { getPublishedArticles } from "@/lib/blog/catalog";
+import { articleToSeo } from "@/lib/blog/seo";
 import { assembleGraph, type GraphEntity } from "@jdevalk/seo-graph-core";
 import type { Database } from "@/lib/db";
 import { getDatabase } from "@/lib/db/client";
@@ -5,6 +7,7 @@ import { authors, bookFormats, books } from "@/lib/db/schema";
 import { eq } from "drizzle-orm";
 import { seoIds } from "./ids";
 import {
+  blogPiece,
   buildBookPiece,
   buildPersonPiece,
   organizationPiece,
@@ -85,7 +88,7 @@ async function fetchAuthors(db: Database): Promise<AuthorSeoData[]> {
 
 /** Site-wide entities for published sections only. */
 export async function getSitePieces(): Promise<GraphEntity[]> {
-  return [organizationPiece(), websitePiece()];
+  return [organizationPiece(), websitePiece(), ...(getPublishedArticles().length ? [blogPiece()] : [])];
 }
 
 /** Every book as a full page graph (Book + WebPage + BreadcrumbList). */
@@ -112,6 +115,11 @@ export async function getPersonPieces(): Promise<GraphEntity[]> {
   return pieces;
 }
 
+/** Published articles only; private briefs never reach a public endpoint. */
+export async function getArticlePieces(): Promise<GraphEntity[]> {
+  return [organizationPiece(), websitePiece(), ...getPublishedArticles().flatMap(article => seoRegistry.article.buildPieces(articleToSeo(article), seoIds))];
+}
+
 /** Corpus-wide graph: site entities + all Persons + all Books. */
 export async function getCorpusPieces(): Promise<GraphEntity[]> {
   const db = await getDatabase();
@@ -125,6 +133,7 @@ export async function getCorpusPieces(): Promise<GraphEntity[]> {
     websitePiece(),
     ...authorData.map(buildPersonPiece),
     ...bookData.map(buildBookPiece),
+    ...getPublishedArticles().flatMap(article => seoRegistry.article.buildPieces(articleToSeo(article), seoIds)),
   ];
 }
 
@@ -153,6 +162,7 @@ export interface SchemaEndpoint {
 export const SCHEMA_ENDPOINTS: SchemaEndpoint[] = [
   { path: "/schema/site.json", schemaType: "WebSite", build: getSitePieces },
   { path: "/schema/books.json", schemaType: "Book", build: getBookPieces },
+  { path: "/schema/articles.json", schemaType: "BlogPosting", build: getArticlePieces },
   { path: "/schema/authors.json", schemaType: "Person", build: getPersonPieces },
   { path: "/schema.json", schemaType: null, build: getCorpusPieces },
 ];

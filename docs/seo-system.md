@@ -26,7 +26,7 @@ Data flow for a page: page component fetches its entity → passes it to
 
 ## Adding a new content type
 
-1. **Create the table** (Drizzle migration), e.g. `posts`.
+1. **Choose the source of truth**. Books/authors use D1; articles now use the validated Git-based catalog described in [Blog publishing](blog-publishing.md). A new content type needs a table only when its workflow requires one.
 2. **Add a registry entry** in `src/lib/seo/registry.ts`:
    - add the key to the `SeoPageType` union,
    - define a `XxxSeoData` interface,
@@ -73,7 +73,7 @@ Graph rules (from the seo-graph recipes):
 | ------ | --- | ---- |
 | Organization | `https://everrisepress.com/#organization` | site-wide singleton |
 | WebSite | `https://everrisepress.com/#website` | site-wide singleton |
-| Blog collection | `https://everrisepress.com/blog/#blog` | site-wide singleton |
+| Blog collection | `https://everrisepress.com/blog#blog` | site-wide singleton |
 | Book | `https://everrisepress.com/books/<slug>#book` | per-entity |
 | Person | `https://everrisepress.com/authors/<slug>#person` | per-entity |
 | WebPage | the canonical URL itself | per-page |
@@ -95,8 +95,7 @@ WebPage/Breadcrumb/Article/Image ids automatically via `seoIds.factory`.
 
 ## /schema.json
 
-Corpus-wide knowledge graph (Organization, WebSite, Blog, all Persons, all
-Books) assembled with `assembleGraph`, served as `application/ld+json`,
+Corpus-wide knowledge graph (Organization, WebSite, all Persons and Books, plus Blog and BlogPosting entities when articles are published) assembled with `assembleGraph`, served as `application/ld+json`,
 `Cache-Control: no-store`. AI crawlers can fetch the whole entity corpus in
 one request. Keep it in sync with new content types by adding their entities
 to the piece list in `src/lib/seo/endpoints.ts` (`getCorpusPieces`).
@@ -147,7 +146,7 @@ Three discovery documents for AI crawlers and agents, wired together:
 
 | Content type | Builders to use (per seo-graph recipes) |
 | ------------ | --------------------------------------- |
-| **Blog post** | `article` registry type already wired: `buildArticle(..., 'BlogPosting')` + `Blog` collection + WebPage + BreadcrumbList + author Person ref. Adding a `posts` table + data query is all that remains. |
+| **Blog post** | Implemented: validated file catalog, publication gates, Article/CollectionPage routes, staff previews and published-only discovery. See [Blog publishing](blog-publishing.md). |
 | **Chapter pages** (`/books/<slug>/preview`) | WebPage (`isPartOf: #website`, `isPartOf`-link the page to the Book entity) + BreadcrumbList (Home → Books → Book → Chapter). No new registry type needed — could extend `book` with a `variant` or add a `chapter` type. |
 | **Podcast pages** | `buildPiece<PodcastSeries>` (site-wide) + `buildPiece<PodcastEpisode>` (`partOfSeries`, `associatedMedia`, `author`) per the seo-graph "Podcast / video site" recipe; `buildVideoObject` if video. |
 | **Contact page** | WebPage + BreadcrumbList (Home → Contact); optionally `ContactPage` subtype via `buildWebPage`. |
@@ -175,3 +174,7 @@ Three discovery documents for AI crawlers and agents, wired together:
 - Shared metadata provides canonical OG URLs and fallback social cards. The layout does not impose a homepage canonical on unrelated routes.
 - `node scripts/seo-check.mjs [base-url]` verifies built/live SEO behavior. Production runs also test both HTTP hosts and their robots paths.
 - Cloudflare Always Use HTTPS was enabled at the zone, separate from the Worker deployment. Keep this in rollback considerations.
+
+## Blog implementation — 27 October 2026
+
+The `blog` and `article` registry entries now use the same published-only catalog as the page routes. `/schema/articles.json` exposes published BlogPosting graphs; its endpoint is included in the schema map and API catalog. An empty blog is noindex, has no canonical and contributes no Blog entity, sitemap entry or navigation link. Published bylines can identify a Person or the publisher Organization. Article dates must be real supplied values; no render-time fallback date is generated. See the [publishing runbook](blog-publishing.md) for the exact workflow and tests.

@@ -314,3 +314,28 @@ html { scroll-padding-top: 100px; scrollbar-color: #8a6a1e #eee8dc; }
     @apply font-sans;
   }
 }
+
+/* Reading surfaces extend the existing Spectral/Karla publishing system. */
+.press-article-grid { display: grid; grid-template-columns: minmax(0, 1fr); }
+.press-article-body { font-size: 18px; line-height: 1.85; color: var(--text-body); }
+.press-article-body > * + * { margin-top: 24px; }
+.press-article-body > h2 { margin-top: 48px; font: 600 30px/1.25 var(--font-spectral), serif; color: var(--charcoal); text-wrap: balance; }
+.press-article-body > h2:first-child { margin-top: 0; }
+.press-article-body ul, .press-article-body ol { padding-left: 26px; }
+.press-article-body ul { list-style: disc; }
+.press-article-body ol { list-style: decimal; }
+.press-article-body li + li { margin-top: 10px; }
+.press-article-body figure { padding-block: 24px; border-block: 1px solid #c9c1b2; }
+.press-article-body blockquote { font: 400 25px/1.5 var(--font-spectral), serif; color: var(--charcoal); }
+.press-article-body figcaption { margin-top: 16px; font-size: 14px; line-height: 1.6; }
+.press-article-body a { text-decoration: underline; }
+.press-article-table { max-width: 100%; overflow-x: auto; }
+.press-article-table table { width: 100%; border-collapse: collapse; font-size: 16px; line-height: 1.65; text-align: left; }
+.press-article-table caption { text-align: left; font-weight: 700; padding-bottom: 16px; }
+.press-article-table th, .press-article-table td { min-width: 104px; padding: 14px 16px; border-bottom: 1px solid #c9c1b2; vertical-align: top; font-variant-numeric: tabular-nums; }
+.press-article-table tbody th { font-weight: 400; }
+@media (min-width: 1024px) { .press-article-grid { grid-template-columns: 210px minmax(0, 680px); gap: 64px; } }
+@media (min-width: 768px) and (max-width: 1023px) {
+  .press-header[data-blog-available] .press-nav { gap: 16px; }
+  .press-header[data-blog-available] .press-nav-links { gap: 18px; }
+}

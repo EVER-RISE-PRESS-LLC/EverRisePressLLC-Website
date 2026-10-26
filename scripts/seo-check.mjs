@@ -90,10 +90,12 @@ for (const icon of manifest.icons) {
   await r.arrayBuffer();
 }
 const schema = JSON.parse((await get("/schema/site.json")).body);
-assert.ok(!(schema["@graph"] ?? []).some(n => n["@type"] === "Blog"), "no unpublished blog collection");
+const publishedArticleSchema = JSON.parse((await get("/schema/articles.json")).body);
+const hasPublishedArticles = (publishedArticleSchema["@graph"] ?? []).some(n => n["@type"] === "BlogPosting");
+assert.equal((schema["@graph"] ?? []).some(n => n["@type"] === "Blog"), hasPublishedArticles, "publication-aware blog collection");
 const catalog = await get("/llms.txt");
 assert.equal(catalog.status, 200);
-assert.ok(!catalog.body.includes("/blog/"), "no unpublished blog link in discovery file");
+assert.equal(catalog.body.includes("/blog/"), hasPublishedArticles, "publication-aware article discovery");
 assert.match(catalog.body, /Free sample with email signup/, "sample access disclosed in discovery file");
 for (const path of ["/schema/books.json", "/schema.json"]) {
   const corpus = JSON.parse((await get(path)).body);

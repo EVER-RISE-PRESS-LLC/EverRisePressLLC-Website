@@ -7,6 +7,8 @@
     "dev": "next dev",
     "start": "next start",
     "lint": "eslint",
+    "test:blog": "node --test --experimental-strip-types scripts/blog.test.mjs",
+    "check:blog": "node scripts/blog-check.mjs",
     "preview": "opennextjs-cloudflare build && opennextjs-cloudflare preview",
     "deploy": "opennextjs-cloudflare build && opennextjs-cloudflare deploy",
     "upload": "opennextjs-cloudflare build && opennextjs-cloudflare upload",

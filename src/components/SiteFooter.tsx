@@ -1,6 +1,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import { BookOpen, UserRound, ShieldCheck } from "lucide-react";
+import { BlogFooterLink } from "@/components/blog/BlogAvailability";
 import { PrivacySettingsButton } from "@/components/privacy/PrivacyPreferences";
 
 interface SiteFooterProps {
@@ -56,6 +57,7 @@ export default function SiteFooter({ extraLinks = [] }: SiteFooterProps) {
               {link.label}
             </Link>
           ))}
+          <BlogFooterLink />
         </nav>
       </div>
       <div className="border-t border-cream/10">

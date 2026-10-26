@@ -11,6 +11,8 @@ import Navbar from "@/components/Navbar";
 import SiteFooter from "@/components/SiteFooter";
 import ReactiveButton from "@/components/ui/ReactiveButton";
 import BookStories from "@/components/marketing/BookStories";
+import ArticleList from "@/components/blog/ArticleList";
+import { getPublishedArticles } from "@/lib/blog/catalog";
 import { ArrowRight } from "lucide-react";
 
 export const dynamic = "force-dynamic";
@@ -18,6 +20,7 @@ export const metadata: Metadata = buildMetadata("home");
 const BOOK_PATH = "/books/how-to-have-a-financial-heart-attack";
 
 export default async function Home() {
+  const recentArticles = getPublishedArticles().slice(0, 2);
   const db = await getDatabase();
   const [[book], [author]] = await Promise.all([
     db.select().from(books).where(eq(books.slug, "how-to-have-a-financial-heart-attack")).limit(1),
@@ -98,6 +101,7 @@ export default async function Home() {
           <ReactiveButton href={`${BOOK_PATH}/preview`} size="lg">Read Chapter 1 Free<ArrowRight size={18}/></ReactiveButton>
         </div>
       </section>
+      {recentArticles.length > 0 && <section className="press-section" aria-labelledby="latest-reading-title"><div className="press-container"><div className="mb-9 flex flex-wrap items-end justify-between gap-5"><h2 id="latest-reading-title" className="font-heading text-3xl font-semibold">From the press</h2><Link href="/blog" className="press-text-link">All articles<ArrowRight size={17} aria-hidden /></Link></div><ArticleList articles={recentArticles} /></div></section>}
       <SiteFooter extraLinks={[{label:"The Book",href:BOOK_PATH}]}/>
     </main>
   );

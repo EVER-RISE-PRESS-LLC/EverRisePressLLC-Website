@@ -16,6 +16,7 @@ const SITEMAP_TYPE_ORDER: SeoPageType[] = [
   "privacy",
   "book",
   "author",
+  "blog",
   "article",
 ];
 

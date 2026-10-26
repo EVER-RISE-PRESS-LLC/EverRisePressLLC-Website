@@ -32,8 +32,8 @@ export const seoIds = {
   organization: `${SITE_URL}/#organization`,
   /** WebSite entity for everrisepress.com. */
   website: `${SITE_URL}/#website`,
-  /** Blog collection entity (pre-wired for the future /blog). */
-  blog: `${SITE_URL}/blog/#blog`,
+  /** Blog collection entity; emitted only when an article is published. */
+  blog: `${SITE_URL}/blog#blog`,
   /** Book entity, keyed by book slug. */
   book: (slug: string) => `${SITE_URL}/books/${slug}#book`,
   /** Person entity, keyed by author slug. */

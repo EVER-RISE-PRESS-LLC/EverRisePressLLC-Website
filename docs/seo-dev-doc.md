@@ -260,3 +260,39 @@ Production D1 was backed up before the targeted two-row update. Post-update chec
 The day-three selected excerpt uses a sentence already published in the existing sample, so an additional interview was not required to complete these page improvements. Please review the new synopsis and reader-fit wording in this document and on the live book page. Before a new article is published in Lamont's voice, supply or approve the personal example, quotation and byline; the proposed payday essay and discussion guide still need that editorial input. The retention-period decision from day two also remains open.
 
 Day four is the blog foundation: article template, author/source/date fields, related reading, canonical and Article/Breadcrumb schema, draft exclusion and publication-aware sitemap/navigation. The two articles and reading guide remain later steps. No new article or empty index page was published as part of day three.
+
+## Blog foundation implemented — 27 October 2026
+
+The blog setup previously described as a proposed completion report is now implemented, tested and deployed. This completes the blog-foundation work item from the plan. It does not publish the two planned articles; both remain editorial briefs awaiting copy, sources, review and byline confirmation.
+
+### Delivered
+
+- `/blog` and `/blog/[slug]` extend the existing cream/charcoal/gold reading design, with Spectral/Karla, stable controls and responsive layouts. Articles support a byline, publication/update/review dates, reading time, in-page navigation, paragraphs, headings, lists, attributed quotations, accessible scrolling tables, sources and related reading.
+- Article content is versioned in `src/content/blog/articles.json`. No CMS, new service, production database write or migration was required. Staff ADMIN/EDITOR sessions can review the two briefs through `/admin/articles` and `/admin/articles/<slug>`; both routes check access before accessing the brief.
+- A validated publication gate is shared by routes, navigation, homepage, sitemap and discovery. Publication requires body copy, sources, a confirmed byline, actual dates and a recorded review covering the latest update. It rejects malformed tables, broken source/related links, duplicate identifiers and unsafe URLs. Future publication/update/review dates keep the item out of public output until those dates have passed.
+- Published articles receive canonical, description and social metadata, Open Graph publication/update times, BlogPosting/WebPage/Image/author graph nodes and complete breadcrumbs. The byline can identify the real Person or publisher Organization. The old fallback that fabricated a publication date at render time is removed.
+- The first published article enables the Blog/CollectionPage schema, public blog navigation, a homepage latest-reading section, sitemap entries and llms discovery. `/schema/articles.json`, the corpus, schema map and API catalog use the same publication set. JSON-LD now escapes less-than characters so source text cannot break out of the script element.
+
+### What is public today
+
+There are zero published articles. The blog URL returns a useful coming-soon page with book and sample links, `noindex, follow`, no canonical and no Blog schema. It is absent from the sitemap and main navigation. The two draft article URLs and unknown slugs return 404. Unauthenticated staff-review requests redirect to login and do not reveal the brief or emit Article schema.
+
+The GitHub repository is public. Committed source and editorial notes can be read on GitHub, even when the website preview requires staff login. Only the non-sensitive planning briefs from the existing SEO plan are committed. Confidential source material should remain outside this repository until approved for source control. No new private first-person contribution has been published.
+
+### Validation and release
+
+Initial deployment: Worker `f1710454-9242-49c1-93f6-9d4015d2f46c`, compressed size 2,005.29 KiB. Next.js/TypeScript and OpenNext builds, deployment dry run and lint pass; lint has zero errors and three pre-existing warnings. Six new publication-model tests and five existing chapter-access/tracking tests pass.
+
+Positive HTTP integration used two explicitly synthetic local articles to exercise both Person and Organization authors, indexed collection/article metadata, real date fields, all breadcrumb destinations, sources, related reading, table semantics, homepage/nav inclusion, sitemap and schema/llms discovery. A literal script-like fixture string rendered safely as text. A temporary local editor fixture could open the review list and unpublished preview; anonymous access redirected. Both synthetic articles and the local test account were removed before the production build. The production catalog was checked to contain only the original two drafts; a scan found no fixture or editorial-brief strings in browser assets.
+
+Local production and live checks pass for both blog publication behavior and all five existing public pages. The existing chapter flow, tracking defaults and opt-outs remain in place. No real signup, CAPTCHA, purchase, production reader record or outbound message was created. Browser checks cover 1280 px desktop, 390 px mobile, 768 px navigation, table keyboard scrolling, in-page links and menu dismissal. Independent Impeccable review returned `ship` after the product brief was persisted; the detector reported no findings.
+
+The blog metadata title is “Blog: Money, Books and Reading | EverRise Press”. Its description explains the articles, sources and reading ideas rather than repeating the title. The title/description and draft metadata were checked for specific opening words, concrete language, filler, active phrasing, distinct purpose, familiar words, snippet length and a single clear purpose. Full prose readability and content SEO review belong to each completed article before publication; incomplete briefs were not scored as finished articles.
+
+The workflow and maintenance instructions are in [Blog publishing](blog-publishing.md). Evidence, local fixtures, build/test/deployment logs and captures are in `../seo-blog-setup-2026-10-27/`; screenshots used for the independent review are ignored under `.impeccable/review/`.
+
+Sources: [Next.js metadata](https://nextjs.org/docs/app/api-reference/functions/generate-metadata), [Google Article guidance](https://developers.google.com/search/docs/appearance/structured-data/article), [Cloudflare Next.js deployment](https://developers.cloudflare.com/workers/framework-guides/web-apps/nextjs/). No claim is made that an unpublished or noindex page is indexed by Google.
+
+### Next editorial input
+
+Complete and review the payday article's personal example and byline, then the cash-flow guide's checked fictional example, worksheet and primary sources. Staff previews are ready for that review. Publishing a substantive article remains a separate step from completing this infrastructure. The retention decision recorded earlier also remains open.

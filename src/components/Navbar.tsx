@@ -6,6 +6,7 @@ import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { Dialog } from "radix-ui";
 import { Menu, X, ArrowRight } from "lucide-react";
+import { useBlogAvailable } from "@/components/blog/BlogAvailability";
 import ReactiveButton from "@/components/ui/ReactiveButton";
 
 const NAV_LINKS = [
@@ -20,6 +21,8 @@ function isActive(pathname: string, href: string) {
 }
 
 export default function Navbar({ cta }: NavbarProps) {
+  const blogAvailable = useBlogAvailable();
+  const navLinks = blogAvailable ? [...NAV_LINKS, { label: "Blog", href: "/blog" }] : NAV_LINKS;
   const activeCta = cta ?? DEFAULT_CTA;
   const [menuOpen, setMenuOpen] = useState(false);
   const pathname = usePathname();
@@ -33,14 +36,14 @@ export default function Navbar({ cta }: NavbarProps) {
   return (
     <Dialog.Root open={menuOpen} onOpenChange={setMenuOpen}>
       <a className="press-skip-link" href="#page-content">Skip to content</a>
-      <header className="press-header">
+      <header className="press-header" data-blog-available={blogAvailable || undefined}>
         <nav className="press-nav" aria-label="Main navigation">
           <Link href="/" className="press-brand" aria-label="EverRise Press home">
             <Image src="/images/logo.png" alt="" width={32} height={32} />
             <span>EverRise Press</span>
           </Link>
           <div className="press-nav-links">
-            {NAV_LINKS.map(link => <Link key={link.href} href={link.href} aria-current={isActive(pathname, link.href) ? "page" : undefined}>{link.label}</Link>)}
+            {navLinks.map(link => <Link key={link.href} href={link.href} aria-current={isActive(pathname, link.href) ? "page" : undefined}>{link.label}</Link>)}
           </div>
           <div className="press-nav-cta"><ReactiveButton href={activeCta.href} size="sm">{activeCta.label}<ArrowRight size={15}/></ReactiveButton></div>
           <Dialog.Trigger asChild><button className="press-menu-trigger" aria-label="Open menu"><Menu size={22}/></button></Dialog.Trigger>
@@ -55,7 +58,7 @@ export default function Navbar({ cta }: NavbarProps) {
           </div>
           <Dialog.Description className="sr-only">Explore the book, meet the author, or start the free first chapter.</Dialog.Description>
           <nav aria-label="Mobile navigation">
-            {NAV_LINKS.map(link => <Link key={link.href} href={link.href} onClick={() => setMenuOpen(false)} aria-current={isActive(pathname, link.href) ? "page" : undefined}>{link.label}<ArrowRight size={20}/></Link>)}
+            {navLinks.map(link => <Link key={link.href} href={link.href} onClick={() => setMenuOpen(false)} aria-current={isActive(pathname, link.href) ? "page" : undefined}>{link.label}<ArrowRight size={20}/></Link>)}
           </nav>
           <ReactiveButton href={activeCta.href} className="w-full" onClick={() => setMenuOpen(false)}>{activeCta.label}<ArrowRight size={18}/></ReactiveButton>
         </Dialog.Content>

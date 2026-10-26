@@ -40,3 +40,6 @@ next-env.d.ts
 
 # book source files
 /BOOK/
+
+# local visual review captures
+/.impeccable/review/

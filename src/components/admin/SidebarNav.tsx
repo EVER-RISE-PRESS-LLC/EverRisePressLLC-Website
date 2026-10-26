@@ -2,12 +2,13 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { BookOpen, LayoutDashboard, Mail, Share2, UserPen } from "lucide-react";
+import { BookOpen, LayoutDashboard, Mail, Share2, UserPen, Newspaper } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const NAV_ITEMS = [
   { href: "/admin/dashboard", label: "Dashboard", icon: LayoutDashboard },
   { href: "/admin/books", label: "Books", icon: BookOpen },
+  { href: "/admin/articles", label: "Articles", icon: Newspaper },
   { href: "/admin/authors", label: "Authors", icon: UserPen },
   { href: "/admin/referrals", label: "Referrals", icon: Share2 },
   { href: "/admin/leads", label: "Leads", icon: Mail },

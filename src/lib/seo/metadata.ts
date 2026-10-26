@@ -29,13 +29,13 @@ export function buildMetadata(type: SeoPageType, data?: unknown): Metadata {
   return {
     title,
     description: meta.description,
-    alternates: {
-      canonical: `${SITE_URL}${meta.canonicalPath}`,
-    },
+    alternates: meta.noindex ? {} : { canonical: `${SITE_URL}${meta.canonicalPath}` },
+    ...(meta.author ? { authors: [meta.author] } : {}),
     openGraph: {
       url: `${SITE_URL}${meta.canonicalPath}`,
       siteName: BRAND_NAME,
       type: meta.ogType ?? "website",
+      ...(meta.ogType === "article" ? { publishedTime: meta.publishedTime, modifiedTime: meta.modifiedTime, authors: meta.author ? [meta.author.url] : undefined } : {}),
       title: meta.ogTitle ?? meta.title,
       description: meta.ogDescription ?? meta.description,
       ...(ogImages ? { images: ogImages } : {}),
@@ -47,6 +47,6 @@ export function buildMetadata(type: SeoPageType, data?: unknown): Metadata {
         meta.twitterDescription ?? meta.ogDescription ?? meta.description,
       images: [meta.imageUrl ?? `${SITE_URL}/images/og/everrise-default.png`],
     },
-    ...(meta.noindex ? { robots: { index: false } } : {}),
+    ...(meta.noindex ? { robots: { index: false, follow: true } } : {}),
   };
 }

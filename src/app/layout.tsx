@@ -7,6 +7,8 @@ import OptionalAnalytics from "@/components/privacy/OptionalAnalytics";
 import PostHogProvider from "@/components/providers/PostHogProvider";
 import MetaPixelProvider from "@/components/providers/MetaPixelProvider";
 import { buildMetadata } from "@/lib/seo/metadata";
+import { BlogAvailabilityProvider } from "@/components/blog/BlogAvailability";
+import { getPublishedArticles } from "@/lib/blog/catalog";
 import { SITE_URL } from "@/lib/seo/ids";
 
 const spectral = Spectral({
@@ -42,7 +44,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       <body className="min-h-full flex flex-col">
         <OptionalAnalytics />
         <PostHogProvider>
-          <MetaPixelProvider>{children}</MetaPixelProvider>
+          <MetaPixelProvider><BlogAvailabilityProvider available={getPublishedArticles().length > 0}>{children}</BlogAvailabilityProvider></MetaPixelProvider>
         </PostHogProvider>
         <PrivacyPreferences />
       </body>
