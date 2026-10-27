@@ -1,3 +1,5 @@
+import { getCloudflareContext } from "@opennextjs/cloudflare";
+import { sameOrigin } from "@/lib/admin/api";
 import { NextRequest } from "next/server";
 import { cookies } from "next/headers";
 import { getDb } from "@/lib/db";
@@ -16,10 +18,10 @@ export type AdminUser = {
   role: "ADMIN" | "EDITOR" | "PARTNER";
 };
 
-function getJwtSecret(): Uint8Array {
-  return new TextEncoder().encode(
-    process.env.JWT_SECRET || "everrisepress-jwt-secret-change-in-production"
-  );
+async function getJwtSecret(): Promise<Uint8Array> {
+  const secret = process.env.JWT_SECRET || (await getCloudflareContext({ async: true })).env.JWT_SECRET;
+  if (!secret) throw new Error("Admin signing key is not configured");
+  return new TextEncoder().encode(secret);
 }
 
 export function generateSaltHex(): string {
@@ -96,14 +98,14 @@ export async function createSessionToken(userId: string): Promise<string> {
     .setSubject(userId)
     .setIssuedAt()
     .setExpirationTime(`${SESSION_MAX_AGE}s`)
-    .sign(getJwtSecret());
+    .sign(await getJwtSecret());
 }
 
 export async function verifySessionToken(
   token: string
 ): Promise<{ userId: string } | null> {
   try {
-    const { payload } = await jwtVerify(token, getJwtSecret());
+    const { payload } = await jwtVerify(token, await getJwtSecret(), { algorithms: ["HS256"], requiredClaims: ["sub", "exp"] });
     if (!payload.sub) return null;
     return { userId: payload.sub };
   } catch {
@@ -115,6 +117,7 @@ export async function getSessionUser(
   request: NextRequest,
   dbEnv: D1Database
 ): Promise<AdminUser | null> {
+  if (!["GET", "HEAD"].includes(request.method) && !sameOrigin(request)) return null;
   const token = request.cookies.get(SESSION_COOKIE_NAME)?.value;
   if (!token) return null;
   const verified = await verifySessionToken(token);

@@ -3,14 +3,22 @@
 import { useCallback, useEffect, useState, useSyncExternalStore } from "react";
 import posthog, { type PostHog } from "posthog-js";
 import { env } from "@/lib/env";
+import { usePathname } from "next/navigation";
 import { browserConsent, PRIVACY_CHANGE_EVENT } from "@/lib/privacy-consent";
+import { canTrackPage, subscribeTrackingPageGuard } from "@/lib/tracking-page";
 
 let phInstance: PostHog | null = null;
 let phInitPromise: Promise<PostHog> | null = null;
 
 function initPostHog(): Promise<PostHog | null> {
-  if (!browserConsent().analytics) return Promise.resolve(null);
-  if (phInstance) return Promise.resolve(phInstance);
+  if (!browserConsent().analytics) {
+    phInstance?.opt_out_capturing();
+    return Promise.resolve(null);
+  }
+  if (phInstance) {
+    if (phInstance.has_opted_out_capturing()) phInstance.opt_in_capturing({ captureEventName: false });
+    return Promise.resolve(phInstance);
+  }
   if (phInitPromise) return phInitPromise;
 
   phInitPromise = new Promise((resolve) => {
@@ -20,10 +28,11 @@ function initPostHog(): Promise<PostHog | null> {
     posthog.init(key, {
       api_host: host,
       autocapture: false,
-      capture_pageview: true,
+      capture_pageview: false,
       capture_pageleave: true,
       disable_session_recording: true,
       person_profiles: "never",
+      before_send: (event) => browserConsent().analytics ? event : null,
     });
     // A prior withdrawal may be persisted by the SDK. The site choice is authoritative.
     if (posthog.has_opted_out_capturing()) posthog.opt_in_capturing({ captureEventName: false });
@@ -46,6 +55,7 @@ function initPostHog(): Promise<PostHog | null> {
 
 export function usePostHog(): PostHog | null {
   const [client, setClient] = useState<PostHog | null>(phInstance);
+  const pathname = usePathname();
 
   useEffect(() => {
     let mounted = true;
@@ -55,7 +65,7 @@ export function usePostHog(): PostHog | null {
     return () => {
       mounted = false;
     };
-  }, []);
+  }, [pathname]);
 
   return client;
 }
@@ -81,18 +91,28 @@ export function usePostHogFlag(name: string): boolean | undefined {
 }
 
 export function trackEvent(event: string, properties: Record<string, unknown> = {}) {
+  if (!browserConsent().analytics) return;
   initPostHog()
     .then((client) => { if (browserConsent().analytics) client?.capture(event, properties); })
     .catch(() => {});
 }
 
 export default function PostHogProvider({ children }: { children: React.ReactNode }) {
+  const pathname = usePathname();
+  useEffect(() => subscribeTrackingPageGuard((page) => {
+    if (!canTrackPage(page)) phInstance?.opt_out_capturing();
+  }), []);
   useEffect(() => {
-    initPostHog().catch(() => {});
-    const stopIfDeclined = () => { if (!browserConsent().analytics) phInstance?.opt_out_capturing(); };
-    window.addEventListener(PRIVACY_CHANGE_EVENT, stopIfDeclined);
-    return () => window.removeEventListener(PRIVACY_CHANGE_EVENT, stopIfDeclined);
-  }, []);
+    const sync = () => {
+      if (!browserConsent().analytics) { phInstance?.opt_out_capturing(); return; }
+      initPostHog().then((client) => {
+        if (browserConsent().analytics) client?.capture("$pageview", { $current_url: window.location.href });
+      }).catch(() => {});
+    };
+    sync();
+    window.addEventListener(PRIVACY_CHANGE_EVENT, sync);
+    return () => window.removeEventListener(PRIVACY_CHANGE_EVENT, sync);
+  }, [pathname]);
 
   return children;
 }

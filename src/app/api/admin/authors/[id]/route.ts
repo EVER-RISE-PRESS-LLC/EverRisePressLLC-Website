@@ -1,17 +1,18 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getCloudflareContext } from "@opennextjs/cloudflare";
 import { getDb } from "@/lib/db";
-import { authors, books } from "@/lib/db/schema";
+import { authors } from "@/lib/db/schema";
 import { eq } from "drizzle-orm";
 import { getSessionUser } from "@/lib/auth";
 import { authorPatchSchema } from "@/lib/admin/validation";
+import { SITE_URL } from "@/lib/seo/ids";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
 export async function PATCH(
   request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: Promise<{ id: string }> },
 ) {
   try {
     const { id } = await params;
@@ -25,8 +26,12 @@ export async function PATCH(
     const parsed = authorPatchSchema.safeParse(body);
     if (!parsed.success || Object.keys(parsed.data).length === 0) {
       return NextResponse.json(
-        { error: parsed.success ? "Nothing to update." : (parsed.error.issues[0]?.message ?? "Invalid input.") },
-        { status: 400 }
+        {
+          error: parsed.success
+            ? "Nothing to update."
+            : (parsed.error.issues[0]?.message ?? "Invalid input."),
+        },
+        { status: 400 },
       );
     }
 
@@ -40,19 +45,26 @@ export async function PATCH(
         .limit(1)
         .then((rows) => rows[0]);
       if (existing && existing.id !== id) {
-        return NextResponse.json({ error: "Slug already in use." }, { status: 409 });
+        return NextResponse.json(
+          { error: "Slug already in use." },
+          { status: 409 },
+        );
       }
     }
 
     const updates: Record<string, unknown> = {};
     if (parsed.data.name !== undefined) updates.name = parsed.data.name;
     if (parsed.data.slug !== undefined) updates.slug = parsed.data.slug;
-    if (parsed.data.title !== undefined) updates.title = parsed.data.title || null;
+    if (parsed.data.title !== undefined)
+      updates.title = parsed.data.title || null;
     if (parsed.data.bio !== undefined) updates.bio = parsed.data.bio;
-    if (parsed.data.avatarUrl !== undefined) updates.avatarUrl = parsed.data.avatarUrl || null;
+    if (parsed.data.avatarUrl !== undefined)
+      updates.avatarUrl = parsed.data.avatarUrl || null;
     if (parsed.data.socialLinks !== undefined) {
       updates.socialLinks =
-        Object.keys(parsed.data.socialLinks).length > 0 ? parsed.data.socialLinks : null;
+        Object.keys(parsed.data.socialLinks).length > 0
+          ? parsed.data.socialLinks
+          : null;
     }
     updates.updatedAt = new Date().toISOString();
 
@@ -71,14 +83,14 @@ export async function PATCH(
     console.error("Update author error:", error);
     return NextResponse.json(
       { error: "Something went wrong. Try again." },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
 
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: Promise<{ id: string }> },
 ) {
   try {
     const { id } = await params;
@@ -88,7 +100,10 @@ export async function DELETE(
       return NextResponse.json({ error: "Unauthorized." }, { status: 401 });
     }
     if (user.role !== "ADMIN") {
-      return NextResponse.json({ error: "Admin access required." }, { status: 403 });
+      return NextResponse.json(
+        { error: "Admin access required." },
+        { status: 403 },
+      );
     }
 
     const db = getDb(env.DB);
@@ -101,25 +116,33 @@ export async function DELETE(
       return NextResponse.json({ error: "Author not found." }, { status: 404 });
     }
 
-    const bookCount = await db
-      .select({ id: books.id })
-      .from(books)
-      .where(eq(books.authorId, id))
-      .then((rows) => rows.length);
-    if (bookCount > 0) {
+    // Check references in the DELETE itself so a new draft/byline cannot race a prior check.
+    // Archived articles are included because restoring them must keep their author link intact.
+    const removed = await env.DB.prepare(
+      `DELETE FROM authors WHERE id = ?
+      AND NOT EXISTS (SELECT 1 FROM books WHERE author_id = authors.id)
+      AND NOT EXISTS (SELECT 1 FROM articles
+        WHERE json_extract(document, '$.author.url') IN ('/authors/' || authors.slug, ? || '/authors/' || authors.slug)
+        OR json_extract(published_document, '$.author.url') IN ('/authors/' || authors.slug, ? || '/authors/' || authors.slug))
+      RETURNING id`,
+    )
+      .bind(id, SITE_URL, SITE_URL)
+      .first();
+    if (!removed) {
       return NextResponse.json(
-        { error: `Cannot delete ${author.name}: they have ${bookCount} book(s). Reassign the books first.` },
-        { status: 409 }
+        {
+          error: `Cannot delete ${author.name}: the profile is used by books or article bylines. Reassign its books and update saved and published bylines, including archived articles, first.`,
+        },
+        { status: 409 },
       );
     }
 
-    await db.delete(authors).where(eq(authors.id, id));
     return NextResponse.json({ success: true });
   } catch (error) {
     console.error("Delete author error:", error);
     return NextResponse.json(
       { error: "Something went wrong. Try again." },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

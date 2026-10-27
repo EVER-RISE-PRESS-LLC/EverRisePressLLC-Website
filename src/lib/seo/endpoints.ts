@@ -88,7 +88,8 @@ async function fetchAuthors(db: Database): Promise<AuthorSeoData[]> {
 
 /** Site-wide entities for published sections only. */
 export async function getSitePieces(): Promise<GraphEntity[]> {
-  return [organizationPiece(), websitePiece(), ...(getPublishedArticles().length ? [blogPiece()] : [])];
+  const articles = await getPublishedArticles();
+  return [organizationPiece(), websitePiece(), ...(articles.length ? [blogPiece(articles)] : [])];
 }
 
 /** Every book as a full page graph (Book + WebPage + BreadcrumbList). */
@@ -117,15 +118,17 @@ export async function getPersonPieces(): Promise<GraphEntity[]> {
 
 /** Published articles only; private briefs never reach a public endpoint. */
 export async function getArticlePieces(): Promise<GraphEntity[]> {
-  return [organizationPiece(), websitePiece(), ...getPublishedArticles().flatMap(article => seoRegistry.article.buildPieces(articleToSeo(article), seoIds))];
+  const articles = await getPublishedArticles();
+  return [organizationPiece(), websitePiece(), ...(articles.length ? [blogPiece(articles)] : []), ...articles.flatMap(article => seoRegistry.article.buildPieces(articleToSeo(article), seoIds))];
 }
 
 /** Corpus-wide graph: site entities + all Persons + all Books. */
 export async function getCorpusPieces(): Promise<GraphEntity[]> {
   const db = await getDatabase();
-  const [bookData, authorData] = await Promise.all([
+  const [bookData, authorData, articles] = await Promise.all([
     fetchBooks(db),
     fetchAuthors(db),
+    getPublishedArticles(),
   ]);
 
   return [
@@ -133,7 +136,8 @@ export async function getCorpusPieces(): Promise<GraphEntity[]> {
     websitePiece(),
     ...authorData.map(buildPersonPiece),
     ...bookData.map(buildBookPiece),
-    ...getPublishedArticles().flatMap(article => seoRegistry.article.buildPieces(articleToSeo(article), seoIds)),
+    ...(articles.length ? [blogPiece(articles)] : []),
+    ...articles.flatMap(article => seoRegistry.article.buildPieces(articleToSeo(article), seoIds)),
   ];
 }
 

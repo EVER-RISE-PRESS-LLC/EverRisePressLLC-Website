@@ -2,7 +2,9 @@
 
 import { useEffect } from "react";
 import { env } from "@/lib/env";
-import { browserConsent } from "@/lib/privacy-consent";
+import { usePathname } from "next/navigation";
+import { browserConsent, PRIVACY_CHANGE_EVENT } from "@/lib/privacy-consent";
+import { canTrackPage, subscribeTrackingPageGuard } from "@/lib/tracking-page";
 
 declare global {
   interface Window {
@@ -20,9 +22,22 @@ export function trackMetaEvent(event: string, params: Record<string, unknown> = 
 }
 
 export default function MetaPixelProvider({ children }: { children: React.ReactNode }) {
+  const pathname = usePathname();
+  useEffect(() => subscribeTrackingPageGuard((page) => {
+    if (!canTrackPage(page)) window.fbq?.("consent", "revoke");
+  }), []);
   useEffect(() => {
+    const syncConsent = () => {
+      window.fbq?.("consent", browserConsent().advertising ? "grant" : "revoke");
+    };
+    window.addEventListener(PRIVACY_CHANGE_EVENT, syncConsent);
+    syncConsent();
     const pixelId = env.NEXT_PUBLIC_META_PIXEL_ID;
-    if (!pixelId || loaded || !browserConsent().advertising) return;
+    if (!pixelId || !browserConsent().advertising) return () => window.removeEventListener(PRIVACY_CHANGE_EVENT, syncConsent);
+    if (loaded) {
+      trackMetaEvent("PageView");
+      return () => window.removeEventListener(PRIVACY_CHANGE_EVENT, syncConsent);
+    }
     loaded = true;
 
     type PixelQueue = ((...args: unknown[]) => void) & {
@@ -33,6 +48,7 @@ export default function MetaPixelProvider({ children }: { children: React.ReactN
       version: string;
     };
     const fbq: PixelQueue = Object.assign((...args: unknown[]) => {
+      if (["track", "trackCustom", "trackSingle", "trackSingleCustom"].includes(String(args[0])) && !browserConsent().advertising) return;
       if (fbq.callMethod) fbq.callMethod(...args);
       else fbq.queue.push(args);
     }, { queue: [] as unknown[][], loaded: true, version: "2.0" });
@@ -45,7 +61,8 @@ export default function MetaPixelProvider({ children }: { children: React.ReactN
     script.async = true;
     script.src = "https://connect.facebook.net/en_US/fbevents.js";
     document.head.appendChild(script);
-  }, []);
+    return () => window.removeEventListener(PRIVACY_CHANGE_EVENT, syncConsent);
+  }, [pathname]);
 
   return children;
 }

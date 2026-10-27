@@ -33,7 +33,8 @@ export const metadata: Metadata = {
   },
 };
 
-export default function RootLayout({ children }: LayoutProps<"/">) {
+export default async function RootLayout({ children }: LayoutProps<"/">) {
+  const publishedArticles = await getPublishedArticles();
   return (
     <html
       lang="en"
@@ -44,7 +45,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       <body className="min-h-full flex flex-col">
         <OptionalAnalytics />
         <PostHogProvider>
-          <MetaPixelProvider><BlogAvailabilityProvider available={getPublishedArticles().length > 0}>{children}</BlogAvailabilityProvider></MetaPixelProvider>
+          <MetaPixelProvider><BlogAvailabilityProvider available={publishedArticles.length > 0}>{children}</BlogAvailabilityProvider></MetaPixelProvider>
         </PostHogProvider>
         <PrivacyPreferences />
       </body>

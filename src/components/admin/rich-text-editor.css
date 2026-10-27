@@ -1,0 +1,28 @@
+.admin-editor-frame { border: 1px solid var(--input); border-radius: 10px; background: var(--card); }
+.admin-editor-frame:focus-within { border-color: var(--ring); box-shadow: 0 0 0 2px color-mix(in srgb,var(--ring) 18%,transparent); }
+.admin-editor-toolbar { display: flex; gap: 2px; align-items: center; overflow-x: auto; padding: 6px; border-bottom: 1px solid var(--border); background: var(--card); border-radius: 10px 10px 0 0; scrollbar-width: thin; }
+.admin-editor-tool { display: grid; place-items: center; width: 44px; height: 44px; flex-shrink: 0; border-radius: 6px; color: var(--muted-foreground); cursor: pointer; }
+.admin-editor-tool:hover { background: var(--muted); color: var(--foreground); }
+.admin-editor-tool[aria-pressed=true] { background: var(--secondary); color: var(--foreground); }
+.admin-editor-tool:disabled { opacity: .35; cursor: default; }
+.admin-editor-tool svg { width: 18px; height: 18px; }
+.admin-editor-separator { width: 1px; height: 24px; margin: 0 4px; background: var(--border); flex-shrink: 0; }
+.admin-prose-editor { min-height: 360px; padding: 28px; color: var(--foreground); line-height: 1.8; overflow-wrap: anywhere; outline: none !important; }
+.admin-prose-editor > * + * { margin-top: 1em; }
+.admin-prose-editor h2 { font-size: 1.55em; font-weight: 700; line-height: 1.3; margin-top: 1.8em; }
+.admin-prose-editor h3 { font-size: 1.2em; font-weight: 700; line-height: 1.4; }
+.admin-prose-editor :is(ul,ol) { padding-left: 1.6em; }
+.admin-prose-editor ul { list-style: disc; }
+.admin-prose-editor ol { list-style: decimal; }
+.admin-prose-editor li + li { margin-top: .3em; }
+.admin-prose-editor blockquote { border-left: 3px solid var(--admin-accent); padding-left: 1.3em; color: var(--muted-foreground); }
+.admin-prose-editor a { text-decoration: underline; color: var(--admin-accent-text); cursor: pointer; }
+.admin-prose-editor img { max-width: 100%; height: auto; border-radius: 6px; }
+.admin-prose-editor hr { margin-block: 2em; border-color: var(--border); }
+.admin-prose-editor table { width: 100%; table-layout: fixed; border-collapse: collapse; }
+.admin-prose-editor :is(th,td) { position: relative; border: 1px solid var(--border); padding: 10px; min-width: 70px; vertical-align: top; }
+.admin-prose-editor th { font-weight: 600; background: var(--muted); text-align: left; }
+.admin-prose-editor .selectedCell { background: var(--secondary); }
+.admin-prose-editor:has(> p:first-child:last-child:empty)::before { content: attr(data-placeholder); color: var(--muted-foreground); float: left; height: 0; pointer-events: none; }
+.admin-prose-editor[contenteditable=false] { opacity: .7; }
+@media(max-width:767px) { .admin-prose-editor { min-height: 320px; padding: 20px; } }

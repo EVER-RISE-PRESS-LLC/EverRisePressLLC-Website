@@ -4,7 +4,7 @@ import { getDb } from "@/lib/db";
 import { referralPartners } from "@/lib/db/schema";
 import { eq } from "drizzle-orm";
 import { getSessionUser, requireAdmin } from "@/lib/auth";
-import { partnerCreateSchema } from "@/lib/admin/validation";
+import { referralPartnerSchema } from "@/lib/admin/referral-validation";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -21,7 +21,7 @@ export async function POST(request: NextRequest) {
     }
 
     const body = await request.json().catch(() => null);
-    const parsed = partnerCreateSchema.safeParse(body);
+    const parsed = referralPartnerSchema.safeParse(body);
     if (!parsed.success) {
       return NextResponse.json(
         { error: parsed.error.issues[0]?.message ?? "Invalid input." },
@@ -39,7 +39,7 @@ export async function POST(request: NextRequest) {
 
     if (existing) {
       return NextResponse.json(
-        { error: "Slug already in use." },
+        { error: "This referral link is already in use. Choose a different link name.", field: "slug" },
         { status: 409 }
       );
     }
@@ -56,7 +56,11 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({ partner }, { status: 201 });
   } catch (error) {
-    console.error("Create partner error:", error);
+    const message = error instanceof Error ? `${error.message} ${error.cause instanceof Error ? error.cause.message : ""}` : "";
+    if (message.includes("UNIQUE constraint failed: referral_partners.slug")) {
+      return NextResponse.json({ error: "This referral link is already in use. Choose a different link name.", field: "slug" }, { status: 409 });
+    }
+    console.error("Create partner failed:", error instanceof Error ? error.name : "UnknownError");
     return NextResponse.json(
       { error: "Something went wrong. Try again." },
       { status: 500 }

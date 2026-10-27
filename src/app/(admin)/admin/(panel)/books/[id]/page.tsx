@@ -57,7 +57,11 @@ export default async function AdminBookEditPage({
       }}
       formats={formats.map((f) => ({
         id: f.id,
-        formatType: f.formatType as "EBOOK" | "PAPERBACK" | "HARDCOVER" | "AUDIOBOOK",
+        formatType: f.formatType as
+          | "EBOOK"
+          | "PAPERBACK"
+          | "HARDCOVER"
+          | "AUDIOBOOK",
         isbn: f.isbn ?? "",
         retailPrice: f.retailPrice,
         currency: f.currency,

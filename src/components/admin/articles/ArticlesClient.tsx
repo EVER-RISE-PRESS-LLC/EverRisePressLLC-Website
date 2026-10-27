@@ -1,0 +1,26 @@
+"use client";
+
+import { useState } from "react";
+import Link from "next/link";
+import { FilePenLine, Plus, Search, ArrowUpRight, ArrowRight } from "lucide-react";
+import type { StoredArticle } from "@/lib/blog/model";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { PageHeader } from "@/components/admin/PageHeader";
+import { EmptyState } from "@/components/admin/EmptyState";
+
+export function articleStatus(article: Pick<StoredArticle, "isLive" | "hasUnpublishedChanges">) { return article.isLive ? article.hasUnpublishedChanges ? "Unpublished changes" : "Published" : "Draft"; }
+export default function ArticlesClient({ articles }: { articles: StoredArticle[] }) {
+  const [search, setSearch] = useState("");
+  const [filter, setFilter] = useState("all");
+  const active = articles.filter(article => !article.archivedAt);
+  const live = active.filter(article => article.isLive).length;
+  const filtered = articles.filter(article => (filter === "archived" ? Boolean(article.archivedAt) : !article.archivedAt) && `${article.title} ${article.section} ${article.slug}`.toLowerCase().includes(search.toLowerCase()) && (filter === "all" || filter === "archived" || filter === "published" && article.isLive || filter === "drafts" && !article.isLive || filter === "changes" && article.hasUnpublishedChanges && article.isLive));
+  return <>
+    <PageHeader title="Articles" description="Write something useful. Save it as a draft, preview the page, and publish when it’s ready." ><Button asChild><Link href="/admin/articles/new"><Plus className="size-4" />Write article</Link></Button></PageHeader>
+    <div className="mb-6 flex flex-wrap items-center justify-between gap-4 rounded-xl border bg-card p-5"><p className="text-sm text-muted-foreground"><strong className="text-foreground">{live} published</strong> · {active.length - live} drafts</p><p className="text-sm text-muted-foreground">Drafts are private. Published articles appear on your blog automatically.</p></div>
+    <div className="mb-6 flex flex-wrap items-center justify-between gap-4"><div className="flex max-w-full gap-1 overflow-x-auto rounded-lg bg-muted p-1" aria-label="Filter articles">{[["all", "All articles"], ["drafts", "Drafts"], ["published", "Published"], ["changes", "Changes"], ["archived", "Archived"]].map(([value, label]) => <Button key={value} type="button" variant={filter === value ? "outline" : "ghost"} aria-pressed={filter === value} onClick={() => setFilter(value)}>{label}</Button>)}</div><div className="relative w-full sm:max-w-xs"><Search className="pointer-events-none absolute left-3 top-3.5 size-4 text-muted-foreground" /><Input aria-label="Search articles" className="pl-10" value={search} onChange={e => setSearch(e.target.value)} placeholder="Find an article…" /></div></div>
+    {filtered.length ? <div className="overflow-hidden rounded-xl border bg-card"><div className="hidden grid-cols-[minmax(0,1fr)_170px_150px_44px] gap-5 border-b bg-muted/40 px-6 py-3 text-sm font-semibold text-muted-foreground lg:grid"><span>Article</span><span>Status</span><span>Last saved</span><span className="sr-only">Open</span></div>{filtered.map(article => <div key={article.id} className="flex flex-wrap items-center gap-4 border-b px-5 py-5 last:border-0 lg:grid lg:grid-cols-[minmax(0,1fr)_170px_150px_44px] lg:gap-5 lg:px-6"><div className="min-w-0 basis-full lg:basis-auto"><Link href={`/admin/articles/${article.slug}`} className="inline-block min-h-11 text-lg font-semibold leading-snug hover:underline">{article.title || "Untitled article"}</Link><p className="mt-1 text-sm text-muted-foreground">{article.section || "No category yet"}{article.description ? ` · ${article.description.slice(0, 105)}${article.description.length > 105 ? "…" : ""}` : " · Start with a title and your first paragraph."}</p></div><span className={`admin-status-tag ${article.isLive && !article.hasUnpublishedChanges ? "admin-status-tag-live" : ""}`}>{article.archivedAt ? "Archived" : articleStatus(article)}</span><span className="text-sm text-muted-foreground">{new Date(article.savedAt).toLocaleDateString("en-US", { month: "short", day: "numeric", timeZone: "UTC" })}</span><Button asChild variant="ghost" size="icon" className="ml-auto"><Link href={`/admin/articles/${article.slug}`} aria-label={`Edit ${article.title || "untitled article"}`}><ArrowRight className="size-4" /></Link></Button></div>)}</div> : <EmptyState icon={FilePenLine} title={search || filter !== "all" ? "No matching articles" : "Your next story starts here"} message={search || filter !== "all" ? "Try another search or show all articles." : "Create a draft and build it at your own pace. Nothing goes live until you publish."} action={search || filter !== "all" ? <Button variant="outline" onClick={() => { setSearch(""); setFilter("all"); }}>Show all articles</Button> : <Button asChild><Link href="/admin/articles/new"><Plus className="size-4" />Write your first article</Link></Button>} />}
+    <p className="mt-5 text-sm text-muted-foreground"><Link href="/blog" target="_blank" className="inline-flex min-h-11 items-center gap-2 underline">Open the public blog<ArrowUpRight className="size-4" /></Link></p>
+  </>;
+}

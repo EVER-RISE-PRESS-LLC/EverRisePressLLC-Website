@@ -8,7 +8,8 @@ export function articleToSeo(article: BlogArticle): ArticleSeoData {
   return {
     slug: article.slug, title: article.title, description: article.description,
     publishedAt: article.publishedAt, updatedAt: article.updatedAt,
-    imageUrl: article.imageUrl, imageAlt: article.imageAlt, section: article.section,
+    imageUrl: article.imageUrl, imageAlt: article.imageAlt,
+    imageWidth: article.imageWidth, imageHeight: article.imageHeight, section: article.section,
     wordCount: articleWordCount(article),
     author: { name: article.author.name, url: article.author.url, type: article.author.type },
   };

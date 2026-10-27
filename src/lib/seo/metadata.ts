@@ -18,8 +18,8 @@ export function buildMetadata(type: SeoPageType, data?: unknown): Metadata {
     ? [
         {
           url: meta.imageUrl,
-          width: 1200,
-          height: 630,
+          width: meta.imageWidth ?? (meta.ogType === "article" ? undefined : 1200),
+          height: meta.imageHeight ?? (meta.ogType === "article" ? undefined : 630),
           alt: meta.imageAlt ?? meta.title,
         },
         ...(meta.extraOgImages ?? []),

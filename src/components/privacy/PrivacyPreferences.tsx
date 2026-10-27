@@ -7,6 +7,7 @@ import { Dialog } from "radix-ui";
 import { X } from "lucide-react";
 import ReactiveButton from "@/components/ui/ReactiveButton";
 import { env } from "@/lib/env";
+import { canTrackPage } from "@/lib/tracking-page";
 import { browserConsent, consentCookieValue, PRIVACY_CHANGE_EVENT, PRIVACY_OPEN_EVENT, savePrivacyConsent, type PrivacyConsent } from "@/lib/privacy-consent";
 
 function subscribe(callback: () => void) {
@@ -15,9 +16,10 @@ function subscribe(callback: () => void) {
 }
 
 export function usePrivacyConsent() {
-  const isAdmin = usePathname().startsWith("/admin");
+  const pathname = usePathname();
+  const eligible = canTrackPage({ pathname, hostname: typeof window === "undefined" ? "" : window.location.hostname });
   const value = useSyncExternalStore(subscribe, () => consentCookieValue(document.cookie) || "default", () => "");
-  return { chosen: isAdmin || (Boolean(value) && value !== "default"), analytics: !isAdmin && (value === "default" || value[3] === "1"), advertising: !isAdmin && (value === "default" || value[5] === "1") };
+  return { chosen: !eligible || (Boolean(value) && value !== "default"), analytics: eligible && (value === "default" || value[3] === "1"), advertising: eligible && (value === "default" || value[5] === "1") };
 }
 
 export function PrivacySettingsButton() {

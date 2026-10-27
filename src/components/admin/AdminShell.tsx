@@ -1,98 +1,79 @@
 "use client";
 
 import { useState } from "react";
-import { Menu } from "lucide-react";
-import { AdminUser } from "@/lib/auth";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+import { BookMarked, ChevronRight, ExternalLink, Menu, PenLine } from "lucide-react";
+import type { AdminUser } from "@/lib/auth";
 import { AdminThemeProvider } from "./AdminThemeProvider";
 import { AdminAppearanceControls } from "./AdminAppearanceControls";
 import { SidebarNav } from "./SidebarNav";
 import { AdminUserMenu } from "./AdminUserMenu";
 import { Button } from "@/components/ui/button";
-import {
-  Sheet,
-  SheetContent,
-  SheetHeader,
-  SheetTitle,
-  SheetTrigger,
-} from "@/components/ui/sheet";
+import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 
-export function AdminShell({
-  user,
-  children,
-}: {
-  user: AdminUser;
-  children: React.ReactNode;
-}) {
+const SECTION_LABELS: Record<string, string> = {
+  dashboard: "Overview", articles: "Articles", media: "Images", books: "Books", authors: "Authors", leads: "Readers", referrals: "Links & partners",
+};
+
+function Brand() {
+  return <Link href="/admin/dashboard" className="admin-brand" aria-label="EverRise Press workspace home">
+    <span className="admin-brand-mark"><BookMarked className="size-5" aria-hidden="true" /></span>
+    <span><strong>EverRise Press</strong><small>Publisher workspace</small></span>
+  </Link>;
+}
+
+export function AdminShell({ user, children }: { user: AdminUser; children: React.ReactNode }) {
   const [mobileOpen, setMobileOpen] = useState(false);
+  const pathname = usePathname();
+  const segments = pathname.split("/").filter(Boolean);
+  const section = segments[1] ?? "dashboard";
+  const sectionLabel = SECTION_LABELS[section] ?? "Workspace";
+  const detailLabel = segments[3] === "preview" ? "Preview draft" : segments[2] === "new" ? `New ${section === "articles" ? "article" : section === "books" ? "book" : "author"}`
+    : segments[2] ? (section === "referrals" ? "Partner details" : `Edit ${section === "articles" ? "article" : section === "books" ? "book" : "author"}`) : null;
 
   return (
     <AdminThemeProvider>
-      <div className="flex min-h-svh">
-        <aside className="sticky top-0 hidden h-svh w-60 shrink-0 flex-col border-r border-sidebar-border bg-sidebar md:flex">
-          <div className="flex h-14 items-center gap-2 border-b border-sidebar-border px-4">
-            <span className="inline-block size-2.5 rounded-full bg-primary" />
-            <span className="font-heading text-sm font-semibold tracking-wide text-sidebar-foreground">
-              EVERRISE PRESS
-            </span>
-            <span className="ml-auto rounded bg-sidebar-accent px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-sidebar-foreground/60">
-              Admin
-            </span>
-          </div>
-          <div className="flex-1 overflow-y-auto py-4">
-            <SidebarNav />
-          </div>
-          <div className="border-t border-sidebar-border p-3">
-            <div className="flex items-center gap-2.5 px-1">
-              <div className="flex size-8 shrink-0 items-center justify-center rounded-full bg-primary text-xs font-bold text-primary-foreground">
-                {user.name
-                  .split(" ")
-                  .map((part) => part[0])
-                  .slice(0, 2)
-                  .join("")
-                  .toUpperCase()}
-              </div>
-              <div className="min-w-0">
-                <p className="truncate text-xs font-medium text-sidebar-foreground">
-                  {user.name}
-                </p>
-                <p className="truncate text-[11px] text-sidebar-foreground/50">{user.email}</p>
-              </div>
+      <a href="#admin-main" className="admin-skip-link">Skip to workspace content</a>
+      <div className="admin-layout">
+        <aside className="admin-sidebar">
+          <div className="admin-sidebar-brand"><Brand /></div>
+          <div className="admin-sidebar-scroll"><SidebarNav /></div>
+          <div className="admin-sidebar-bottom">
+            <Link href="/" target="_blank" rel="noopener noreferrer" className="admin-site-link">
+              <ExternalLink className="size-4" aria-hidden="true" /> View public website <span className="sr-only">(opens in a new tab)</span>
+            </Link>
+            <div className="admin-workspace-person">
+              <span className="admin-person-avatar" aria-hidden="true">{user.name.trim().split(/\s+/).map(part => part[0]).slice(0, 2).join("").toUpperCase() || "EP"}</span>
+              <div className="min-w-0"><p className="truncate font-semibold">{user.name}</p><p className="text-muted-foreground">{user.role === "ADMIN" ? "Administrator" : "Editor"}</p></div>
             </div>
           </div>
         </aside>
-
-        <div className="flex min-w-0 flex-1 flex-col">
-          <header className="sticky top-0 z-40 flex h-14 items-center gap-3 border-b bg-background/95 px-4 backdrop-blur md:px-6">
+        <div className="admin-workspace">
+          <header className="admin-topbar">
             <Sheet open={mobileOpen} onOpenChange={setMobileOpen}>
-              <SheetTrigger asChild>
-                <Button variant="ghost" size="icon" className="md:hidden" aria-label="Open menu">
-                  <Menu className="size-4" />
-                </Button>
-              </SheetTrigger>
-              <SheetContent side="left" className="w-64 p-0">
-                <SheetHeader className="border-b border-sidebar-border px-4 py-3">
-                  <SheetTitle className="flex items-center gap-2 font-heading text-sm tracking-wide">
-                    <span className="inline-block size-2.5 rounded-full bg-primary" />
-                    EVERRISE PRESS
-                  </SheetTitle>
+              <SheetTrigger asChild><Button variant="ghost" size="icon" className="admin-mobile-trigger" aria-label="Open workspace navigation"><Menu className="size-5" /></Button></SheetTrigger>
+              <SheetContent side="left" className="admin-mobile-sheet">
+                <SheetHeader className="admin-mobile-sheet-header">
+                  <SheetTitle className="text-base font-bold">EverRise Press</SheetTitle>
+                  <SheetDescription>Publisher workspace navigation</SheetDescription>
                 </SheetHeader>
-                <div className="py-4" onClick={() => setMobileOpen(false)}>
-                  <SidebarNav />
-                </div>
+                <SidebarNav onNavigate={() => setMobileOpen(false)} />
+                <Link href="/" target="_blank" rel="noopener noreferrer" className="admin-site-link mx-4 mt-auto mb-6"><ExternalLink className="size-4" aria-hidden="true" /> View public website<span className="sr-only"> (opens in a new tab)</span></Link>
               </SheetContent>
             </Sheet>
-            <span className="font-heading text-sm font-semibold tracking-wide md:hidden">
-              EVERRISE PRESS
-            </span>
-            <span className="hidden text-xs uppercase tracking-wider text-muted-foreground md:inline">
-              Publisher Control Room
-            </span>
-            <div className="ml-auto flex items-center gap-2">
+            <nav aria-label="Breadcrumb" className="admin-breadcrumb">
+              <Link href="/admin/dashboard" className="admin-breadcrumb-root">Workspace</Link>
+              <ChevronRight className="admin-breadcrumb-root size-3.5" aria-hidden="true" />
+              {detailLabel ? <><Link href={`/admin/${section}`}>{sectionLabel}</Link><ChevronRight className="size-3.5" aria-hidden="true" /><span aria-current="page">{detailLabel}</span></> : <span aria-current="page">{sectionLabel}</span>}
+            </nav>
+            <div className="admin-topbar-actions">
+              <Button asChild className="admin-write-button"><Link href="/admin/articles/new" aria-label="Write article"><PenLine className="size-4" aria-hidden="true" /><span>Write article</span></Link></Button>
               <AdminAppearanceControls />
               <AdminUserMenu user={user} />
             </div>
           </header>
-          <main className="flex-1 p-4 md:p-6 lg:p-8">{children}</main>
+          <main id="admin-main" tabIndex={-1} className="admin-main"><div className="admin-main-inner">{children}</div></main>
         </div>
       </div>
     </AdminThemeProvider>

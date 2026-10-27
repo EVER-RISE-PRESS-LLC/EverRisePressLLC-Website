@@ -1,123 +1,65 @@
 import Link from "next/link";
 import { Plus, UserPen } from "lucide-react";
-import { getDatabase } from "@/lib/db/client";
+import { getCloudflareContext } from "@opennextjs/cloudflare";
+import { getDb } from "@/lib/db";
+import { getCurrentAdminUser } from "@/lib/auth";
 import { sql } from "drizzle-orm";
+import { SITE_URL } from "@/lib/seo/ids";
 import { PageHeader } from "@/components/admin/PageHeader";
 import { EmptyState } from "@/components/admin/EmptyState";
 import { Button } from "@/components/ui/button";
 import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-import { AuthorRowActions } from "@/components/admin/authors/AuthorRowActions";
+  AuthorsCatalogClient,
+  type CatalogAuthor,
+} from "@/components/admin/authors/AuthorsCatalogClient";
 
 export const dynamic = "force-dynamic";
-
 export default async function AdminAuthorsPage() {
-  const db = await getDatabase();
-
-  const rows = await db.all<{
-    id: string;
-    name: string;
-    slug: string;
-    title: string | null;
-    avatarUrl: string | null;
-    bookCount: number;
-  }>(
-    sql`SELECT a.id, a.name, a.slug, a.title, a.avatar_url AS avatarUrl,
-          (SELECT count(*) FROM books b WHERE b.author_id = a.id) AS bookCount
-        FROM authors a
-        ORDER BY a.name ASC`
-  );
-
+  const { env } = await getCloudflareContext({ async: true });
+  const db = getDb(env.DB);
+  const [rows, user] = await Promise.all([
+    db.all<CatalogAuthor>(sql`SELECT a.id, a.name, a.slug, a.title, a.avatar_url AS avatarUrl,
+      (SELECT count(*) FROM books b WHERE b.author_id = a.id) AS bookCount,
+      (SELECT count(*) FROM articles ar
+        WHERE json_extract(ar.document, '$.author.url') IN ('/authors/' || a.slug, ${SITE_URL} || '/authors/' || a.slug)
+        OR json_extract(ar.published_document, '$.author.url') IN ('/authors/' || a.slug, ${SITE_URL} || '/authors/' || a.slug)) AS articleCount
+      FROM authors a ORDER BY a.name ASC`),
+    getCurrentAdminUser(env.DB),
+  ]);
   return (
     <>
-      <PageHeader title="Authors" description="Author profiles shown on the site">
-        <Button asChild>
+      <PageHeader
+        title="Authors"
+        description="Give readers a familiar face and an approved introduction."
+      >
+        <Button asChild className="min-h-11">
           <Link href="/admin/authors/new">
-            <Plus className="size-4" />
-            New Author
+            <Plus className="size-4" /> Add author
           </Link>
         </Button>
       </PageHeader>
-
       {rows.length === 0 ? (
         <EmptyState
           icon={UserPen}
-          title="No authors yet"
-          message="Create an author profile to attach books to."
+          title="Introduce your first author"
+          message="Create an author profile with a biography and optional photo, then attach their books."
           action={
-            <Button asChild>
+            <Button asChild className="min-h-11">
               <Link href="/admin/authors/new">
-                <Plus className="size-4" />
-                New Author
+                <Plus className="size-4" /> Add your first author
               </Link>
             </Button>
           }
         />
       ) : (
-        <div className="rounded-lg border">
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Author</TableHead>
-                <TableHead>Slug</TableHead>
-                <TableHead>Title</TableHead>
-                <TableHead className="text-right">Books</TableHead>
-                <TableHead className="w-10" />
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {rows.map((author) => (
-                <TableRow key={author.id}>
-                  <TableCell>
-                    <div className="flex items-center gap-3">
-                      {author.avatarUrl ? (
-                        // eslint-disable-next-line @next/next/no-img-element
-                        <img
-                          src={author.avatarUrl}
-                          alt=""
-                          className="size-9 rounded-full border object-cover"
-                        />
-                      ) : (
-                        <div className="flex size-9 items-center justify-center rounded-full bg-muted text-xs font-bold text-muted-foreground">
-                          {author.name
-                            .split(" ")
-                            .map((p) => p[0])
-                            .slice(0, 2)
-                            .join("")
-                            .toUpperCase()}
-                        </div>
-                      )}
-                      <Link
-                        href={`/admin/authors/${author.id}`}
-                        className="font-medium hover:text-primary hover:underline"
-                      >
-                        {author.name}
-                      </Link>
-                    </div>
-                  </TableCell>
-                  <TableCell className="font-mono text-xs text-muted-foreground">
-                    {author.slug}
-                  </TableCell>
-                  <TableCell className="text-sm text-muted-foreground">
-                    {author.title ?? "—"}
-                  </TableCell>
-                  <TableCell className="text-right tabular-nums">
-                    {Number(author.bookCount)}
-                  </TableCell>
-                  <TableCell>
-                    <AuthorRowActions author={{ id: author.id, name: author.name }} />
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </div>
+        <AuthorsCatalogClient
+          authors={rows.map((author) => ({
+            ...author,
+            bookCount: Number(author.bookCount),
+            articleCount: Number(author.articleCount),
+          }))}
+          canDelete={user?.role === "ADMIN"}
+        />
       )}
     </>
   );

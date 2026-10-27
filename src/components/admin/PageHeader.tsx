@@ -1,21 +1,6 @@
-export function PageHeader({
-  title,
-  description,
-  children,
-}: {
-  title: string;
-  description?: string;
-  children?: React.ReactNode;
-}) {
-  return (
-    <div className="mb-6 flex flex-wrap items-end justify-between gap-4">
-      <div>
-        <h1 className="font-heading text-2xl font-semibold tracking-wide">{title}</h1>
-        {description ? (
-          <p className="mt-1 text-sm text-muted-foreground">{description}</p>
-        ) : null}
-      </div>
-      {children ? <div className="flex items-center gap-2">{children}</div> : null}
-    </div>
-  );
+export function PageHeader({ title, description, children }: { title: string; description?: string; children?: React.ReactNode }) {
+  return <div className="admin-page-header">
+    <div className="min-w-0"><h1>{title}</h1>{description ? <p>{description}</p> : null}</div>
+    {children ? <div className="admin-page-actions">{children}</div> : null}
+  </div>;
 }

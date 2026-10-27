@@ -3,6 +3,7 @@ import { getDatabase } from "@/lib/db/client";
 import { sql } from "drizzle-orm";
 import { getCurrentAdminUser } from "@/lib/auth";
 import { ReferralsClient } from "@/components/admin/referrals/ReferralsClient";
+import { SITE_URL } from "@/lib/seo/ids";
 
 export const dynamic = "force-dynamic";
 
@@ -37,5 +38,5 @@ export default async function AdminReferralsPage() {
     isActive: Boolean(row.isActive),
   }));
 
-  return <ReferralsClient partners={partners} isAdmin={isAdmin} />;
+  return <ReferralsClient partners={partners} isAdmin={isAdmin} siteUrl={SITE_URL} />;
 }

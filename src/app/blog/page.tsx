@@ -10,10 +10,10 @@ import { buildMetadata } from "@/lib/seo/metadata";
 import { BOOK_PATH } from "@/lib/publisher";
 
 export const dynamic = "force-dynamic";
-export function generateMetadata(): Metadata { return buildMetadata("blog", { articles: getPublishedArticles() }); }
+export async function generateMetadata(): Promise<Metadata> { return buildMetadata("blog", { articles: await getPublishedArticles() }); }
 
-export default function BlogPage() {
-  const articles = getPublishedArticles();
+export default async function BlogPage() {
+  const articles = await getPublishedArticles();
   return <main id="page-content" tabIndex={-1} className="bg-cream text-charcoal">
     <Navbar />
     {articles.length > 0 && <SeoJsonLd type="blog" data={{ articles }} />}

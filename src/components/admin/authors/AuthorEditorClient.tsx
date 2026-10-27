@@ -6,7 +6,7 @@ import Link from "next/link";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm, useWatch } from "react-hook-form";
 import { z } from "zod";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, ExternalLink } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -18,6 +18,7 @@ import {
 import {
   Form,
   FormControl,
+  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -26,25 +27,44 @@ import {
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
+import { authorCreateSchema, imageUrlSchema } from "@/lib/admin/validation";
+import { CatalogEditorState } from "../books/CatalogEditorState";
+import { MediaPicker } from "@/components/admin/media/MediaPicker";
+import { useDraftRecovery } from "../books/useDraftRecovery";
+import { DraftRecoveryNotice } from "../books/DraftRecoveryNotice";
+import { draftSignature } from "@/lib/admin/draft-recovery";
 
-const formSchema = z.object({
-  name: z.string().trim().min(2, "Name is required"),
-  slug: z
-    .string()
-    .trim()
-    .toLowerCase()
-    .regex(/^[a-z0-9]+(-[a-z0-9]+)*$/, "Lowercase letters, numbers, hyphens"),
-  title: z.string().trim().optional(),
-  bio: z.string().trim().min(10, "Bio is required"),
-  avatarUrl: z.string().trim().optional(),
-  website: z.string().trim().optional(),
-  linkedin: z.string().trim().optional(),
-  facebook: z.string().trim().optional(),
-  twitter: z.string().trim().optional(),
+const optionalLink = z
+  .string()
+  .trim()
+  .refine((value) => {
+    if (!value) return true;
+    try {
+      return ["http:", "https:"].includes(new URL(value).protocol);
+    } catch {
+      return false;
+    }
+  }, "Enter a full link beginning with https://, or leave this blank.");
+const formSchema = authorCreateSchema.omit({ socialLinks: true }).extend({
+  title: z.string(),
+  avatarUrl: imageUrlSchema.or(z.literal("")),
+  website: optionalLink,
+  linkedin: optionalLink,
+  facebook: optionalLink,
+  twitter: optionalLink,
 });
-
+const recoverySchema = z.object({
+  name: z.string(),
+  slug: z.string(),
+  title: z.string(),
+  bio: z.string(),
+  avatarUrl: z.string(),
+  website: z.string(),
+  linkedin: z.string(),
+  facebook: z.string(),
+  twitter: z.string(),
+});
 type FormValues = z.infer<typeof formSchema>;
-
 export interface AuthorEditorData {
   name: string;
   slug: string;
@@ -53,6 +73,23 @@ export interface AuthorEditorData {
   avatarUrl: string | null;
   socialLinks: Record<string, string> | null;
 }
+const slugify = (value: string) =>
+  value
+    .normalize("NFKD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-|-$/g, "");
+const socialFields = [
+  { name: "website", label: "Website", placeholder: "https://" },
+  {
+    name: "linkedin",
+    label: "LinkedIn",
+    placeholder: "https://linkedin.com/in/",
+  },
+  { name: "facebook", label: "Facebook", placeholder: "https://facebook.com/" },
+  { name: "twitter", label: "X / Twitter", placeholder: "https://x.com/" },
+] as const;
 
 export function AuthorEditorClient({
   authorId,
@@ -63,10 +100,11 @@ export function AuthorEditorClient({
 }) {
   const router = useRouter();
   const [saving, setSaving] = useState(false);
+  const [saved, setSaved] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [slugEdited, setSlugEdited] = useState(Boolean(author));
   const isEdit = Boolean(authorId);
-
   const social = author?.socialLinks ?? {};
-
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -81,23 +119,55 @@ export function AuthorEditorClient({
       twitter: social.x ?? social.twitter ?? "",
     },
   });
-
-  const avatarUrl = useWatch({ control: form.control, name: "avatarUrl" });
+  const [baseline, setBaseline] = useState(() =>
+    draftSignature(form.getValues()),
+  );
+  const currentDraft = useWatch({ control: form.control }) as FormValues;
+  const recovery = useDraftRecovery<FormValues>({
+    storageKey: `author:${authorId ?? "new"}`,
+    baseline,
+    current: currentDraft,
+    dirty: form.formState.isDirty,
+    parse: (value) => {
+      const parsed = recoverySchema.safeParse(value);
+      return parsed.success ? parsed.data : null;
+    },
+    onRestore: (value, info) => {
+      form.reset(value, { keepDefaultValues: true });
+      setSaved(false);
+      setError(null);
+      toast.info(
+        info.baselineChanged
+          ? "Local draft restored. Review it against the newer saved version before saving."
+          : "Local draft restored. Choose Save author when you’re ready.",
+      );
+    },
+  });
+  const slug = useWatch({ control: form.control, name: "slug" });
 
   async function onSubmit(values: FormValues) {
+    setError(null);
     setSaving(true);
     try {
       const payload = {
         name: values.name,
         slug: values.slug,
-        title: values.title || "",
+        title: values.title,
         bio: values.bio,
-        avatarUrl: values.avatarUrl || "",
+        avatarUrl: values.avatarUrl,
         socialLinks: {
-          website: values.website ?? "",
-          linkedin: values.linkedin ?? "",
-          facebook: values.facebook ?? "",
-          twitter: values.twitter ?? "",
+          ...Object.fromEntries(
+            Object.entries(social).filter(
+              ([key]) =>
+                !["website", "linkedin", "facebook", "x", "twitter"].includes(
+                  key,
+                ),
+            ),
+          ),
+          website: values.website,
+          linkedin: values.linkedin,
+          facebook: values.facebook,
+          twitter: values.twitter,
         },
       };
       const res = await fetch(
@@ -106,18 +176,34 @@ export function AuthorEditorClient({
           method: isEdit ? "PATCH" : "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(payload),
-        }
+        },
       );
-      const data = (await res.json().catch(() => null)) as { error?: string } | null;
+      const data = (await res.json().catch(() => null)) as {
+        error?: string;
+        author?: { id: string };
+      } | null;
       if (!res.ok) {
-        toast.error(data?.error ?? "Save failed. Try again.");
+        const message =
+          res.status === 401
+            ? "Your session has expired. Open sign in in another tab, then save again. Your changes are still here."
+            : (data?.error ??
+              "We could not save this author. Your changes are still here; please try again.");
+        setError(message);
+        toast.error(message);
         return;
       }
+      recovery.clear();
+      form.reset(values);
+      setBaseline(draftSignature(values));
+      setSaved(true);
       toast.success(isEdit ? "Author saved" : "Author created");
-      router.push("/admin/authors");
+      if (!isEdit && data?.author?.id)
+        router.replace(`/admin/authors/${data.author.id}`);
       router.refresh();
     } catch {
-      toast.error("Network error. Try again.");
+      setError(
+        "We could not reach the server. Check your connection and save again. Your changes are still here.",
+      );
     } finally {
       setSaving(false);
     }
@@ -125,47 +211,130 @@ export function AuthorEditorClient({
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)}>
-        <div className="mb-6 flex items-center justify-between gap-4">
+      <form
+        noValidate
+        onSubmit={form.handleSubmit(onSubmit, () => {
+          setError(
+            "A few fields need attention. Check the messages below, then save again.",
+          );
+          toast.error("Check the highlighted fields before saving.");
+        })}
+        className="pb-2"
+      >
+        <DraftRecoveryNotice {...recovery} noun="author" />
+        <Link
+          href="/admin/authors"
+          className="mb-4 inline-flex min-h-11 items-center gap-2 text-sm text-muted-foreground hover:text-foreground"
+        >
+          <ArrowLeft className="size-4" /> All authors
+        </Link>
+        <div className="mb-7 flex flex-wrap items-start justify-between gap-4">
           <div>
-            <Link
-              href="/admin/authors"
-              className="mb-2 inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground"
-            >
-              <ArrowLeft className="size-3.5" />
-              All authors
-            </Link>
-            <h1 className="font-heading text-2xl font-semibold tracking-wide">
-              {isEdit ? "Edit author" : "New author"}
+            <h1 className="text-2xl font-semibold tracking-tight">
+              {isEdit ? "Edit author" : "Add an author"}
             </h1>
+            <p className="mt-1 max-w-2xl text-sm text-muted-foreground">
+              {isEdit
+                ? "Keep the author’s introduction, photo and links up to date."
+                : "Create the profile readers will see alongside this author’s books."}
+            </p>
           </div>
-          <div className="flex items-center gap-2">
-            <Button type="button" variant="outline" asChild>
-              <Link href="/admin/authors">Cancel</Link>
+          {isEdit && author ? (
+            <Button
+              variant="outline"
+              type="button"
+              asChild
+              className="min-h-11"
+            >
+              <a
+                href={`/authors/${author.slug}`}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                View profile <ExternalLink className="size-4" />
+              </a>
             </Button>
-            <Button type="submit" disabled={saving}>
-              {saving ? "Saving…" : "Save changes"}
-            </Button>
-          </div>
+          ) : null}
         </div>
-
-        <div className="grid gap-4 lg:grid-cols-3">
-          <Card className="lg:col-span-2">
-            <CardHeader>
-              <CardTitle>Profile</CardTitle>
-              <CardDescription>Shown on the author page and book metadata.</CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="grid gap-4 sm:grid-cols-2">
+        <fieldset
+          disabled={saving}
+          className="grid min-w-0 items-start gap-6 disabled:opacity-70 xl:grid-cols-[minmax(0,1fr)_300px]"
+        >
+          <div className="min-w-0 space-y-6">
+            <Card className="shadow-none">
+              <CardHeader>
+                <CardTitle className="font-sans text-lg">
+                  Author profile
+                </CardTitle>
+                <CardDescription>
+                  Fields marked * are required. Saved changes appear on the
+                  public author page.
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-5">
                 <FormField
                   control={form.control}
                   name="name"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Name</FormLabel>
+                      <FormLabel>Author name *</FormLabel>
                       <FormControl>
-                        <Input {...field} />
+                        <Input
+                          {...field}
+                          autoComplete="name"
+                          className="min-h-11"
+                          onChange={(event) => {
+                            field.onChange(event);
+                            if (!slugEdited && !isEdit)
+                              form.setValue(
+                                "slug",
+                                slugify(event.target.value),
+                                { shouldDirty: true },
+                              );
+                          }}
+                        />
                       </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="title"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Role or short introduction</FormLabel>
+                      <FormControl>
+                        <Input
+                          {...field}
+                          className="min-h-11"
+                          placeholder="For example, Author"
+                        />
+                      </FormControl>
+                      <FormDescription>
+                        Optional. Use the author’s approved title.
+                      </FormDescription>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="bio"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Biography *</FormLabel>
+                      <FormControl>
+                        <Textarea
+                          rows={12}
+                          {...field}
+                          className="min-h-64 leading-relaxed"
+                        />
+                      </FormControl>
+                      <FormDescription>
+                        Introduce the author in their approved words. Plain text
+                        is welcome.
+                      </FormDescription>
                       <FormMessage />
                     </FormItem>
                   )}
@@ -175,137 +344,101 @@ export function AuthorEditorClient({
                   name="slug"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Slug</FormLabel>
+                      <FormLabel>Page address *</FormLabel>
                       <FormControl>
-                        <Input {...field} disabled={isEdit} />
+                        <Input
+                          {...field}
+                          readOnly={isEdit}
+                          className="min-h-11"
+                          onChange={(event) => {
+                            setSlugEdited(true);
+                            field.onChange(event);
+                          }}
+                        />
                       </FormControl>
+                      <FormDescription>
+                        <span className="break-all">
+                          /authors/{slug || "author-name"}
+                        </span>
+                        {isEdit
+                          ? " · Kept fixed so existing links continue to work."
+                          : " · Created from the name. You can edit it before saving."}
+                      </FormDescription>
                       <FormMessage />
                     </FormItem>
                   )}
                 />
-              </div>
+              </CardContent>
+            </Card>
+            <Card className="shadow-none">
+              <CardHeader>
+                <CardTitle className="font-sans text-lg">
+                  Website & social links
+                </CardTitle>
+                <CardDescription>
+                  Optional. Add the author’s public profiles using full links
+                  beginning with https://.
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="grid gap-5 sm:grid-cols-2">
+                {socialFields.map(({ name, label, placeholder }) => (
+                  <FormField
+                    key={name}
+                    control={form.control}
+                    name={name}
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>{label}</FormLabel>
+                        <FormControl>
+                          <Input
+                            {...field}
+                            type="url"
+                            placeholder={placeholder}
+                            className="min-h-11"
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                ))}
+              </CardContent>
+            </Card>
+          </div>
+          <Card className="min-w-0 shadow-none">
+            <CardHeader>
+              <CardTitle className="font-sans text-lg">Author photo</CardTitle>
+              <CardDescription>
+                Choose a portrait, upload one, or leave this blank.
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
               <FormField
                 control={form.control}
-                name="title"
+                name="avatarUrl"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Title</FormLabel>
-                    <FormControl>
-                      <Input {...field} placeholder="Founder & Publisher" />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="bio"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Bio</FormLabel>
-                    <FormControl>
-                      <Textarea rows={12} {...field} />
-                    </FormControl>
+                    <MediaPicker
+                      value={field.value}
+                      onChange={field.onChange}
+                      label="Profile photo"
+                    />
                     <FormMessage />
                   </FormItem>
                 )}
               />
             </CardContent>
           </Card>
-
-          <div className="space-y-4">
-            <Card>
-              <CardHeader>
-                <CardTitle>Photo</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-3">
-                <FormField
-                  control={form.control}
-                  name="avatarUrl"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Avatar URL</FormLabel>
-                      <FormControl>
-                        <Input {...field} placeholder="/images/authors/photo.jpg" />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
-                  src={avatarUrl || undefined}
-                  alt="Avatar preview"
-                  className="mx-auto size-28 rounded-full border object-cover"
-                  onError={(e) => {
-                    (e.target as HTMLImageElement).style.visibility = "hidden";
-                  }}
-                />
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardHeader>
-                <CardTitle>Social links</CardTitle>
-                <CardDescription>Optional. Used for schema.org sameAs.</CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-3">
-                <FormField
-                  control={form.control}
-                  name="website"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Website</FormLabel>
-                      <FormControl>
-                        <Input {...field} placeholder="https://…" />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={form.control}
-                  name="linkedin"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>LinkedIn</FormLabel>
-                      <FormControl>
-                        <Input {...field} placeholder="https://linkedin.com/in/…" />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={form.control}
-                  name="facebook"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Facebook</FormLabel>
-                      <FormControl>
-                        <Input {...field} placeholder="https://facebook.com/…" />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={form.control}
-                  name="twitter"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>X / Twitter</FormLabel>
-                      <FormControl>
-                        <Input {...field} placeholder="https://x.com/…" />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              </CardContent>
-            </Card>
-          </div>
-        </div>
+        </fieldset>
+        <CatalogEditorState
+          dirty={form.formState.isDirty}
+          saving={saving}
+          saved={saved}
+          error={error}
+          isEdit={isEdit}
+          noun="author"
+          onDiscard={recovery.clear}
+        />
       </form>
     </Form>
   );

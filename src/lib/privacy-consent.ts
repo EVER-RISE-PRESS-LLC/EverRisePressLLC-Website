@@ -1,3 +1,5 @@
+import { canTrackPage } from "./tracking-page.ts";
+
 export const PRIVACY_COOKIE = "everrise_privacy";
 export const PRIVACY_MAX_AGE = 60 * 60 * 24 * 180;
 export const PRIVACY_CHANGE_EVENT = "everrise:privacy-change";
@@ -7,7 +9,6 @@ export interface PrivacyConsent {
   analytics: boolean;
   advertising: boolean;
 }
-
 export function consentCookieValue(cookieHeader: string | null | undefined): string {
   const value = cookieHeader?.split(";").map(part => part.trim())
     .find(part => part.startsWith(`${PRIVACY_COOKIE}=`))?.slice(PRIVACY_COOKIE.length + 1);
@@ -21,7 +22,7 @@ export function readPrivacyConsent(cookieHeader: string | null | undefined): Pri
 }
 
 export function browserConsent(): PrivacyConsent {
-  if (typeof location !== "undefined" && location.pathname.startsWith("/admin")) return { analytics: false, advertising: false };
+  if (typeof location !== "undefined" && !canTrackPage(location)) return { analytics: false, advertising: false };
   return typeof document === "undefined" ? { analytics: false, advertising: false } : readPrivacyConsent(document.cookie);
 }
 

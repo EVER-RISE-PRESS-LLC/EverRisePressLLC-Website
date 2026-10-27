@@ -1,5 +1,7 @@
 # EverRise Press — Admin Panel Specification (Milestone 8)
 
+> **Historical specification. Superseded for the 27 October 2026 admin rebuild.** The owner requested a full usability redesign and direct publishing while keeping existing Cloudflare free-plan resources. Current authority: PRODUCT.md, docs/blog-publishing.md, and the admin audit documents. The rebuilt workspace defaults to light, retains dark mode and scoped scale controls, supports D1-backed drafts and bounded image uploads, and uses truthful first-party activity labels. The original requirements below are retained as history.
+
 > **Status:** Approved for build — 2026-08-25
 > **Mandate:** All admin UI MUST be built with shadcn/ui components.
 > **Audience:** Any agent (human or AI) building, extending, or reviewing the admin panel. This document is the single source of truth for scope, structure, and behavior.

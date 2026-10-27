@@ -4,7 +4,7 @@ import { getDb } from "@/lib/db";
 import { referralPartners } from "@/lib/db/schema";
 import { eq } from "drizzle-orm";
 import { getSessionUser, requireAdmin } from "@/lib/auth";
-import { partnerPatchSchema } from "@/lib/admin/validation";
+import { referralPartnerPatchSchema } from "@/lib/admin/referral-validation";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -25,7 +25,7 @@ export async function PATCH(
     }
 
     const body = await request.json().catch(() => null);
-    const parsed = partnerPatchSchema.safeParse(body);
+    const parsed = referralPartnerPatchSchema.safeParse(body);
     if (!parsed.success || Object.keys(parsed.data).length === 0) {
       return NextResponse.json(
         { error: parsed.success ? "Nothing to update." : (parsed.error.issues[0]?.message ?? "Invalid input.") },
@@ -43,7 +43,7 @@ export async function PATCH(
         .limit(1)
         .then((rows) => rows[0]);
       if (existing && existing.id !== id) {
-        return NextResponse.json({ error: "Slug already in use." }, { status: 409 });
+        return NextResponse.json({ error: "This referral link is already in use. Choose a different link name.", field: "slug" }, { status: 409 });
       }
     }
 
@@ -66,7 +66,11 @@ export async function PATCH(
 
     return NextResponse.json({ partner });
   } catch (error) {
-    console.error("Update partner error:", error);
+    const message = error instanceof Error ? `${error.message} ${error.cause instanceof Error ? error.cause.message : ""}` : "";
+    if (message.includes("UNIQUE constraint failed: referral_partners.slug")) {
+      return NextResponse.json({ error: "This referral link is already in use. Choose a different link name.", field: "slug" }, { status: 409 });
+    }
+    console.error("Update partner failed:", error instanceof Error ? error.name : "UnknownError");
     return NextResponse.json(
       { error: "Something went wrong. Try again." },
       { status: 500 }

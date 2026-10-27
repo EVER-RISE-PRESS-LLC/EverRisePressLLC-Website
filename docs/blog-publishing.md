@@ -1,40 +1,97 @@
-# Blog publishing
+# Publish an article
 
-The blog is maintained in `src/content/blog/articles.json`, validated by `src/lib/blog/model.ts`. It uses the existing Next.js/OpenNext Worker. No CMS, database migration, new service, or storage account is required.
+Write and publish articles from the EverRise Press staff workspace at `/admin/articles`. You can format text, upload images, save private drafts and preview the page before it goes live. You can publish from this page without editing code or rebuilding the site.
 
-## Current state
+## Start a draft
 
-Two non-sensitive editorial briefs are present: `payday-spending-patterns` and `weekly-cash-flow-calendar`. Neither contains article body copy or has an approved byline/review. Both remain drafts. Public draft URLs return 404. Staff with an existing ADMIN or EDITOR session can use `/admin/articles` and `/admin/articles/<slug>` to review them.
+1. Sign in with an existing ADMIN or EDITOR account.
+2. Open **Articles**, then choose **Write article**.
+3. Add an **Article title** and a **Short introduction**. Keep the title to 90 characters or fewer. The short introduction also appears in search results. Aim for 70–200 characters.
+4. Choose a **Category** that tells readers what the piece is about.
+5. Write or paste the article in the editor. The toolbar adds headings, bold and italic text, lists, quotes, links, images and tables. Undo and redo are available.
 
-This GitHub repository is public. Draft source and editorial notes committed here can be read on GitHub; staff authentication protects the website preview routes, not the repository. Keep sensitive or not-yet-approved-for-source-control material outside this repository. The two committed briefs contain only planning information already in the SEO plan.
+Drafts save automatically after you pause for about 1.5 seconds. Autosave starts once you add a title or content. You can also choose **Save draft**. Wait for **All changes saved** before closing the page.
 
-With no published articles, `/blog` offers a short coming-soon page and book/chapter links. It has `noindex, follow`, no canonical, no Blog schema, and no sitemap or main-navigation entry. This avoids advertising an empty collection to search engines. The first published article enables the blog index, header/mobile/footer links, a latest-reading section on the homepage, sitemap entries, Blog/BlogPosting schema and article discovery automatically.
+A saved draft stays private. When you edit a live article, readers keep seeing the approved version until you choose **Publish changes**.
 
-## Add and review an article
+## Add author and sharing details
 
-1. Create an entry with a unique lowercase slug, title, description, section, image path/alt, byline, sources, related slugs and content blocks. Start with `status: "draft"`, `author.confirmed: false`, null dates/review. Reuse the existing default OG image until an approved article-specific image is available.
-2. Write the body using paragraph, heading, list, quote and table blocks. Paragraphs are plain text, escaped by React. A heading needs a unique anchor ID. Quote blocks need an attribution and a source ID from the sources list. Tables need a caption and equal cell/column counts. Source URLs must use HTTPS. Related slugs must exist and cannot link to the article itself.
-3. Check the copy against source material. Obtain actual approval before attributing a first-person contribution to Lamont. A book author profile does not establish a financial-adviser qualification. Verify calculations and label fictional examples. The two planned articles still need their editorial input, source review and byline confirmation.
-4. Set `author.confirmed: true` only after confirming the responsible author. Person bylines link to the real author profile; the publisher byline uses Organization, name EverRise Press and URL `/about`.
-5. Record actual ISO timestamps with offsets, for example `2026-10-27T10:30:00Z`: `publishedAt` for first publication, `updatedAt` for the latest material edit, and `review: { "by": "Actual reviewer name", "at": "..." }`. The review must cover the latest update. Do not change dates on unchanged pages. For an edit, retain the first publication date and record a fresh review/update.
-6. Set `status: "published"` after review. The validator rejects missing dates, missing sources/body, unconfirmed bylines, stale reviews, invalid links, duplicate slugs/anchors and broken references. Future publication, update or review dates keep the article out of all public selectors until those dates have passed; no scheduler was added.
-7. Run `npm run test:blog`, lint and the existing OpenNext build. Test a local production preview with `npm run check:blog -- http://localhost:8788` and `node scripts/seo-check.mjs http://localhost:8788`. Verify the actual article layout, source links, dates and sharing metadata.
-8. Commit, push to main, and verify Cloudflare Workers Builds plus live checks. Articles are versioned with the deployed app; editing a file alone does not update production.
+Open **Details & sharing** to add the details readers will see.
 
-## Reader and SEO behavior
+- **Byline:** Choose EverRise Press, an existing author, or another contributor. Check the name and profile link. Check the approval box once the named author has agreed to the byline.
+- **Article URL:** Use a short address with lowercase words and hyphens. The address stays fixed once you first publish, so shared links keep working.
+- **Sources & further reading:** Add a clear title and an HTTPS link for each source. Add at least one full source before you publish. Use first-hand sources for factual claims where you can.
+- **Related reading:** Select useful follow-up articles. The public page only shows links that are live.
+- **Sharing image:** Choose an image and describe what it shows. A wide image around 1200 × 630 pixels works well when readers share a link.
+- **Private editorial notes:** Keep a brief, reminders or review notes here. Staff can see these notes. Readers cannot see them in the live article.
 
-The same publication selector drives the public article route, related-reading links, index, navigation, homepage, sitemap, llms.txt, `/schema/articles.json`, `/schema/site.json` and `/schema.json`. Drafts do not receive public Article schema. Admin previews inherit `noindex, nofollow` and check the staff session before accessing the brief. They emit no public Article schema.
+Changing the author name or profile link clears the byline approval checkbox. Confirm it again after checking the change.
 
-Published articles have a canonical URL, title/description, large sharing card, visible byline and dates, Open Graph publication/update times, BlogPosting/WebPage/author/image nodes and three-level breadcrumbs. The Blog hasPart list and corpus endpoint include only published articles. All graph links use the canonical site origin. Publication dates are required rather than fabricated at render time.
+## Use images
 
-The reading template supports in-page navigation, a restrained reading column, accessible lists/quotes, named keyboard-scrollable table regions, source links, published related articles, and book/free-chapter links. Existing signup, tracking defaults, saved opt-outs and shared motion behavior are preserved.
+Choose **Choose or upload** in an image field to open the library. Select a thumbnail, then choose **Use image**. You can also paste an existing `/images/…` path or HTTPS image link.
 
-## Validation performed for this setup
+To upload, choose **Upload image** and select a JPEG, PNG or WebP file. The site makes a web-sized copy and shows upload progress. If an upload fails, your current image stays in place. Add a useful image description when inserting an image into an article.
 
-Six model tests cover publication/review gates, future dates, stale edits, invalid links, source references, duplicate identifiers, table shape, related reading and catalog validity. Five existing chapter/tracking tests also pass. HTTP integration was exercised with two clearly labeled local fixture articles: Organization and Person bylines, index/nav/homepage visibility, canonical and social dates, breadcrumbs, structured-data endpoints, sitemap and llms discovery, safe script-like text rendering, related reading and table semantics.
+The library holds up to 100 images and 20 MB in total. Each copy can use up to 500 KB. Its longest side can be up to 1600 pixels. When the library is full, reuse an existing image or remove an unused one. Images used in saved books, author profiles or articles cannot be deleted. Unsaved selections and links shared outside the website are not tracked.
 
-Unauthenticated draft-review requests redirect to login. A temporary local EDITOR fixture successfully opened both the review list and a draft preview with noindex and no public Article schema. That local test user and the two synthetic articles were removed before the production build. The production catalog contains only the original two unpublished briefs. No production database record, subscriber, real signup, CAPTCHA, purchase or outbound message was created.
+Uploaded images have public URLs, including images selected for a private draft. Use artwork intended for the website.
 
-Desktop (1280 px), mobile (390 px), tablet navigation (768 px), keyboard table scrolling, in-page links and menu Escape dismissal were checked. The independent Impeccable finish review returned `ship`. Captures and logs are in the adjacent `seo-blog-setup-2026-10-27` evidence folder and ignored `.impeccable/review/` directory.
+## Preview and publish
 
-Technical references: [Next.js metadata](https://nextjs.org/docs/app/api-reference/functions/generate-metadata), [Google Article structured data](https://developers.google.com/search/docs/appearance/structured-data/article), [Cloudflare Next.js deployment](https://developers.cloudflare.com/workers/framework-guides/web-apps/nextjs/).
+1. Choose **Preview**. The editor saves your latest changes, then opens the staff preview.
+2. Read the whole page. Check the opening, headings, links, images, tables, byline and source list.
+3. Return to the editor and choose **Review & publish**, or **Publish changes** for a live article.
+4. Complete the checklist. It checks the title, category, introduction, article text, byline approval, image descriptions and supporting sources.
+5. Select the review checkbox after checking the content and facts. Choose **Publish article** or **Publish changes** to make that version public immediately.
+
+The site records when you publish and who reviewed the work. If you publish again, it keeps the first publish date and adds a new update and review time. You do not need to type dates or choose a technical status.
+
+Check the facts as well as the form fields. Confirm claims and sums, label made-up examples, and get the author’s approval for personal statements. The planned payday-spending and cash-flow pieces stay as briefs until the text, sources and bylines pass review.
+
+## Understand article status
+
+| Status | What readers can see |
+| --- | --- |
+| Draft | Nothing public. Staff can keep writing and preview the saved draft. |
+| Published | The approved version appears on the public blog. |
+| Unpublished changes | Readers still see the approved version. Your newer saved changes remain private. |
+| Archived | The article is hidden from the public blog and the active article list. The text is kept. |
+
+The **Articles** list has All articles, Drafts, Published, Changes and Archived filters, plus a search field. Use **Changes** to find public articles with saved work awaiting publication.
+
+## Hide or restore an article
+
+Open **Details & sharing**, then find **Visibility**.
+
+Choose **Unpublish** to remove the public article and keep a private draft. Choose **Archive** to hide the article from both the public blog and the active staff list. Each action asks you to confirm.
+
+To restore, open the **Archived** filter, select the article and choose **Restore article**. Restore also brings back its earlier public status. If it was live when you archived it, the approved version becomes public again.
+
+## Recover from a save problem
+
+If a save fails, keep the editor open. Your text stays in the page. Read the error, then choose **Retry save**. If your session has ended, open sign-in in another tab. Sign in, then retry in the first editor tab.
+
+If another tab saved the same article, the workspace stops to keep that version safe. Choose **Copy draft text** to keep your writing, then **Reload saved version**. Reloading drops unsaved changes from the page. Copy what you need first.
+
+If you follow a workspace link while changes remain unsaved, the editor offers **Keep editing** or **Discard changes**. Use Keep editing while you fix a save error.
+
+The editor also keeps a local recovery copy in the current browser tab. If Back or Forward takes you away before a save completes, return to the same article. Choose **Restore local draft** to recover the writing, or **Keep saved version** to discard that copy. If the saved version changed, review the recovered text before saving. No server content changes just because a recovery copy exists.
+
+A successful save or an explicit discard clears the local copy. Keep the same browser tab open until you finish saving; closing it ends this recovery session. If draft recovery cannot use the browser’s storage, the editor shows a message asking you to keep the page open and save first.
+
+## How public discovery works
+
+Only approved, live versions appear on the blog and in related reading. The site also adds them to the homepage, menus, sitemap and search data. Drafts and archived work stay out of these lists. Staff previews require sign-in and tell search engines not to index them.
+
+When no articles are published, `/blog` shows a coming-soon page and stays out of the main navigation and sitemap. The first live article adds these blog links on its own.
+
+## Notes for site maintainers
+
+D1 is the live article and image store. The editor saves drafts separately from published versions and checks a revision number before changing an article. Deploying code does not replace saved D1 content.
+
+The older `src/content/blog/articles.json` file holds the two original editorial briefs. It is seed input, not the live editing source. The repository is public; files committed there can be read on GitHub. Keep staff-only notes in the workspace.
+
+New environments need the committed D1 migrations, including the article/media tables and publication-history migration. The release record documents the explicit import of existing briefs and deployment checks. Developers should run the article tests, catalog/media tests, reader/referral tests, lint, TypeScript and the existing OpenNext build before a release.
+
+The first file-based blog foundation and its earlier checks are recorded in README and the dated SEO work log. They describe the earlier implementation; this guide describes the visual D1 publishing workflow that replaces it.

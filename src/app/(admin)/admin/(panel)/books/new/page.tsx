@@ -12,5 +12,12 @@ export default async function AdminBookNewPage() {
     .from(authors)
     .orderBy(asc(authors.name));
 
-  return <BookEditorClient bookId={null} book={null} formats={[]} authors={authorOptions} />;
+  return (
+    <BookEditorClient
+      bookId={null}
+      book={null}
+      formats={[]}
+      authors={authorOptions}
+    />
+  );
 }

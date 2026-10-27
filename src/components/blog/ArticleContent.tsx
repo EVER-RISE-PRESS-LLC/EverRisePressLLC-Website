@@ -4,9 +4,17 @@ import { articleWordCount } from "@/lib/blog/model";
 import { BOOK_PATH } from "@/lib/publisher";
 import ReactiveButton from "@/components/ui/ReactiveButton";
 import { formatArticleDate } from "./ArticleList";
+import { cleanContentHtml } from "@/lib/content-html";
 
 function Block({ block }: { block: ArticleBlock }) {
   switch (block.type) {
+    case "richtext": return <div className={`press-article-rich ${block.html.includes("<table") ? "press-article-table" : ""}`} {...(block.html.includes("<table") ? { role: "region", "aria-label": "Article table", tabIndex: 0 } : {})} dangerouslySetInnerHTML={{ __html: cleanContentHtml(block.html) }} />;
+    case "image": return <figure>
+      {/* Direct image delivery avoids image transformations. */}
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img src={block.src} alt={block.alt} width={block.width} height={block.height} loading="lazy" decoding="async" className="h-auto max-w-full" />
+      {block.caption && <figcaption>{block.caption}</figcaption>}
+    </figure>;
     case "heading": return <h2 id={block.id}>{block.text}</h2>;
     case "paragraph": return <p>{block.text}</p>;
     case "list": return block.ordered ? <ol>{block.items.map((item, i) => <li key={i}>{item}</li>)}</ol> : <ul>{block.items.map((item, i) => <li key={i}>{item}</li>)}</ul>;
@@ -29,7 +37,7 @@ export default function ArticleContent({ article, related = [], preview = false 
     <div className="press-article-grid mx-auto max-w-6xl gap-12 px-6 pb-16 md:pb-24">
       <aside className="min-w-0" aria-label="In this article">{headings.length > 0 && <nav className="lg:sticky lg:top-28"><p className="font-semibold">In this article</p><ul className="mt-3 space-y-1 text-sm">{headings.map(heading => <li key={heading.id}><Link href={`#${heading.id}`} className="inline-flex min-h-11 items-center underline hover:text-gold-deep">{heading.text}</Link></li>)}{article.sources.length > 0 && <li><Link href="#sources" className="inline-flex min-h-11 items-center underline hover:text-gold-deep">Sources</Link></li>}</ul></nav>}</aside>
       <div className="min-w-0">
-        {preview && <div role="note" className="mb-8 border-y border-charcoal/20 py-5 text-base leading-relaxed"><strong>Editorial preview. This article is not published.</strong><p className="mt-2">{article.editorialNotes}</p></div>}
+        {preview && <div role="note" className="mb-8 border-y border-charcoal/20 py-5 text-base leading-relaxed"><strong>Private preview of the saved draft.</strong>{article.editorialNotes && <p className="mt-2">{article.editorialNotes}</p>}</div>}
         <div className="press-article-body">{article.blocks.map((block, i) => <Block key={i} block={block} />)}</div>
         {article.sources.length > 0 && <section id="sources" className="mt-12 border-t border-charcoal/20 pt-8" aria-labelledby="sources-title"><h2 id="sources-title" className="font-heading text-2xl font-semibold">Sources and further reading</h2><ul className="mt-5 space-y-4 text-base leading-relaxed">{article.sources.map(source => <li id={`source-${source.id}`} key={source.id}><a href={source.url} className="break-words underline hover:text-gold-deep">{source.title}</a></li>)}</ul></section>}
         {related.length > 0 && <section id="related-reading" className="mt-12 border-t border-charcoal/20 pt-8" aria-labelledby="related-reading-title"><h2 id="related-reading-title" className="font-heading text-2xl font-semibold">Keep exploring</h2><ul className="mt-5 space-y-3">{related.map(item => <li key={item.slug}><Link href={`/blog/${item.slug}`} className="inline-flex min-h-11 items-center text-lg underline hover:text-gold-deep">{item.title}</Link></li>)}</ul></section>}

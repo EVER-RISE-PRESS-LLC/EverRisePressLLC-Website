@@ -2,42 +2,42 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { BookOpen, LayoutDashboard, Mail, Share2, UserPen, Newspaper } from "lucide-react";
+import { BookOpen, LayoutDashboard, Mail, Share2, UserPen, Newspaper, Images } from "lucide-react";
 import { cn } from "@/lib/utils";
 
-const NAV_ITEMS = [
-  { href: "/admin/dashboard", label: "Dashboard", icon: LayoutDashboard },
-  { href: "/admin/books", label: "Books", icon: BookOpen },
-  { href: "/admin/articles", label: "Articles", icon: Newspaper },
-  { href: "/admin/authors", label: "Authors", icon: UserPen },
-  { href: "/admin/referrals", label: "Referrals", icon: Share2 },
-  { href: "/admin/leads", label: "Leads", icon: Mail },
+const NAV_GROUPS = [
+  { label: "Workspace", items: [{ href: "/admin/dashboard", label: "Overview", icon: LayoutDashboard }] },
+  { label: "Publishing", items: [
+    { href: "/admin/articles", label: "Articles", icon: Newspaper },
+    { href: "/admin/media", label: "Images", icon: Images },
+    { href: "/admin/books", label: "Books", icon: BookOpen },
+    { href: "/admin/authors", label: "Authors", icon: UserPen },
+  ] },
+  { label: "Audience", items: [
+    { href: "/admin/leads", label: "Readers", icon: Mail },
+    { href: "/admin/referrals", label: "Links & partners", icon: Share2 },
+  ] },
 ];
 
-export function SidebarNav() {
+export function SidebarNav({ onNavigate }: { onNavigate?: () => void } = {}) {
   const pathname = usePathname();
-
   return (
-    <nav className="flex flex-col gap-1 px-3">
-      {NAV_ITEMS.map((item) => {
-        const active =
-          pathname === item.href || pathname.startsWith(`${item.href}/`);
-        return (
-          <Link
-            key={item.href}
-            href={item.href}
-            className={cn(
-              "flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium transition-colors",
-              active
-                ? "bg-primary text-primary-foreground"
-                : "text-sidebar-foreground/70 hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
-            )}
-          >
-            <item.icon className="size-4 shrink-0" />
-            {item.label}
-          </Link>
-        );
-      })}
+    <nav aria-label="Publisher workspace" className="admin-sidebar-nav">
+      {NAV_GROUPS.map((group) => (
+        <div key={group.label} className="admin-nav-group">
+          <p className="admin-nav-group-label">{group.label}</p>
+          {group.items.map((item) => {
+            const active = pathname === item.href || pathname.startsWith(`${item.href}/`);
+            return (
+              <Link key={item.href} href={item.href} onClick={onNavigate} aria-current={active ? "page" : undefined}
+                className={cn("admin-nav-link", active && "admin-nav-link-active")}>
+                <item.icon className="size-[18px] shrink-0" aria-hidden="true" />
+                <span>{item.label}</span>
+              </Link>
+            );
+          })}
+        </div>
+      ))}
     </nav>
   );
 }

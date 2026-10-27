@@ -3,19 +3,13 @@ import { getCloudflareContext } from "@opennextjs/cloudflare";
 import { getDb } from "@/lib/db";
 import { sql } from "drizzle-orm";
 import { getSessionUser } from "@/lib/auth";
+import { buildLeadWhere, csvCell, parseLeadFilters } from "@/lib/admin/lead-filters";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
-function csvEscape(value: string | null | undefined): string {
-  const s = value ?? "";
-  if (/[",\n]/.test(s)) {
-    return `"${s.replace(/"/g, '""')}"`;
-  }
-  return s;
-}
-
 export async function GET(request: NextRequest) {
+  try {
   const { env } = await getCloudflareContext({ async: true });
   const user = await getSessionUser(request, env.DB);
   if (!user) {
@@ -23,15 +17,9 @@ export async function GET(request: NextRequest) {
   }
 
   const { searchParams } = new URL(request.url);
-  const q = searchParams.get("q")?.trim() || null;
-  const bookId = searchParams.get("book")?.trim() || null;
-  const partnerId = searchParams.get("partner")?.trim() || null;
-
-  const conditions = [];
-  if (q) conditions.push(sql`l.email LIKE ${`%${q}%`}`);
-  if (bookId) conditions.push(sql`l.book_id = ${bookId}`);
-  if (partnerId) conditions.push(sql`l.partner_id = ${partnerId}`);
-  const where = conditions.length > 0 ? sql`WHERE ${sql.join(conditions, sql` AND `)}` : sql``;
+  const { filters, notice } = parseLeadFilters(Object.fromEntries(searchParams));
+  if (notice) return NextResponse.json({ error: notice }, { status: 400 });
+  const where = buildLeadWhere(filters);
 
   const db = getDb(env.DB);
   const rows = await db.all<{
@@ -50,21 +38,21 @@ export async function GET(request: NextRequest) {
         JOIN books b ON b.id = l.book_id
         LEFT JOIN referral_partners p ON p.id = l.partner_id
         ${where}
-        ORDER BY l.created_at DESC`
+        ORDER BY l.created_at DESC, l.id DESC`
   );
 
-  const header = ["email", "book_slug", "partner_slug", "source_utm", "mailchimp_synced", "unlocked_at", "created_at"];
+  const header = ["email", "book_slug", "partner_slug", "source_utm", "email_sync_recorded", "unlocked_at", "created_at"];
   const lines = [
     header.join(","),
     ...rows.map((row) =>
       [
-        csvEscape(row.email),
-        csvEscape(row.bookSlug),
-        csvEscape(row.partnerSlug),
-        csvEscape(row.sourceUtm),
+        csvCell(row.email),
+        csvCell(row.bookSlug),
+        csvCell(row.partnerSlug),
+        csvCell(row.sourceUtm),
         row.isSyncedEsp ? "yes" : "no",
-        csvEscape(row.unlockedAt),
-        csvEscape(row.createdAt),
+        csvCell(row.unlockedAt),
+        csvCell(row.createdAt),
       ].join(",")
     ),
   ];
@@ -74,6 +62,11 @@ export async function GET(request: NextRequest) {
     headers: {
       "Content-Type": "text/csv; charset=utf-8",
       "Content-Disposition": `attachment; filename="everrise-leads-${date}.csv"`,
+      "Cache-Control": "private, no-store",
     },
   });
+  } catch (error) {
+    console.error("Reader export failed:", error instanceof Error ? error.name : "UnknownError");
+    return NextResponse.json({ error: "The reader export could not be prepared. Try again." }, { status: 500 });
+  }
 }

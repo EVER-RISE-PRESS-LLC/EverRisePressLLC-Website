@@ -1,6 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
+import { useState } from "react";
 import { MoreHorizontal, Pencil, Eye, Power, PowerOff } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -19,7 +20,6 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-  AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { toast } from "sonner";
 
@@ -33,8 +33,14 @@ export function PartnerRowActions({
   onEdit: () => void;
 }) {
   const router = useRouter();
+  const [saving, setSaving] = useState(false);
+  const [deactivateOpen, setDeactivateOpen] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   async function toggleActive(active: boolean) {
+    if (saving || !isAdmin) return;
+    setSaving(true);
+    setError(null);
     try {
       const res = await fetch(`/api/admin/referrals/${partner.id}`, {
         method: "PATCH",
@@ -43,27 +49,34 @@ export function PartnerRowActions({
       });
       const data = (await res.json().catch(() => null)) as { error?: string } | null;
       if (!res.ok) {
-        toast.error(data?.error ?? "Update failed. Try again.");
+        const message = data?.error ?? "The link status could not be changed. Try again.";
+        setError(message);
+        toast.error(message);
         return;
       }
       toast.success(active ? "Partner reactivated" : "Partner deactivated");
+      setDeactivateOpen(false);
       router.refresh();
     } catch {
-      toast.error("Network error. Try again.");
+      setError("The link status was not changed. Check your connection and try again.");
+      toast.error("The link status was not changed. Check your connection and try again.");
+    } finally {
+      setSaving(false);
     }
   }
 
   return (
+    <>
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="ghost" size="icon-sm" aria-label={`Actions for ${partner.name}`}>
+        <Button variant="ghost" size="icon-sm" className="size-11" disabled={saving} aria-label={`Actions for ${partner.name}`}>
           <MoreHorizontal className="size-4" />
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">
         <DropdownMenuItem onClick={() => router.push(`/admin/referrals/${partner.id}`)}>
           <Eye className="size-4" />
-          View detail
+          View activity
         </DropdownMenuItem>
         {isAdmin ? (
           <DropdownMenuItem onClick={onEdit}>
@@ -75,32 +88,13 @@ export function PartnerRowActions({
           <>
             <DropdownMenuSeparator />
             {partner.isActive ? (
-              <AlertDialog>
-                <AlertDialogTrigger asChild>
                   <DropdownMenuItem
                     className="text-destructive focus:text-destructive"
-                    onSelect={(e) => e.preventDefault()}
+                    onSelect={() => { setError(null); setDeactivateOpen(true); }}
                   >
                     <PowerOff className="size-4" />
                     Deactivate
                   </DropdownMenuItem>
-                </AlertDialogTrigger>
-                <AlertDialogContent>
-                  <AlertDialogHeader>
-                    <AlertDialogTitle>Deactivate {partner.name}?</AlertDialogTitle>
-                    <AlertDialogDescription>
-                      Their /refer/{partner.slug} link will redirect to the homepage and
-                      stop recording clicks. You can reactivate anytime.
-                    </AlertDialogDescription>
-                  </AlertDialogHeader>
-                  <AlertDialogFooter>
-                    <AlertDialogCancel>Cancel</AlertDialogCancel>
-                    <AlertDialogAction onClick={() => toggleActive(false)}>
-                      Deactivate
-                    </AlertDialogAction>
-                  </AlertDialogFooter>
-                </AlertDialogContent>
-              </AlertDialog>
             ) : (
               <DropdownMenuItem onClick={() => toggleActive(true)}>
                 <Power className="size-4" />
@@ -111,5 +105,13 @@ export function PartnerRowActions({
         ) : null}
       </DropdownMenuContent>
     </DropdownMenu>
+    <AlertDialog open={deactivateOpen} onOpenChange={(open) => { if (!saving) setDeactivateOpen(open); }}>
+      <AlertDialogContent>
+        <AlertDialogHeader><AlertDialogTitle>Deactivate {partner.name}?</AlertDialogTitle><AlertDialogDescription>The /refer/{partner.slug} link will send visitors to the homepage and stop recording new visits. Existing reader and visit records stay saved. You can reactivate the link at any time.</AlertDialogDescription></AlertDialogHeader>
+        {error && <p role="alert" className="text-sm text-destructive">{error}</p>}
+        <AlertDialogFooter><AlertDialogCancel disabled={saving} className="min-h-11">Keep active</AlertDialogCancel><AlertDialogAction disabled={saving} className="min-h-11" onClick={(event) => { event.preventDefault(); void toggleActive(false); }}>{saving ? "Deactivating…" : "Deactivate link"}</AlertDialogAction></AlertDialogFooter>
+      </AlertDialogContent>
+    </AlertDialog>
+    </>
   );
 }

@@ -70,6 +70,8 @@ export interface ArticleSeoData {
   publishedAt: string;
   updatedAt?: string | null;
   imageUrl?: string;
+  imageWidth?: number;
+  imageHeight?: number;
   section?: string;
   wordCount?: number;
   author: { name: string; url: string; type: "Person" | "Organization" };
@@ -94,6 +96,8 @@ export interface SeoMetadataInput {
   /** Absolute path on the canonical origin, e.g. "/books/slug". */
   canonicalPath: string;
   imageUrl?: string;
+  imageWidth?: number;
+  imageHeight?: number;
   imageAlt?: string;
   extraOgImages?: { url: string; width: number; height: number; alt: string }[];
   ogType?: "website" | "article" | "profile" | "book";
@@ -205,7 +209,7 @@ export function websitePiece(): GraphEntity {
   );
 }
 
-export function blogPiece(articles: BlogArticle[] = getPublishedArticles()): GraphEntity {
+export function blogPiece(articles?: readonly { slug: string }[]): GraphEntity {
   return buildPiece<WithContext<Blog>>({
     "@type": "Blog",
     "@id": seoIds.blog,
@@ -213,7 +217,7 @@ export function blogPiece(articles: BlogArticle[] = getPublishedArticles()): Gra
     url: `${SITE_URL}/blog`,
     publisher: { "@id": seoIds.organization },
     inLanguage: "en-US",
-    hasPart: articles.map(article => ({ "@id": seoIds.article(`${SITE_URL}/blog/${article.slug}`) })),
+    hasPart: articles?.map(article => ({ "@id": seoIds.article(`${SITE_URL}/blog/${article.slug}`) })),
   });
 }
 
@@ -583,7 +587,7 @@ export const seoRegistry: Record<SeoPageType, RegistryEntry> = {
       return { title: "Blog: Money, Books and Reading", description: "Read articles from EverRise Press about spending habits, books, and personal experience. Explore sources, reading ideas, and the stories behind the book.", canonicalPath: "/blog", noindex: !articles.length };
     },
     sitemapEntries: async () => {
-      const articles = getPublishedArticles();
+      const articles = await getPublishedArticles();
       return articles.length ? [{ path: "/blog", lastModified: new Date(Math.max(...articles.map(article => Date.parse(article.updatedAt!)))).toISOString(), changeFrequency: "weekly", priority: 0.6 }] : [];
     },
   },
@@ -599,11 +603,17 @@ export const seoRegistry: Record<SeoPageType, RegistryEntry> = {
       const modified = safeDate(article.updatedAt);
       if (!published || !modified) throw new Error("Article schema requires real publication and update dates");
       const imageUrl = new URL(article.imageUrl ?? "/images/og/everrise-default.png", SITE_URL).href;
+      const imageDimensions = article.imageUrl
+        ? article.imageWidth && article.imageHeight ? { width: article.imageWidth, height: article.imageHeight } : null
+        : { width: 1200, height: 630 };
+      const imagePiece = imageDimensions
+        ? buildImageObject({ pageUrl: url, url: imageUrl, ...imageDimensions, caption: article.imageAlt }, seoIds.factory)
+        : buildPiece({ "@type": "ImageObject", "@id": seoIds.primaryImage(url), url: imageUrl, contentUrl: imageUrl, caption: article.imageAlt });
       return [
         blogPiece(),
         buildWebPage({ url, name: article.title, isPartOf: { "@id": seoIds.website }, mainEntity: { "@id": seoIds.article(url) }, breadcrumb: { "@id": seoIds.breadcrumb(url) }, author: { "@id": authorId }, datePublished: published, dateModified: modified, primaryImage: { "@id": seoIds.primaryImage(url) }, inLanguage: "en-US" }, seoIds.factory),
         { ...buildArticle({ url, isPartOf: [{ "@id": seoIds.webPage(url) }, { "@id": seoIds.blog }], author: { "@id": authorId }, publisher: { "@id": seoIds.organization }, headline: article.title, description: article.description, datePublished: published, dateModified: modified, image: { "@id": seoIds.primaryImage(url) }, articleSection: article.section, wordCount: article.wordCount, inLanguage: "en-US" }, seoIds.factory, "BlogPosting"), url, mainEntityOfPage: { "@id": seoIds.webPage(url) } },
-        buildImageObject({ pageUrl: url, url: imageUrl, width: 1200, height: 630, caption: article.imageAlt }, seoIds.factory),
+        imagePiece,
         ...(!siteAuthor ? [buildPiece({ "@type": article.author.type, "@id": authorId, name: article.author.name, url: authorUrl })] : []),
         breadcrumbListPiece(url, this.buildBreadcrumbs(data)),
       ];
@@ -614,11 +624,11 @@ export const seoRegistry: Record<SeoPageType, RegistryEntry> = {
     },
     metadata(data) {
       const article = data as ArticleSeoData;
-      return { title: article.title, description: article.description, canonicalPath: `/blog/${article.slug}`, imageUrl: new URL(article.imageUrl ?? "/images/og/everrise-default.png", SITE_URL).href, imageAlt: article.imageAlt, ogType: "article", ogTitle: article.title, publishedTime: article.publishedAt, modifiedTime: article.updatedAt ?? undefined, author: { name: article.author.name, url: new URL(article.author.url, SITE_URL).href } };
+      return { title: article.title, description: article.description, canonicalPath: `/blog/${article.slug}`, imageUrl: new URL(article.imageUrl ?? "/images/og/everrise-default.png", SITE_URL).href, imageWidth: article.imageUrl ? article.imageWidth : 1200, imageHeight: article.imageUrl ? article.imageHeight : 630, imageAlt: article.imageAlt, ogType: "article", ogTitle: article.title, publishedTime: article.publishedAt, modifiedTime: article.updatedAt ?? undefined, author: { name: article.author.name, url: new URL(article.author.url, SITE_URL).href } };
     },
-    sitemapEntries: async () => getPublishedArticles().map(article => ({ path: `/blog/${article.slug}`, lastModified: article.updatedAt!, changeFrequency: "monthly", priority: 0.7 })),
+    sitemapEntries: async () => (await getPublishedArticles()).map(article => ({ path: `/blog/${article.slug}`, lastModified: article.updatedAt!, changeFrequency: "monthly", priority: 0.7 })),
     llmsSection: async () => {
-      const articles = getPublishedArticles();
+      const articles = await getPublishedArticles();
       return articles.length ? `## Articles\n\n- Blog: ${SITE_URL}/blog\n${articles.map(article => `- ${article.title}: ${SITE_URL}/blog/${article.slug} — ${article.description}`).join("\n")}` : null;
     },
   },

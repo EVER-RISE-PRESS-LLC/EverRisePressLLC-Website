@@ -339,3 +339,10 @@ html { scroll-padding-top: 100px; scrollbar-color: #8a6a1e #eee8dc; }
   .press-header[data-blog-available] .press-nav { gap: 16px; }
   .press-header[data-blog-available] .press-nav-links { gap: 18px; }
 }
+
+/* Visual editor blocks share the public reading rhythm. */
+.press-article-rich > * + * { margin-top: 24px; }
+.press-article-rich h2 { margin-top: 48px; font: 600 30px/1.25 var(--font-spectral),serif; }
+.press-article-rich h3 { margin-top: 32px; font: 600 24px/1.35 var(--font-spectral),serif; }
+.press-article-rich img { max-width: 100%; height: auto; }
+.admin-root .press-article :is(h1,h2,h3) { font-family: var(--font-spectral),serif; }

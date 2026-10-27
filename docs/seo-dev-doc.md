@@ -296,3 +296,31 @@ Sources: [Next.js metadata](https://nextjs.org/docs/app/api-reference/functions/
 ### Next editorial input
 
 Complete and review the payday article's personal example and byline, then the cash-flow guide's checked fictional example, worksheet and primary sources. Staff previews are ready for that review. Publishing a substantive article remains a separate step from completing this infrastructure. The retention decision recorded earlier also remains open.
+
+## Admin publishing workspace — 27 October 2026
+
+The owner requested direct writing and publishing plus a complete admin usability overhaul, using the existing Cloudflare resources without a paid-service dependency. This release supersedes the earlier file-based publishing instructions. Existing account credentials are unchanged.
+
+### Daily publishing workflow
+
+Open `/admin/login`, sign in with the existing staff account, and choose **Write article**. Write the title, short introduction and body in the visual editor. Formatting controls support headings, lists, quotes, links, tables, images, undo and redo. Drafts save automatically after a short pause; **Save draft** provides a manual save. The status distinguishes unsaved work, saved drafts, published versions and unpublished changes.
+
+Under **Details & sharing**, choose the responsible author, confirm the approved byline, add supporting sources and choose a sharing image. **Preview** opens the last saved draft behind staff authentication. **Review & publish** checks the required details and asks the editor to approve the content. Publication records the signed-in reviewer and actual server dates. No source edit or deployment is needed for future article publication.
+
+Saving edits to a live article keeps the approved public version unchanged. **Publish changes** replaces that snapshot after review. The first publication date and URL remain fixed. Re-publishing unchanged content or changing a private note does not advance the public modification date. Private editorial notes are excluded from public snapshots and schema. **Unpublish** keeps a private draft; **Archive** hides a retained article; **Archived → Restore** restores its previous visibility.
+
+### Other management tools
+
+The workspace has searchable articles, books, authors and images, clearer reader filters/CSV export, and partner links with retained history. Books and authors have consistent save states, field validation, image selection and unsaved-change protection. Chapter 1 uses the visual editor. Book and retailer saves are atomic and retain existing retailer identifiers. Deletion protects referenced books, authors and images.
+
+The overview reports recorded referral clicks, chapter unlocks and retailer link clicks. It does not call retailer clicks purchases or imply that an email sequence is active. Staff routes and local development do not send optional Google, PostHog or Meta browser tracking. Public tracking defaults and saved opt-outs remain as previously approved.
+
+Draft recovery uses versioned per-tab browser session storage, without changing history entries. A returning editor can restore the local copy explicitly; a changed server baseline receives a warning. Recovery is not a server save, does not publish, and may be unavailable when browser storage is blocked or the tab is permanently closed. Save before closing the tab.
+
+### Cloudflare limits and owner review
+
+The image library uses the existing D1 database. It accepts compressed JPEG/PNG/WebP images up to 500 KiB, 1600 pixels, 100 images and 20 MiB total stored image bytes. Limits are enforced atomically; referenced images cannot be deleted. Images are delivered directly, with no Images transformation binding, R2 bucket, paid image host, new CMS subscription or scheduled job.
+
+The deployment is designed for the published Workers/D1 Free allocations. Account subscription and invoice status could not be read: the current Cloudflare session lacks Billing Read permission. No billing plan, subscription or payment setting was changed. Actual quotas still apply; large traffic or exports are not unlimited. The evidence and official limits are in `docs/admin-free-plan-verification.md`.
+
+The two planned articles remain unpublished briefs. Review still needs the approved payday example/byline and the checked fictional cash-flow example, worksheet and primary sources. The earlier retention decision remains open. Use `docs/blog-publishing.md` for the current staff guide. Audit findings and corrections are recorded in the three admin audit documents; validation and deployment evidence will be recorded below after the release checks complete.

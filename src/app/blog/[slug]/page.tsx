@@ -11,14 +11,15 @@ import { buildMetadata } from "@/lib/seo/metadata";
 export const dynamic = "force-dynamic";
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
   const { slug } = await params;
-  const article = getPublishedArticle(slug);
+  const article = await getPublishedArticle(slug);
   if (!article) notFound();
   return buildMetadata("article", articleToSeo(article));
 }
 export default async function BlogArticlePage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
-  const article = getPublishedArticle(slug);
+  const articles = await getPublishedArticles();
+  const article = articles.find((item) => item.slug === slug);
   if (!article) notFound();
-  const related = getPublishedArticles().filter(item => article.relatedSlugs.includes(item.slug));
+  const related = articles.filter(item => article.relatedSlugs.includes(item.slug));
   return <main id="page-content" tabIndex={-1} className="bg-cream pt-20 text-charcoal"><Navbar /><SeoJsonLd type="article" data={articleToSeo(article)} /><ArticleContent article={article} related={related} /><SiteFooter /></main>;
 }

@@ -4,19 +4,20 @@ Official website for EverRise Press LLC — an independent digital publishing ho
 
 ## Project Overview
 
-High-converting, SEO-first digital publishing platform featuring:
+The site helps readers learn about the book, open Chapter 1 and choose a retailer. It includes:
 - Gated Chapter 1 reading experience for email lead capture
 - Multi-retailer distribution (Amazon, Draft2Digital, IngramSpark)
 - Podcast referral engine with cookie attribution
-- Admin dashboard for partner management and analytics
+- A staff publishing workspace for articles, images, books, authors, readers and referral partners
 
 ## Tech Stack
 
 - **Framework:** Next.js 16 (App Router, TypeScript, Tailwind CSS)
-- **Hosting:** Cloudflare Workers + Pages
+- **Hosting:** Cloudflare Workers through the OpenNext Cloudflare adapter
 - **Database:** Cloudflare D1 (SQLite) + Drizzle ORM
-- **Caching:** Cloudflare Assets (R2 removed 2026-08-21 — product disabled on account; no ISR in use)
-- **ESP:** Mailchimp Marketing API
+- **Assets and images:** Existing Cloudflare static assets plus bounded D1 image storage and immutable media responses; no R2 bucket or paid image transformations
+- **Publishing:** D1 article drafts and published versions, a Tiptap visual editor, and the existing authenticated ADMIN/EDITOR workspace
+- **Email behavior:** Signup unlocks Chapter 1 on the website. Newsletter/email-series delivery remains deferred; Mailchimp is not an active sending integration.
 - **Analytics:** PostHog, GA4, Meta CAPI
 
 ## Development
@@ -176,6 +177,14 @@ npm run db:migrate:remote # Apply to remote D1
   - Added validated file-based content, source/byline/review/date fields, accessible content blocks, related reading and publication-aware homepage/navigation/sitemap/schema discovery.
   - Both planned articles remain unpublished briefs. Public draft URLs return 404; the empty blog is noindex and excluded from navigation and sitemap. No new CMS or D1 migration.
   - Six publishing-model tests, existing chapter/tracking tests, positive/negative HTTP integration, authenticated local staff preview and responsive browser checks passed. Publishing workflow: [Blog runbook](docs/blog-publishing.md).
+- [x] **Publisher workspace and visual CMS implementation** (2026-10-27)
+  - Rebuilt the staff workspace around a readable light-first Karla interface, clearer navigation and actionable overview states. Existing dark mode remains available.
+  - Added visual article writing, automatic private draft saves, staff preview, byline/source/image checks, explicit review and publication, unpublished changes, archive/restore and revision conflict protection.
+  - Moved the live article catalog to the existing D1 database. The earlier file-based blog foundation above is historical; repository JSON now supplies the original briefs for explicit import.
+  - Added a shared image library and upload picker using the existing D1 binding, with image resizing, 500 KiB per-image and 100-image/20 MiB library limits, and protection for images used in saved content. No paid service or billing change.
+  - Reworked book/author search and editing, added a visual Chapter 1 editor, made book/retailer saves atomic, and clarified reader history and destructive actions. Improved reader filters/CSV export and partner-link management.
+  - Current operating guide: [Publish an article](docs/blog-publishing.md). Detailed findings: [Catalog and images](docs/admin-catalog-audit.md), [Readers and referrals](docs/admin-readers-referrals-audit.md), and [Workspace shell](docs/admin-shell-audit.md).
+  - Release validation: 43 tests and 74 isolated D1/API assertions pass. OpenNext/TypeScript and lint pass with one pre-existing warning. Desktop, mobile, tablet, dark mode and 90–150% workspace checks passed; independent Impeccable review returned ship. Production release evidence is recorded separately.
 - [ ] **Remaining content and measurement work** — publish two reviewed articles and a discussion guide, improve measured performance and evaluate GSC after recrawling. See the dated plan; these are not automated runs.
 
 ### Interface and sharing refinement
