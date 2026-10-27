@@ -323,7 +323,7 @@ The image library uses the existing D1 database. It accepts compressed JPEG/PNG/
 
 The deployment is designed for the published Workers/D1 Free allocations. Account subscription and invoice status could not be read: the current Cloudflare session lacks Billing Read permission. No billing plan, subscription or payment setting was changed. Actual quotas still apply; large traffic or exports are not unlimited. The evidence and official limits are in `docs/admin-free-plan-verification.md`.
 
-The two planned articles remain unpublished briefs. Review still needs the approved payday example/byline and the checked fictional cash-flow example, worksheet and primary sources. The earlier retention decision remains open. Use `docs/blog-publishing.md` for the current staff guide. Audit findings and corrections are recorded in the three admin audit documents; validation and deployment evidence will be recorded below after the release checks complete.
+The two planned articles remain unpublished briefs. Review still needs the approved payday example/byline and the checked fictional cash-flow example, worksheet and primary sources. The earlier retention decision remains open. Use `docs/blog-publishing.md` for the current staff guide. Audit findings and corrections are recorded in the three admin audit documents; validation and deployment evidence is recorded below.
 
 
 ## Cloudflare deployment migration — 27 October 2026
@@ -334,4 +334,4 @@ The production version `ff18926c-10d9-436f-b2f9-b4319455a4ea` was first tested t
 
 All 43 model/API/privacy/recovery tests and 74 isolated catalog/media assertions pass after migration. Local native-Workers checks also covered every admin page, actual sign-in, autosave, private preview navigation and approved-public-snapshot isolation. The independent design review returned ship. Lint has zero errors and one existing ScrollStack warning. Neither local fixtures nor editorial notes were published to production.
 
-Workers Builds must use `npm run build` and `npm run deploy`, root `/`, and the existing build token. The owner confirmed both commands were updated. Node/npm are pinned in the repository. Automatic build verification follows the migration commit; the final check result is recorded in the release report.
+Workers Builds must use `npm run build` and `npm run deploy`, root `/`, and the existing build token. The owner confirmed both commands were updated. Node/npm are pinned in the repository. GitHub main commit `28d28e0` passed the automatic Workers Build and deployed version `c6034c70-b607-4bea-ab66-149691b2759a` at 100% traffic. Live SEO, blog, login and unauthorized-access checks passed again after that CI deployment. No further Cloudflare command changes are needed.
