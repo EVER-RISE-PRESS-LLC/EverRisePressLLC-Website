@@ -29,8 +29,8 @@ function harness() {
   const api = loadTypeScript("../src/lib/admin/api.ts");
   // Exercise actual session/JWT/role checks. Only the fixture-user lookup is
   // substituted; the article store runs its real SQL against disposable SQLite.
-  const auth = loadTypeScript("../src/lib/auth.ts", { "@opennextjs/cloudflare": cloud, "@/lib/admin/api": api, "@/lib/db": dbModule, "@/lib/db/schema": { users: { id: "id" } }, "drizzle-orm": { eq(_column, id) { return id; } }, jose });
-  const injected = { "@opennextjs/cloudflare": cloud, "@/lib/auth": auth, "@/lib/admin/api": api, "@/lib/blog/store": store };
+  const auth = loadTypeScript("../src/lib/auth.ts", { "@/lib/cloudflare-context": cloud, "@/lib/admin/api": api, "@/lib/db": dbModule, "@/lib/db/schema": { users: { id: "id" } }, "drizzle-orm": { eq(_column, id) { return id; } }, jose });
+  const injected = { "@/lib/cloudflare-context": cloud, "@/lib/auth": auth, "@/lib/admin/api": api, "@/lib/blog/store": store };
   return { sqlite, auth, collection: loadTypeScript("../src/app/api/admin/articles/route.ts", injected), item: loadTypeScript("../src/app/api/admin/articles/[id]/route.ts", injected), close() { sqlite.close(); } };
 }
 async function request(context, method, payload, { role = "admin", headers = {}, query = "" } = {}) {

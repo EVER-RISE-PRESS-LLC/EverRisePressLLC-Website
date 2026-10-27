@@ -12,8 +12,8 @@ The site helps readers learn about the book, open Chapter 1 and choose a retaile
 
 ## Tech Stack
 
-- **Framework:** Next.js 16 (App Router, TypeScript, Tailwind CSS)
-- **Hosting:** Cloudflare Workers through the OpenNext Cloudflare adapter
+- **Framework:** Next.js 16 APIs on vinext 1.3.1, React 19.3.1, TypeScript and Tailwind CSS
+- **Hosting:** Cloudflare Workers through vinext and the Cloudflare Vite plugin; native D1/runtime bindings
 - **Database:** Cloudflare D1 (SQLite) + Drizzle ORM
 - **Assets and images:** Existing Cloudflare static assets plus bounded D1 image storage and immutable media responses; no R2 bucket or paid image transformations
 - **Publishing:** D1 article drafts and published versions, a Tiptap visual editor, and the existing authenticated ADMIN/EDITOR workspace
@@ -26,11 +26,12 @@ The site helps readers learn about the book, open Chapter 1 and choose a retaile
 # Install dependencies
 npm install
 
-# Local development (Next.js dev server)
+# Local development (Vite and native Workers bindings)
 npm run dev
 
-# Preview on Cloudflare Workers runtime
-npm run preview
+# Build and preview on Cloudflare Workers runtime
+npm run build
+npm run start
 
 # Deploy to Cloudflare
 npm run deploy
@@ -198,3 +199,8 @@ npm run db:migrate:remote # Apply to remote D1
 **Progress:** 8/10 milestones complete (Milestone 6 deferred)  
 **Domain:** `https://everrisepress.com` (live, canonical — site URL via `NEXT_PUBLIC_SITE_URL`)  
 **Next:** Milestone 10 - Polish, Privacy & Launch
+
+
+### Current Cloudflare deployment
+
+The active deployment path is vinext, following Cloudflare’s current Next.js guide. Build with `npm run build` and deploy with `npm run deploy`. Workers Builds uses those same commands, root `/`, the existing build token and no new build variables. `.node-version` and `packageManager` pin the build tools. The existing Worker and D1 database are retained; no R2, Images transformation, KV, Durable Object or paid cache binding is configured. See [Deployment runbook](docs/cloudflare-vinext-deployment.md).

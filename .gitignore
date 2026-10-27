@@ -43,3 +43,5 @@ next-env.d.ts
 
 # local visual review captures
 /.impeccable/review/
+/dist/
+.vinext/

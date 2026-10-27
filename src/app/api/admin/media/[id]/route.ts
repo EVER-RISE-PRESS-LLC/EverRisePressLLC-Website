@@ -1,5 +1,5 @@
 import { NextRequest } from "next/server";
-import { getCloudflareContext } from "@opennextjs/cloudflare";
+import { getCloudflareContext } from "@/lib/cloudflare-context";
 import { getSessionUser } from "@/lib/auth";
 import { adminJson, sameOrigin } from "@/lib/admin/api";
 import { MEDIA_ID_PATTERN, MEDIA_IN_USE_SQL } from "@/lib/admin/media";

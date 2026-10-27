@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { Plus, BookOpen } from "lucide-react";
-import { getCloudflareContext } from "@opennextjs/cloudflare";
+import { getCloudflareContext } from "@/lib/cloudflare-context";
 import { getDb } from "@/lib/db";
 import { getCurrentAdminUser } from "@/lib/auth";
 import { sql } from "drizzle-orm";

@@ -25,10 +25,10 @@ async function harness() {
   let fixtureUser;
   const dbModule = { getDb() { return { select() { return { from() { return { where(value) { return { limit() { return Promise.resolve(fixtureUser?.email === value ? [fixtureUser] : []); } }; } }; } }; } }; } };
   const api = loadTypeScript("../src/lib/admin/api.ts");
-  const auth = loadTypeScript("../src/lib/auth.ts", { "@opennextjs/cloudflare": cloud, "@/lib/admin/api": api, "@/lib/db": dbModule, "@/lib/db/schema": { users: { email: "email", id: "id" } }, "drizzle-orm": { eq(_column, value) { return value; } }, jose });
+  const auth = loadTypeScript("../src/lib/auth.ts", { "@/lib/cloudflare-context": cloud, "@/lib/admin/api": api, "@/lib/db": dbModule, "@/lib/db/schema": { users: { email: "email", id: "id" } }, "drizzle-orm": { eq(_column, value) { return value; } }, jose });
   const password = "disposable original fixture password";
   fixtureUser = { id: "fixture-admin", email: "staff@example.invalid", name: "Fixture Staff", role: "ADMIN", passwordHash: await auth.hashPassword(password) };
-  const route = loadTypeScript("../src/app/api/admin/login/route.ts", { "@opennextjs/cloudflare": cloud, "@/lib/db": dbModule, "@/lib/db/schema": { users: { email: "email" } }, "drizzle-orm": { eq(_column, value) { return value; } }, "@/lib/admin/api": api, "@/lib/auth": auth });
+  const route = loadTypeScript("../src/app/api/admin/login/route.ts", { "@/lib/cloudflare-context": cloud, "@/lib/db": dbModule, "@/lib/db/schema": { users: { email: "email" } }, "drizzle-orm": { eq(_column, value) { return value; } }, "@/lib/admin/api": api, "@/lib/auth": auth });
   return { sqlite, DB, auth, route, password, fixtureUser, close() { sqlite.close(); } };
 }
 function request(body, headers = {}) {

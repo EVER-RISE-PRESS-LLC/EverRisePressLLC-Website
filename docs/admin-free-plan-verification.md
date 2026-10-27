@@ -45,3 +45,8 @@ Reader lists remain paginated, partner-detail activity uses grouped date-limited
 The session cannot confirm the exact Workers/D1/Images subscription, invoice amount, enabled metered add-ons, total account-wide daily query usage, remaining Workers/Builds allowances, or the site’s production CPU distribution. A successful deployment or an existing `standard` usage-model response does not answer these billing questions. Viewing the account’s subscriptions in Cloudflare’s dashboard, or repeating the read with an explicitly scoped Billing Read session, would close the subscription gap; no new credential or permission was requested or created here.
 
 The accurate release statement is: **this update reuses the existing Worker/D1 resources and adds bounded image storage without requiring a new paid service; current billing status remains unverified because the existing session cannot read subscriptions.** It must not be described as an unconditional promise of zero cost at any traffic level.
+
+
+## Final runtime migration
+
+The active source now builds with vinext and the Cloudflare Vite plugin, using native `cloudflare:workers` bindings. The OpenNext adapter and its self-reference binding were removed. The generated deployment config was checked: only the existing D1 binding, static assets and public runtime variables are present; R2/KV/Images/Durable Object/cache-service bindings are absent. Native Workers Cache use for immutable media remains bounded to existing responses. No subscription or payment setting was changed. The original subscription-permission limitation above still applies.

@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { getCloudflareContext } from "@opennextjs/cloudflare";
+import { getCloudflareContext } from "@/lib/cloudflare-context";
 import { ArrowLeft, ArrowRight, BarChart3, MousePointerClick, Share2, UserCheck } from "lucide-react";
 import { getDatabase } from "@/lib/db/client";
 import { referralPartners } from "@/lib/db/schema";

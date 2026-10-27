@@ -48,11 +48,15 @@ const check = Object.fromEntries(
             import.meta.resolve("@jdevalk/seo-graph-core"),
           ),
         },
+        plugins: [{ name: "fixture-native-bindings", setup(builder) {
+          builder.onResolve({ filter: /^cloudflare:workers$/ }, () => ({ path: "bindings", namespace: "fixture" }));
+          builder.onLoad({ filter: /.*/, namespace: "fixture" }, () => ({ contents: 'export const env = globalThis[Symbol.for("__cloudflare-context__")].env; export const waitUntil = task => { void task; };', loader: "js" }));
+        } }],
         logLevel: "silent",
       });
     }
     mf = new Miniflare(
-      convertV4MiniflareOptions({
+      (typeof convertV4MiniflareOptions === "function" ? convertV4MiniflareOptions : value => value)({
         name: "fixture",
         modules: true,
         script: 'export default {fetch(){return new Response("fixture")}}',

@@ -1,4 +1,4 @@
-import { getCloudflareContext } from "@opennextjs/cloudflare";
+import { getCloudflareContext } from "@/lib/cloudflare-context";
 import { sameOrigin } from "@/lib/admin/api";
 import { NextRequest } from "next/server";
 import { cookies } from "next/headers";

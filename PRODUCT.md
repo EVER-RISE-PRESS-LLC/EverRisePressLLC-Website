@@ -18,7 +18,7 @@ Follow docs/DESIGN.md, especially its 22 October public-interface update, and th
 
 ## Publishing and operation
 
-The Next.js/OpenNext app runs on the existing Cloudflare Worker and D1 database. The owner wants changes tested, pushed to GitHub main, and deployed; Cloudflare Workers Builds also deploys main automatically. The staff workspace now provides visual article and Chapter 1 editing, image upload, searchable book/author catalogs, reader export and referral management. Use the existing Cloudflare free plan; do not add a paid CMS, storage account, image transformation service or billing change.
+The Next.js API application runs through vinext and the Cloudflare Vite plugin on the existing Cloudflare Worker and D1 database. The owner wants changes tested, pushed to GitHub main, and deployed; Cloudflare Workers Builds also deploys main automatically. The staff workspace now provides visual article and Chapter 1 editing, image upload, searchable book/author catalogs, reader export and referral management. Use the existing Cloudflare free plan; do not add a paid CMS, storage account, image transformation service or billing change.
 
 D1 is the live source for articles and uploaded images. Staff write in the visual editor, save private drafts, preview them, and explicitly review and publish. Saving changes to a published article keeps the approved version public until those changes are published. Publication records the actual reviewer and dates, retains the first publication date, and fixes the public article address. Archive keeps the content and hides the article; restoration restores its earlier visibility. Public navigation, homepage reading, sitemap and schema use published versions only.
 

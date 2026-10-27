@@ -1,5 +1,5 @@
 import { NextRequest } from "next/server";
-import { getCloudflareContext } from "@opennextjs/cloudflare";
+import { getCloudflareContext } from "@/lib/cloudflare-context";
 import { MEDIA_ID_PATTERN } from "@/lib/admin/media";
 
 export const runtime = "nodejs";

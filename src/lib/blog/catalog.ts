@@ -1,6 +1,6 @@
 import "server-only";
 import { cache } from "react";
-import { getCloudflareContext } from "@opennextjs/cloudflare";
+import { getCloudflareContext } from "@/lib/cloudflare-context";
 import { listStoredArticles, readPublishedArticles, readStoredArticle, readStoredArticleById } from "./store";
 
 const database = cache(async () => (await getCloudflareContext({ async: true })).env.DB);

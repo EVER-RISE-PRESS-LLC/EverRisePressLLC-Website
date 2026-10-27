@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getCloudflareContext } from "@opennextjs/cloudflare";
+import { getCloudflareContext } from "@/lib/cloudflare-context";
 import { getDb } from "@/lib/db";
 import { leads, books, referralPartners } from "@/lib/db/schema";
 import { and, eq } from "drizzle-orm";

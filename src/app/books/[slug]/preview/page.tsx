@@ -2,7 +2,7 @@ import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import { SITE_URL } from "@/lib/seo/ids";
 import { cookies } from "next/headers";
-import { getCloudflareContext } from "@opennextjs/cloudflare";
+import { getCloudflareContext } from "@/lib/cloudflare-context";
 import { CHAPTER_ACCESS_COOKIE, hasChapterAccess } from "@/lib/chapter-access";
 import { getDatabase } from "@/lib/db/client";
 import { books, authors, bookFormats } from "@/lib/db/schema";

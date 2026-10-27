@@ -1,6 +1,6 @@
 import "server-only";
 import { redirect } from "next/navigation";
-import { getCloudflareContext } from "@opennextjs/cloudflare";
+import { getCloudflareContext } from "@/lib/cloudflare-context";
 import { getCurrentAdminUser } from "@/lib/auth";
 
 /** Guard each page as well as the shared layout before accessing private briefs. */

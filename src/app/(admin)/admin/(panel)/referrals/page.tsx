@@ -1,4 +1,4 @@
-import { getCloudflareContext } from "@opennextjs/cloudflare";
+import { getCloudflareContext } from "@/lib/cloudflare-context";
 import { getDatabase } from "@/lib/db/client";
 import { sql } from "drizzle-orm";
 import { getCurrentAdminUser } from "@/lib/auth";

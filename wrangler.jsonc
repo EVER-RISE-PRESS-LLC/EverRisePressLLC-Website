@@ -1,6 +1,6 @@
 {
 	"$schema": "node_modules/wrangler/config-schema.json",
-	"main": ".open-next/worker.js",
+	"main": "vinext/server/app-router-entry",
 	"name": "everrisepressllc-website",
 	"account_id": "4bb86ba631de88ebffab0709d3e09c19",
 	"compatibility_date": "2026-08-19",
@@ -18,17 +18,10 @@
 		"NEXT_PUBLIC_META_PIXEL_ID": "2855054114869901"
 	},
 	"assets": {
-		"directory": ".open-next/assets",
+		"not_found_handling": "none",
+    "html_handling": "none",
 		"binding": "ASSETS"
 	},
-	"services": [
-		{
-			// Self-reference service binding, the service name must match the worker name
-			// see https://opennext.js.org/cloudflare/caching
-			"binding": "WORKER_SELF_REFERENCE",
-			"service": "everrisepressllc-website"
-		}
-	],
 	"d1_databases": [
 		{
 			"binding": "DB",

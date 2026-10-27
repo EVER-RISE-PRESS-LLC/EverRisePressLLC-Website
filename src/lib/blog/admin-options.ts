@@ -1,5 +1,5 @@
 import "server-only";
-import { getCloudflareContext } from "@opennextjs/cloudflare";
+import { getCloudflareContext } from "@/lib/cloudflare-context";
 import { getAllArticles } from "./catalog";
 export async function articleEditorOptions(currentSlug?: string) {
   const { env } = await getCloudflareContext({ async: true });

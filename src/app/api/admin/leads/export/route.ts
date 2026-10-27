@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getCloudflareContext } from "@opennextjs/cloudflare";
+import { getCloudflareContext } from "@/lib/cloudflare-context";
 import { getDb } from "@/lib/db";
 import { sql } from "drizzle-orm";
 import { getSessionUser } from "@/lib/auth";
