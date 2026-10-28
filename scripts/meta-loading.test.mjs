@@ -1,0 +1,20 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import {readFileSync} from 'node:fs';import {createRequire} from 'node:module';import ts from 'typescript';
+import {afterPageLoadAndIdle} from '../src/lib/after-page-load.ts';
+import {browserConsent,PRIVACY_CHANGE_EVENT} from '../src/lib/privacy-consent.ts';
+import {canTrackPage,subscribeTrackingPageGuard} from '../src/lib/tracking-page.ts';
+const require=createRequire(import.meta.url);
+function harness(cookie=''){
+ const previous={window:globalThis.window,document:globalThis.document,location:globalThis.location};const browser=new EventTarget(),idle=[],effects=[],scripts=[];browser.location=new URL('https://everrisepress.com/blog/public-article');browser.requestIdleCallback=callback=>{idle.push(callback);return idle.length;};globalThis.window=browser;globalThis.location=browser.location;globalThis.document={cookie,readyState:'loading',createElement:()=>({}),head:{appendChild:script=>scripts.push(script)}};
+ const source=readFileSync(new URL('../src/components/providers/MetaPixelProvider.tsx',import.meta.url),'utf8');const compiled=ts.transpileModule(source,{compilerOptions:{module:ts.ModuleKind.CommonJS,target:ts.ScriptTarget.ES2022,jsx:ts.JsxEmit.ReactJSX}}).outputText;const compiledModule={exports:{}};const injected={'react':{useEffect:fn=>effects.push(fn)},'next/navigation':{usePathname:()=>window.location.pathname},'@/lib/env':{env:{NEXT_PUBLIC_META_PIXEL_ID:'test-only'}},'@/lib/after-page-load':{afterPageLoadAndIdle},'@/lib/privacy-consent':{browserConsent,PRIVACY_CHANGE_EVENT},'@/lib/tracking-page':{canTrackPage,subscribeTrackingPageGuard}};new Function('require','module','exports',compiled)(name=>name in injected?injected[name]:require(name),compiledModule,compiledModule.exports);
+ return{idle,scripts,render(){compiledModule.exports.default({children:null});return effects.at(-1)();},load(){document.readyState='complete';browser.dispatchEvent(new Event('load'));},async flush(){assert.ok(idle.length);idle.shift()();await Promise.resolve();},navigate(path){globalThis.location=window.location=new URL('https://everrisepress.com'+path);},close(){for(const key of ['window','document','location']){if(previous[key]===undefined)delete globalThis[key];else globalThis[key]=previous[key];}}};
+}
+
+test('Meta queues default-enabled events and loads one script after page load and idle',async()=>{const h=harness();let cleanup;try{cleanup=h.render();assert.equal(h.scripts.length,0);assert.ok(window.fbq.queue.some(args=>args[0]==='init'));assert.ok(window.fbq.queue.some(args=>args[1]==='PageView'));h.load();await h.flush();assert.equal(h.scripts.length,1);assert.equal(h.scripts[0].src,'https://connect.facebook.net/en_US/fbevents.js');cleanup();cleanup=h.render();assert.equal(h.scripts.length,1);}finally{cleanup?.();h.close();}});
+
+test('saved advertising opt-out prevents Meta initialization and script loading',()=>{const h=harness('everrise_privacy=v1.1.0');let cleanup;try{cleanup=h.render();h.load();assert.equal(window.fbq,undefined);assert.equal(h.idle.length,0);assert.equal(h.scripts.length,0);}finally{cleanup?.();h.close();}});
+
+test('withdrawing advertising while queued prevents loading and removes pending tracking',async()=>{const h=harness();let cleanup;try{cleanup=h.render();document.cookie='everrise_privacy=v1.1.0';window.dispatchEvent(new Event(PRIVACY_CHANGE_EVENT));h.load();await h.flush();assert.equal(h.scripts.length,0);assert.ok(!window.fbq.queue.some(args=>['track','trackCustom'].includes(args[0])));}finally{cleanup?.();h.close();}});
+
+test('staff navigation while queued blocks loading; returning to a public page resumes once',async()=>{const h=harness();let cleanup;try{cleanup=h.render();h.navigate('/admin/articles/private-draft');h.load();await h.flush();assert.equal(h.scripts.length,0);assert.ok(!window.fbq.queue.some(args=>args[0]==='track'));cleanup();h.navigate('/blog/another-public-article');cleanup=h.render();await h.flush();assert.equal(h.scripts.length,1);assert.equal(window.fbq.queue.filter(args=>args[0]==='init').length,1);}finally{cleanup?.();h.close();}});

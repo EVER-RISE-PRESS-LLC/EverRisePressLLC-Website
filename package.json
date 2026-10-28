@@ -23,7 +23,7 @@
     "admin:create": "node scripts/create-admin.mjs",
     "indexnow": "node scripts/indexnow.mjs",
     "test:admin": "node --test --experimental-strip-types scripts/admin-articles.test.mjs scripts/admin-article-api.test.mjs scripts/admin-login-api.test.mjs scripts/admin-readers-referrals.test.mjs scripts/admin-draft-recovery.test.mjs && node scripts/admin-catalog-media.test.mjs",
-    "test:public": "node --test --experimental-strip-types scripts/blog.test.mjs scripts/privacy-access.test.mjs scripts/public-content.test.mjs scripts/tracking-page.test.mjs scripts/posthog-loading.test.mjs",
+    "test:public": "node --test --experimental-strip-types scripts/blog.test.mjs scripts/privacy-access.test.mjs scripts/public-content.test.mjs scripts/tracking-page.test.mjs scripts/posthog-loading.test.mjs scripts/meta-loading.test.mjs",
     "dev:vinext": "vite dev --port 3001",
     "build:vinext": "vite build",
     "start:vinext": "wrangler dev --config dist/server/wrangler.json",

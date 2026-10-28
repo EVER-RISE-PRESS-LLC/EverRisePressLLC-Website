@@ -47,7 +47,7 @@ Uploaded images have public URLs, including images selected for a private draft.
 
 The site records when you publish and who reviewed the work. If you publish again, it keeps the first publish date and adds a new update and review time. You do not need to type dates or choose a technical status.
 
-Check the facts as well as the form fields. Confirm claims and sums, label made-up examples, and get the author’s approval for personal statements. The planned payday-spending and cash-flow pieces stay as briefs until the text, sources and bylines pass review.
+Check the facts as well as the form fields. Confirm claims and sums, label made-up examples, and get the author’s approval for personal statements. The payday, cash-flow and book-club articles are published. Future articles still need finished text, sources and an approved byline; a seed brief is not a reviewed article.
 
 ## Understand article status
 

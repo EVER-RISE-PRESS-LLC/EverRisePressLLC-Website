@@ -5,6 +5,7 @@ import { env } from "@/lib/env";
 import { usePathname } from "next/navigation";
 import { browserConsent, PRIVACY_CHANGE_EVENT } from "@/lib/privacy-consent";
 import { canTrackPage, subscribeTrackingPageGuard } from "@/lib/tracking-page";
+import { afterPageLoadAndIdle } from "@/lib/after-page-load";
 
 declare global {
   interface Window {
@@ -13,7 +14,28 @@ declare global {
   }
 }
 
-let loaded = false;
+let initialized = false;
+let scheduled = false;
+let scriptRequested = false;
+
+function schedulePixelScript() {
+  if (scriptRequested || scheduled) return;
+  scheduled = true;
+  afterPageLoadAndIdle().then(() => {
+    scheduled = false;
+    if (!browserConsent().advertising) {
+      // Drop pending tracking if consent or the public route changed while loading.
+      const pixel = window.fbq as (NonNullable<Window["fbq"]> & { queue?: unknown[][] }) | undefined;
+      if (pixel?.queue) pixel.queue = pixel.queue.filter(args => !["track", "trackCustom", "trackSingle", "trackSingleCustom"].includes(String(args[0])));
+      return;
+    }
+    scriptRequested = true;
+    const script = document.createElement("script");
+    script.async = true;
+    script.src = "https://connect.facebook.net/en_US/fbevents.js";
+    document.head.appendChild(script);
+  });
+}
 
 export function trackMetaEvent(event: string, params: Record<string, unknown> = {}) {
   if (typeof window !== "undefined" && browserConsent().advertising && typeof window.fbq === "function") {
@@ -34,11 +56,12 @@ export default function MetaPixelProvider({ children }: { children: React.ReactN
     syncConsent();
     const pixelId = env.NEXT_PUBLIC_META_PIXEL_ID;
     if (!pixelId || !browserConsent().advertising) return () => window.removeEventListener(PRIVACY_CHANGE_EVENT, syncConsent);
-    if (loaded) {
+    if (initialized) {
       trackMetaEvent("PageView");
+      schedulePixelScript();
       return () => window.removeEventListener(PRIVACY_CHANGE_EVENT, syncConsent);
     }
-    loaded = true;
+    initialized = true;
 
     type PixelQueue = ((...args: unknown[]) => void) & {
       queue: unknown[][];
@@ -57,10 +80,7 @@ export default function MetaPixelProvider({ children }: { children: React.ReactN
     fbq("init", pixelId);
     fbq("track", "PageView");
 
-    const script = document.createElement("script");
-    script.async = true;
-    script.src = "https://connect.facebook.net/en_US/fbevents.js";
-    document.head.appendChild(script);
+    schedulePixelScript();
     return () => window.removeEventListener(PRIVACY_CHANGE_EVENT, syncConsent);
   }, [pathname]);
 

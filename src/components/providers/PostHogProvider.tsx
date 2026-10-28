@@ -6,21 +6,10 @@ import { env } from "@/lib/env";
 import { usePathname } from "next/navigation";
 import { browserConsent, PRIVACY_CHANGE_EVENT } from "@/lib/privacy-consent";
 import { canTrackPage, subscribeTrackingPageGuard } from "@/lib/tracking-page";
+import { afterPageLoadAndIdle } from "@/lib/after-page-load";
 
 let phInstance: PostHog | null = null;
 let phInitPromise: Promise<PostHog | null> | null = null;
-
-/** Keep the first page's resources ahead of optional analytics. Captures await the same queue. */
-function afterPageLoadAndIdle(): Promise<void> {
-  return new Promise(resolve => {
-    const schedule = () => {
-      if (typeof window.requestIdleCallback === "function") window.requestIdleCallback(() => resolve(), { timeout: 1000 });
-      else window.setTimeout(resolve, 0);
-    };
-    if (document.readyState === "complete") schedule();
-    else window.addEventListener("load", schedule, { once: true });
-  });
-}
 
 function initPostHog(): Promise<PostHog | null> {
   if (!browserConsent().analytics) {
@@ -126,8 +115,10 @@ export default function PostHogProvider({ children }: { children: React.ReactNod
   useEffect(() => {
     const sync = () => {
       if (!browserConsent().analytics) { phInstance?.opt_out_capturing(); return; }
+      const pageUrl = new URL(window.location.href);
+      pageUrl.searchParams.delete("_phid");
       initPostHog().then((client) => {
-        if (browserConsent().analytics) client?.capture("$pageview", { $current_url: window.location.href });
+        if (browserConsent().analytics) client?.capture("$pageview", { $current_url: pageUrl.href });
       }).catch(() => {});
     };
     sync();

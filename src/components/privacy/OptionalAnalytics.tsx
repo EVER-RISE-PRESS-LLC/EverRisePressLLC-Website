@@ -1,15 +1,25 @@
 "use client";
 
 import { GoogleAnalytics } from "@next/third-parties/google";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { usePathname } from "next/navigation";
 import { env } from "@/lib/env";
 import { canTrackPage, subscribeTrackingPageGuard } from "@/lib/tracking-page";
 import { usePrivacyConsent } from "./PrivacyPreferences";
+import { browserConsent } from "@/lib/privacy-consent";
+import { afterPageLoadAndIdle } from "@/lib/after-page-load";
 
 export default function OptionalAnalytics() {
   const consent = usePrivacyConsent();
   const pathname = usePathname();
+  const [ready, setReady] = useState(false);
+  useEffect(() => {
+    let active = true;
+    if (consent.analytics) afterPageLoadAndIdle().then(() => {
+      if (active && browserConsent().analytics) setReady(true);
+    });
+    return () => { active = false; };
+  }, [consent.analytics]);
   useEffect(() => subscribeTrackingPageGuard((page) => {
     if (!canTrackPage(page)) (window as unknown as Record<string, unknown>)[`ga-disable-${env.NEXT_PUBLIC_GA_ID}`] = true;
   }), []);
@@ -24,5 +34,5 @@ export default function OptionalAnalytics() {
       window.gtag("event", "page_view", { page_location: window.location.href, page_referrer: window.location.origin, page_title: document.title });
     }
   }, [pathname, consent.analytics]);
-  return consent.analytics ? <GoogleAnalytics gaId={env.NEXT_PUBLIC_GA_ID} /> : null;
+  return consent.analytics && ready ? <GoogleAnalytics gaId={env.NEXT_PUBLIC_GA_ID} /> : null;
 }

@@ -1,5 +1,7 @@
 # seo-dev-doc
 
+Latest release: 29 October 2026. The remaining articles, publisher discussion guide, cover-image workflow, press page and performance work are recorded in [the completion and verification report](seo-completion-2026-10-29.md). The original schedule and historical results below are retained as an audit trail.
+
 Audit date: 22 October 2026, Asia/Dhaka. Site: https://everrisepress.com. This plan was written before day-one implementation. Execution results will be appended after validation.
 
 ## Diagnosis
