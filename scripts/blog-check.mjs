@@ -23,7 +23,13 @@ if(positive) {
     const crumbs=graph.find(n=>n['@type']==='BreadcrumbList');assert.equal(crumbs.itemListElement.length,3);assert.ok(crumbs.itemListElement.every(c=>c.item));
     assert.match(response.body,/property="article:published_time"/);assert.match(response.body,/property="article:modified_time"/);
     assert.ok(sitemap.body.includes(`<loc>https://everrisepress.com${path}</loc>`));assert.ok(llms.body.includes(path));
-    if(publishedPaths.slice(0,2).includes(path)) assert.ok(home.body.includes(`href="${path}"`));assert.ok(schema['@graph'].some(n=>n['@id']===article['@id']));
+    if(publishedPaths.slice(0,3).includes(path)) assert.ok(home.body.includes(`href="${path}"`));assert.ok(schema['@graph'].some(n=>n['@id']===article['@id']));
+    const coverTag=(response.body.match(/<meta\b[^>]*>/g)??[]).find(tag=>/property="og:image"/.test(tag));
+    const cover=coverTag?.match(/content="([^"]+)"/)?.[1]; assert.ok(cover, path+' sharing image');
+    const coverPath=new URL(cover).pathname;
+    assert.ok(response.body.includes(`src="${coverPath}"`) || response.body.includes(`src="${cover}"`),path+' visible article cover');
+    assert.ok(index.body.includes(`src="${coverPath}"`) || index.body.includes(`src="${cover}"`),path+' listing cover');
+    if(publishedPaths.slice(0,3).includes(path)) assert.ok(home.body.includes(`src="${coverPath}"`) || home.body.includes(`src="${cover}"`),path+' homepage cover');
   }
   assert.ok((index.body.match(/<a\b[^>]*>/g)??[]).some(tag=>tag.includes('href="/blog"') && tag.includes('aria-current="page"')), "active blog navigation link");
   assert.ok(sitemap.body.includes('<loc>https://everrisepress.com/blog</loc>'));

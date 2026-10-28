@@ -82,7 +82,7 @@ export interface ArticleSeoData {
 /* Registry contract                                                  */
 /* ------------------------------------------------------------------ */
 
-export type SeoPageType = "home" | "book" | "author" | "about" | "privacy" | "blog" | "article";
+export type SeoPageType = "home" | "book" | "author" | "about" | "privacy" | "blog" | "article" | "press";
 
 export interface SeoCrumbs {
   name: string;
@@ -275,6 +275,16 @@ export function buildBookPiece(book: BookSeoData): GraphEntity {
 /* ------------------------------------------------------------------ */
 
 export const seoRegistry: Record<SeoPageType, RegistryEntry> = {
+  press: {
+    buildPieces() {
+      const url = `${SITE_URL}/press`;
+      return [buildWebPage({ url, name: "Press and Book Information", isPartOf: { "@id": seoIds.website }, breadcrumb: { "@id": seoIds.breadcrumb(url) }, inLanguage: "en-US" }, seoIds.factory), breadcrumbListPiece(url, this.buildBreadcrumbs({}))];
+    },
+    buildBreadcrumbs() { return [HOME_CRUMB, { name: "Press & book information", url: `${SITE_URL}/press` }]; },
+    metadata() { return { title: "Press & Book Information", description: "Find verified book details, author information, cover and portrait files, and the publisher contact for coverage of How To Have a Financial Heart Attack.", canonicalPath: "/press", imageUrl: `${SITE_URL}/images/og/everrise-home-20261022.jpg`, imageAlt: "How To Have a Financial Heart Attack by Lamont D. McLeod, published on the EverRise Press website." }; },
+    sitemapEntries: async () => [{ path: "/press", changeFrequency: "monthly", priority: 0.5 }],
+    llmsSection: async () => `## Press and book information\n\nVerified edition details, author information, downloadable cover and portrait, and publisher contact: ${SITE_URL}/press`,
+  },
   home: {
     buildPieces() {
       return [
@@ -643,4 +653,5 @@ export const seoPageTypes: SeoPageType[] = [
   "privacy",
   "blog",
   "article",
+  "press",
 ];

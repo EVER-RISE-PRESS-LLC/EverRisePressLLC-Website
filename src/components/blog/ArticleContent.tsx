@@ -33,6 +33,10 @@ export default function ArticleContent({ article, related = [], preview = false 
       <p className="mt-7 max-w-3xl text-xl leading-relaxed text-text-body">{article.description}</p>
       <div className="mt-7 flex flex-wrap gap-x-6 gap-y-2 text-sm leading-relaxed text-text-muted"><p>By <Link href={article.author.url} className="underline hover:text-gold-deep">{article.author.name}</Link></p>{article.publishedAt ? <p>Published <time dateTime={article.publishedAt}>{formatArticleDate(article.publishedAt)}</time></p> : <p>Draft · publication date not set</p>}{article.updatedAt && article.updatedAt !== article.publishedAt && <p>Updated <time dateTime={article.updatedAt}>{formatArticleDate(article.updatedAt)}</time></p>}{article.blocks.length > 0 && <p>{minutes} min read</p>}</div>
       {article.review && <p className="mt-3 text-sm text-text-muted">Reviewed by {article.review.by} on <time dateTime={article.review.at}>{formatArticleDate(article.review.at)}</time>.</p>}
+      {article.imageUrl && <figure className="mt-9 overflow-hidden rounded-xl bg-charcoal">
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img src={article.imageUrl} alt={article.imageAlt || article.title} width={article.imageWidth || 1200} height={article.imageHeight || 630} loading="eager" fetchPriority="high" decoding="async" className="h-auto w-full" />
+      </figure>}
     </header>
     <div className="press-article-grid mx-auto max-w-6xl gap-12 px-6 pb-16 md:pb-24">
       <aside className="min-w-0" aria-label="In this article">{headings.length > 0 && <nav className="lg:sticky lg:top-28"><p className="font-semibold">In this article</p><ul className="mt-3 space-y-1 text-sm">{headings.map(heading => <li key={heading.id}><Link href={`#${heading.id}`} className="inline-flex min-h-11 items-center underline hover:text-gold-deep">{heading.text}</Link></li>)}{article.sources.length > 0 && <li><Link href="#sources" className="inline-flex min-h-11 items-center underline hover:text-gold-deep">Sources</Link></li>}</ul></nav>}</aside>

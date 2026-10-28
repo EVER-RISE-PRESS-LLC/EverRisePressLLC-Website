@@ -1,4 +1,4 @@
-import Image from "next/image";
+import Image from "@/components/ui/SiteImage";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
@@ -15,6 +15,7 @@ import Navbar from "@/components/Navbar";
 import SiteFooter from "@/components/SiteFooter";
 import ReactiveButton from "@/components/ui/ReactiveButton";
 import { ArrowRight, ChevronDown } from "lucide-react";
+import { getPublishedArticles } from "@/lib/blog/catalog";
 
 export const dynamic = "force-dynamic";
 
@@ -38,6 +39,7 @@ export default async function BookPage({ params }: { params: Promise<{ slug: str
   ]);
   const editorial = book.slug === FINANCIAL_HEART_ATTACK_SLUG ? financialHeartAttackEditorial : null;
   const editions = uniqueEditions(formats);
+  const relatedArticles = editorial ? await getPublishedArticles() : [];
   const previewPath = `/books/${book.slug}/preview`;
   const publicationDate = book.publishedAt && !Number.isNaN(Date.parse(book.publishedAt))
     ? new Intl.DateTimeFormat("en-US", { month: "long", day: "numeric", year: "numeric", timeZone: "UTC" }).format(new Date(book.publishedAt))
@@ -154,6 +156,7 @@ export default async function BookPage({ params }: { params: Promise<{ slug: str
           </details>)}</div>
         </div>
       </section>}
+      {relatedArticles.length > 0 && <section className="press-section border-t border-charcoal/15" aria-labelledby="book-related-reading"><div className="press-container"><h2 id="book-related-reading" className="font-heading text-3xl font-semibold">Read, plan and discuss</h2><p className="mt-4 max-w-prose text-base leading-relaxed text-text-body">Explore the stories in the book, work through a cash-flow example, or bring a discussion guide to your reading group.</p><ul className="mt-6 space-y-2">{relatedArticles.map(article => <li key={article.slug}><Link href={`/blog/${article.slug}`} className="inline-flex min-h-11 items-center gap-3 text-lg underline underline-offset-4 hover:text-gold-deep">{article.title}<ArrowRight className="size-4 shrink-0" aria-hidden /></Link></li>)}</ul></div></section>}
       <SiteFooter extraLinks={[{ label: "The Book", href: `/books/${book.slug}` }]} />
     </main>
   );

@@ -1,4 +1,4 @@
-import Image from "next/image";
+import Image from "@/components/ui/SiteImage";
 import Link from "next/link";
 import type { Metadata } from "next";
 import { getDatabase } from "@/lib/db/client";
@@ -20,7 +20,7 @@ export const metadata: Metadata = buildMetadata("home");
 const BOOK_PATH = "/books/how-to-have-a-financial-heart-attack";
 
 export default async function Home() {
-  const recentArticles = (await getPublishedArticles()).slice(0, 2);
+  const recentArticles = (await getPublishedArticles()).slice(0, 3);
   const db = await getDatabase();
   const [[book], [author]] = await Promise.all([
     db.select().from(books).where(eq(books.slug, "how-to-have-a-financial-heart-attack")).limit(1),

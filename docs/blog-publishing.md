@@ -22,7 +22,7 @@ Open **Details & sharing** to add the details readers will see.
 - **Article URL:** Use a short address with lowercase words and hyphens. The address stays fixed once you first publish, so shared links keep working.
 - **Sources & further reading:** Add a clear title and an HTTPS link for each source. Add at least one full source before you publish. Use first-hand sources for factual claims where you can.
 - **Related reading:** Select useful follow-up articles. The public page only shows links that are live.
-- **Sharing image:** Choose an image and describe what it shows. A wide image around 1200 × 630 pixels works well when readers share a link.
+- **Cover image:** Choose an image and describe what it shows. This image appears on the homepage, blog listing, article and shared links. Use a 1200 × 630 landscape image with readable text and a background that stands apart from the page.
 - **Private editorial notes:** Keep a brief, reminders or review notes here. Staff can see these notes. Readers cannot see them in the live article.
 
 Changing the author name or profile link clears the byline approval checkbox. Confirm it again after checking the change.

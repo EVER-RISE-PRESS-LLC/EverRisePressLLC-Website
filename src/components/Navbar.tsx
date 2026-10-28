@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import Image from "next/image";
+import Image from "@/components/ui/SiteImage";
 import { usePathname } from "next/navigation";
 import { Dialog } from "radix-ui";
 import { Menu, X, ArrowRight } from "lucide-react";

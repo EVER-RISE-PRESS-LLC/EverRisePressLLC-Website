@@ -13,6 +13,7 @@ export const dynamic = "force-dynamic";
 const SITEMAP_TYPE_ORDER: SeoPageType[] = [
   "home",
   "about",
+  "press",
   "privacy",
   "book",
   "author",

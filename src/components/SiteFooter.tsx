@@ -1,5 +1,5 @@
 import Link from "next/link";
-import Image from "next/image";
+import Image from "@/components/ui/SiteImage";
 import { BookOpen, UserRound, ShieldCheck } from "lucide-react";
 import { BlogFooterLink } from "@/components/blog/BlogAvailability";
 import { PrivacySettingsButton } from "@/components/privacy/PrivacyPreferences";
@@ -14,6 +14,7 @@ export default function SiteFooter({ extraLinks = [] }: SiteFooterProps) {
     { label: "Home", href: "/", icon: BookOpen },
     { label: "Author", href: "/authors/lamont-mcleod", icon: UserRound },
     { label: "About & contact", href: "/about", icon: UserRound },
+    { label: "Press & book info", href: "/press", icon: BookOpen },
     { label: "Privacy", href: "/privacy", icon: ShieldCheck },
   ];
 
@@ -52,7 +53,7 @@ export default function SiteFooter({ extraLinks = [] }: SiteFooterProps) {
             <Link
               key={`${link.label}-${link.href}`}
               href={link.href}
-              className="text-sm text-cream/70 transition-colors duration-300 hover:text-gold"
+              className="inline-flex min-h-11 items-center text-sm text-cream/70 transition-colors duration-300 hover:text-gold"
             >
               {link.label}
             </Link>

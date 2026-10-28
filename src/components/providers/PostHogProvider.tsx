@@ -1,14 +1,14 @@
 "use client";
 
 import { useCallback, useEffect, useState, useSyncExternalStore } from "react";
-import posthog, { type PostHog } from "posthog-js";
+import type { PostHog } from "posthog-js/dist/module.no-external";
 import { env } from "@/lib/env";
 import { usePathname } from "next/navigation";
 import { browserConsent, PRIVACY_CHANGE_EVENT } from "@/lib/privacy-consent";
 import { canTrackPage, subscribeTrackingPageGuard } from "@/lib/tracking-page";
 
 let phInstance: PostHog | null = null;
-let phInitPromise: Promise<PostHog> | null = null;
+let phInitPromise: Promise<PostHog | null> | null = null;
 
 function initPostHog(): Promise<PostHog | null> {
   if (!browserConsent().analytics) {
@@ -21,7 +21,9 @@ function initPostHog(): Promise<PostHog | null> {
   }
   if (phInitPromise) return phInitPromise;
 
-  phInitPromise = new Promise((resolve) => {
+  phInitPromise = import("posthog-js/dist/module.no-external").then(({ default: posthog }) => {
+    // Consent or route may change while the SDK chunk is loading.
+    if (!browserConsent().analytics) return null;
     const key = env.NEXT_PUBLIC_POSTHOG_KEY;
     const host = env.NEXT_PUBLIC_POSTHOG_HOST || "https://us.i.posthog.com";
 
@@ -31,6 +33,8 @@ function initPostHog(): Promise<PostHog | null> {
       capture_pageview: false,
       capture_pageleave: true,
       disable_session_recording: true,
+      disable_surveys: true,
+      disable_external_dependency_loading: true,
       person_profiles: "never",
       before_send: (event) => browserConsent().analytics ? event : null,
     });
@@ -47,8 +51,8 @@ function initPostHog(): Promise<PostHog | null> {
     }
 
     phInstance = posthog;
-    resolve(posthog);
-  });
+    return posthog;
+  }).finally(() => { phInitPromise = null; });
 
   return phInitPromise;
 }

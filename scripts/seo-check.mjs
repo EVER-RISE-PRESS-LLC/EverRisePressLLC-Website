@@ -3,7 +3,7 @@ import assert from "node:assert/strict";
 const base = (process.argv[2] ?? "https://everrisepress.com").replace(/\/$/, "");
 const canonicalOrigin = "https://everrisepress.com";
 const headers = { "user-agent": "EverRisePress-SEO-Audit/1.0" };
-const paths = ["/", "/books/how-to-have-a-financial-heart-attack", "/authors/lamont-mcleod", "/privacy", "/about"];
+const paths = ["/", "/books/how-to-have-a-financial-heart-attack", "/authors/lamont-mcleod", "/privacy", "/about", "/press"];
 const results = [];
 async function get(path) {
   const r = await fetch(new URL(path, base), { headers });
