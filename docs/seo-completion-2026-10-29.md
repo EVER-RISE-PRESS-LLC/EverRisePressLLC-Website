@@ -6,7 +6,7 @@ Site: https://everrisepress.com/. Dates in this report use Asia/Dhaka. The publi
 
 | Resource | What was completed |
 | --- | --- |
-| [Weekly Cash Flow Calendar: Bills and Paydays](https://everrisepress.com/blog/weekly-cash-flow-calendar) | Finished and published the existing brief under EverRise Press. Approximately 951 words including tables/captions. Original fictional November 2026 example; five weeks, independently checked arithmetic, two sourced graphics, two primary CFPB links, related reading, printable worksheet and blank CSV. |
+| [Weekly Cash Flow Calendar: Bills and Paydays](https://everrisepress.com/blog/weekly-cash-flow-calendar) | Finished and published the existing brief with an explicitly fictional publisher exercise. Approximately 951 words including tables/captions. Original fictional November 2026 example; five weeks, independently checked arithmetic, two sourced graphics, two primary CFPB links, related reading, printable worksheet and blank CSV. |
 | [Book Club Guide: Financial Heart Attack](https://everrisepress.com/blog/financial-heart-attack-book-club-guide) | Published an original EverRise Press guide after reading all 15 manuscript chapters. Approximately 994 words including captions. Ten chapter-based prompts, spoiler notice, optional participation, two graphics, a flexible 60-minute outline and a printable sheet. These are publisher questions, not quotations or a new author interview. |
 | [Payday Spending Habits: Notice the Pattern](https://everrisepress.com/blog/payday-spending-patterns) | Preserved the owner's published wording, selected byline and first publication date. Replaced the cover and two infographics with contrasting, smaller WebP files; added the new guide to related reading. Existing media files were retained. |
 | [Press and book information](https://everrisepress.com/press) | Added real edition facts, approved author/publisher background, actual cover and portrait downloads, monitored publisher contact, permission enquiries and links to the book and discussion guide. No invented credentials, review quotes, rights grant or availability promise. |
@@ -57,6 +57,30 @@ Validation passed: TypeScript, production build, 27 public tests, 25 admin tests
 
 No test subscriber, purchase, email campaign or external outreach message was submitted. Existing lead/referral records were not removed. The existing server events remain `lead_generated` after a successful signup and `retailer_redirect_click` for a retailer redirect. A retailer click records interest, not a completed retailer sale. There is no basis for reporting sales from this work.
 
+## Performance results
+
+Prepared responsive WebP files for the logo, cover and portrait, plus AVIF/WebP theme-art variants. Hidden themes load when the reader selects them. The 172,805-byte logo now has prepared 3,922-byte and 10,512-byte variants. The PostHog core loads separately, with unused surveys and external dependency loading disabled. Google Analytics, PostHog and Meta start automatically after the initial page load and browser idle. Tracking calls queue where supported; pending PostHog/Meta loading rechecks category permission and the current route. Saved opt-outs and staff/local exclusions are retained. A very brief visit can end before optional SDKs initialize.
+
+Regression tests cover single initialization, withdrawal while queued, staff navigation while queued, fallback browsers and correct original URLs for queued PostHog page views. Live browser review also confirmed that saved opt-outs prevent vendor scripts from loading; those saved choices were left intact.
+
+The table compares one original mobile baseline with the median of three final runs per page. Final tests used unique performance-check query values to avoid reused reports; the content and canonical URL remain the same. Device/profile: Moto G Power, Slow 4G, Lighthouse 13.5. These are laboratory samples with variance, not field Core Web Vitals or a controlled causal attribution to one change. The payday page now also includes its visible cover, so its before/after layout differs.
+
+| Page | Baseline score | Final median (range) | Baseline LCP → final median | Final median TBT (range) | CLS in final runs |
+| --- | --- | --- | --- | --- | --- |
+| Homepage | 71 | 93 (91–93) | 10.74 s → 3.02 s | 123 ms (93–146) | 0 |
+| Book page | 73 | 91 (90–95) | 8.12 s → 3.15 s | 149 ms (100–182) | 0 |
+| Payday article | 90 | 91 (89–91) | 3.30 s → 3.00 s | 182 ms (179–246) | 0 |
+
+All final runs scored 100 for Lighthouse accessibility and basic SEO. Those automated categories cover a subset of accessibility and SEO, so manual layout checks and the live technical crawl were also performed. There is no CrUX field dataset for these pages. Median blocking time and layout shift meet the plan's lab aims; the 2.5-second LCP aim remains open at approximately 3.0–3.2 seconds. Future work can target the remaining load/render delay and vendor cost as field evidence becomes available.
+
+Homepage reports: [baseline](https://pagespeed.web.dev/analysis/https-everrisepress-com/e4og2lj3ju?form_factor=mobile), [final 1](https://pagespeed.web.dev/analysis/https-everrisepress-com/6addo940e6?form_factor=mobile), [final 2](https://pagespeed.web.dev/analysis/https-everrisepress-com/ian969m4gy?form_factor=mobile), [final 3](https://pagespeed.web.dev/analysis/https-everrisepress-com/glyzx81wnc?form_factor=mobile).
+
+Book page reports: [baseline](https://pagespeed.web.dev/analysis/https-everrisepress-com-books-how-to-have-a-financial-heart-attack/jh0d9xcdfu?form_factor=mobile), [final 1](https://pagespeed.web.dev/analysis/https-everrisepress-com-books-how-to-have-a-financial-heart-attack/bpdptiy7zf?form_factor=mobile), [final 2](https://pagespeed.web.dev/analysis/https-everrisepress-com-books-how-to-have-a-financial-heart-attack/zs6n59qqz3?form_factor=mobile), [final 3](https://pagespeed.web.dev/analysis/https-everrisepress-com-books-how-to-have-a-financial-heart-attack/x8wbylkrqr?form_factor=mobile).
+
+Payday article reports: [baseline](https://pagespeed.web.dev/analysis/https-everrisepress-com-blog-payday-spending-patterns/aphwh743yd?form_factor=mobile), [final 1](https://pagespeed.web.dev/analysis/https-everrisepress-com-blog-payday-spending-patterns/scuj3lu46r?form_factor=mobile), [final 2](https://pagespeed.web.dev/analysis/https-everrisepress-com-blog-payday-spending-patterns/95xlywhxuk?form_factor=mobile), [final 3](https://pagespeed.web.dev/analysis/https-everrisepress-com-blog-payday-spending-patterns/3kmhjflknp?form_factor=mobile).
+
+The packaged Worker is approximately 1.1 MiB compressed. The project still uses its existing Worker, D1 database and static assets; no paid CMS, R2 bucket, paid image transformation, plan upgrade or billing setup was added.
+
 ## Search Console and discovery
 
 The GSC connection works. URL Inspection confirmed six URLs as submitted and indexed: homepage, book, author, About, privacy and the payday article. Blog, the two newly published resources and press were unknown to Google at the inspection time. These four were live, indexable and linked in the sitemap; an inspection immediately after publication does not establish that Google has crawled them.
@@ -78,7 +102,7 @@ Latest complete 28-day GSC window: September 29–October 26, 2026. Property tot
 These are suggested review dates, not scheduled automations or promises that future work has run.
 
 - **November 5:** inspect the ten URLs again; compare crawl dates and selected canonicals; check that the historical breadcrumb reports have refreshed and that the new resources have been discovered. Investigate any genuine fetch, canonical or indexing exclusion individually.
-- **November 12:** review the first complete fortnight after publication, separating branded and non-branded searches. Compare page views, chapter signups and retailer redirect clicks. Do not count clicks as purchases or call an early low sample a trend.
+- **November 12:** review the first complete fortnight after publication, separating branded and non-branded searches. Compare page views, chapter signups and retailer redirect clicks. Exclude the performance-check test URLs from engagement analysis. Do not count clicks as purchases or call an early low sample a trend.
 - **November 26:** review a full post-publication window and choose the next topic from actual queries and reader questions. Improve existing articles when evidence points to a missing explanation rather than generating overlapping posts.
 
 Possible follow-ups are editorial hypotheses: a text-based comparison of advice and action in Chapters 11–14; a deeper explanation of monthly totals versus payment timing; or the trade-off between shared costs and private space in Chapter 12. A new first-person author interview needs actual answers or an approved transcript. No invented interview was added to finish the plan.
