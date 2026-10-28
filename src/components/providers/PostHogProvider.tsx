@@ -10,6 +10,18 @@ import { canTrackPage, subscribeTrackingPageGuard } from "@/lib/tracking-page";
 let phInstance: PostHog | null = null;
 let phInitPromise: Promise<PostHog | null> | null = null;
 
+/** Keep the first page's resources ahead of optional analytics. Captures await the same queue. */
+function afterPageLoadAndIdle(): Promise<void> {
+  return new Promise(resolve => {
+    const schedule = () => {
+      if (typeof window.requestIdleCallback === "function") window.requestIdleCallback(() => resolve(), { timeout: 1000 });
+      else window.setTimeout(resolve, 0);
+    };
+    if (document.readyState === "complete") schedule();
+    else window.addEventListener("load", schedule, { once: true });
+  });
+}
+
 function initPostHog(): Promise<PostHog | null> {
   if (!browserConsent().analytics) {
     phInstance?.opt_out_capturing();
@@ -21,7 +33,12 @@ function initPostHog(): Promise<PostHog | null> {
   }
   if (phInitPromise) return phInitPromise;
 
-  phInitPromise = import("posthog-js/dist/module.no-external").then(({ default: posthog }) => {
+  phInitPromise = afterPageLoadAndIdle().then(() => {
+    if (!browserConsent().analytics) return null;
+    return import("posthog-js/dist/module.no-external");
+  }).then((sdk) => {
+    if (!sdk) return null;
+    const posthog = sdk.default;
     // Consent or route may change while the SDK chunk is loading.
     if (!browserConsent().analytics) return null;
     const key = env.NEXT_PUBLIC_POSTHOG_KEY;
