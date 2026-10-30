@@ -7,6 +7,7 @@ import { usePathname } from "next/navigation";
 import { browserConsent, PRIVACY_CHANGE_EVENT } from "@/lib/privacy-consent";
 import { canTrackPage, subscribeTrackingPageGuard } from "@/lib/tracking-page";
 import { afterPageLoadAndIdle } from "@/lib/after-page-load";
+import { rememberLandingPath } from "@/lib/conversion-attribution";
 
 let phInstance: PostHog | null = null;
 let phInitPromise: Promise<PostHog | null> | null = null;
@@ -114,6 +115,7 @@ export default function PostHogProvider({ children }: { children: React.ReactNod
   }), []);
   useEffect(() => {
     const sync = () => {
+      rememberLandingPath();
       if (!browserConsent().analytics) { phInstance?.opt_out_capturing(); return; }
       const pageUrl = new URL(window.location.href);
       pageUrl.searchParams.delete("_phid");

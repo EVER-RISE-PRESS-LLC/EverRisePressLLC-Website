@@ -6,6 +6,7 @@ import { Dialog } from "radix-ui";
 import ReactiveButton from "@/components/ui/ReactiveButton";
 import { gtagEvent } from "@/lib/gtag";
 import { browserConsent } from "@/lib/privacy-consent";
+import { browserConversionAttribution } from "@/lib/conversion-attribution";
 import { FORMAT_LABELS } from "@/lib/book-editorial";
 import { ArrowUpRight, X, ArrowRight } from "lucide-react";
 
@@ -98,6 +99,7 @@ export default function MultiRetailerModal({
       book_slug: bookSlug,
       retailer: format.distributor,
       format_type: format.formatType,
+      ...browserConversionAttribution(),
     });
     if (!bookSlug) return;
     try {
@@ -108,6 +110,7 @@ export default function MultiRetailerModal({
           bookSlug,
           retailer: format.distributor,
           formatType: format.formatType,
+          attribution: browserConversionAttribution(),
         }),
         keepalive: true,
       }).catch(() => {});

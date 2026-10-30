@@ -6,6 +6,7 @@ import { and, eq } from "drizzle-orm";
 import { REFERRAL_COOKIE_NAME, hashIp, normalizePartnerSlug } from "@/lib/referral";
 import { captureServerEvent, getAnonymousId } from "@/lib/posthog";
 import { readPrivacyConsent } from "@/lib/privacy-consent";
+import { conversionAttribution } from "@/lib/conversion-attribution";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -20,11 +21,12 @@ export async function POST(request: NextRequest) {
       bookSlug?: string;
       retailer?: string;
       formatType?: string;
+      attribution?: unknown;
     } | null;
 
-    const bookSlug = body?.bookSlug?.trim();
-    const retailer = body?.retailer?.trim();
-    const formatType = body?.formatType?.trim();
+    const bookSlug = typeof body?.bookSlug === "string" ? body.bookSlug.trim() : "";
+    const retailer = typeof body?.retailer === "string" ? body.retailer.trim() : "";
+    const formatType = typeof body?.formatType === "string" ? body.formatType.trim() : "";
 
     if (!bookSlug || !retailer || !formatType || !VALID_FORMATS.has(formatType)) {
       return NextResponse.json({ error: "Invalid payload." }, { status: 400 });
@@ -77,10 +79,11 @@ export async function POST(request: NextRequest) {
       retailer,
       format_type: formatType,
       partner_slug: referralSlug,
+      ...conversionAttribution(body?.attribution, request.headers.get("referer"), request.nextUrl.origin),
     });
     if (ctx && typeof ctx.waitUntil === "function") {
       ctx.waitUntil(phCapture);
-    }
+    } else await phCapture;
 
     return NextResponse.json({ success: true });
   } catch (error) {

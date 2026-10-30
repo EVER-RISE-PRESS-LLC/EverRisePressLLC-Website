@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getCloudflareContext } from "@/lib/cloudflare-context";
 import { getDb } from "@/lib/db";
-import { leads, books, referralPartners } from "@/lib/db/schema";
+import { books, referralPartners } from "@/lib/db/schema";
 import { and, eq } from "drizzle-orm";
 import { verifyTurnstileToken } from "@/lib/turnstile";
 import { REFERRAL_COOKIE_NAME, normalizePartnerSlug } from "@/lib/referral";
@@ -9,6 +9,8 @@ import { captureServerEvent, getAnonymousId } from "@/lib/posthog";
 import { sendMetaLeadEvent } from "@/lib/meta";
 import { CHAPTER_ACCESS_COOKIE, CHAPTER_ACCESS_MAX_AGE, createChapterAccessToken } from "@/lib/chapter-access";
 import { readPrivacyConsent } from "@/lib/privacy-consent";
+import { conversionAttribution } from "@/lib/conversion-attribution";
+import { recordChapterLead } from "@/lib/lead-record";
 
 export const runtime = "nodejs";
 
@@ -16,6 +18,7 @@ interface LeadRequestBody {
   email: string;
   bookSlug: string;
   turnstileToken: string;
+  attribution?: unknown;
 }
 
 export async function POST(request: NextRequest) {
@@ -23,7 +26,7 @@ export async function POST(request: NextRequest) {
     const body = (await request.json()) as LeadRequestBody;
     const { email, bookSlug, turnstileToken } = body;
 
-    if (!email || !bookSlug || !turnstileToken) {
+    if (typeof email !== "string" || email.length > 254 || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim()) || typeof bookSlug !== "string" || !bookSlug || typeof turnstileToken !== "string" || !turnstileToken) {
       return NextResponse.json(
         { error: "Email, book slug, and verification token are required." },
         { status: 400 }
@@ -67,13 +70,6 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const existingLead = await db
-      .select()
-      .from(leads)
-      .where(eq(leads.email, email))
-      .limit(1)
-      .then((rows) => rows[0]);
-
     const cookieHeader = request.headers.get("cookie");
     const consent = readPrivacyConsent(cookieHeader);
     const referralSlug = consent.analytics ? request.cookies.get(REFERRAL_COOKIE_NAME)?.value ?? null : null;
@@ -91,32 +87,25 @@ export async function POST(request: NextRequest) {
           .then((rows) => rows[0])
       : null;
 
-    if (!existingLead) {
-      await db.insert(leads).values({
-        email,
-        bookId: book.id,
-        partnerId: partner?.id ?? null,
-        sourceUtm: partner?.slug ?? null,
-      });
-    } else if (partner && !existingLead.partnerId) {
-      await db
-        .update(leads)
-        .set({ partnerId: partner.id })
-        .where(eq(leads.id, existingLead.id));
-    }
+    const token = await createChapterAccessToken(bookSlug, jwtSecret);
+    const isNewLead = await recordChapterLead(env.DB, {
+      email, bookId: book.id, partnerId: partner?.id ?? null, sourceUtm: partner?.slug ?? null,
+    });
+    const attribution = conversionAttribution(body.attribution, request.headers.get("referer"), request.nextUrl.origin);
 
     const { distinctId } = getAnonymousId(request.headers.get("cookie"));
 
-    const phCapture = captureServerEvent(cookieHeader, distinctId, "lead_generated", {
+    const phCapture = captureServerEvent(cookieHeader, distinctId, isNewLead ? "lead_generated" : "chapter_access_renewed", {
       book_slug: book.slug,
       partner_slug: partner?.slug ?? null,
       source_utm: partner?.slug ?? null,
+      ...attribution,
     });
     if (ctx && typeof ctx.waitUntil === "function") {
       ctx.waitUntil(phCapture);
-    }
+    } else await phCapture;
 
-    const metaCapture = sendMetaLeadEvent({
+    const metaCapture = isNewLead ? sendMetaLeadEvent({
       cookieHeader,
       email,
       ip: request.headers.get("CF-Connecting-IP"),
@@ -126,14 +115,12 @@ export async function POST(request: NextRequest) {
         : "",
       fbc: request.cookies.get("_fbc")?.value ?? null,
       fbp: request.cookies.get("_fbp")?.value ?? null,
-    });
+    }) : Promise.resolve();
     if (ctx && typeof ctx.waitUntil === "function") {
       ctx.waitUntil(metaCapture);
-    }
+    } else await metaCapture;
 
-    const token = await createChapterAccessToken(bookSlug, jwtSecret);
-
-    const response = NextResponse.json({ success: true });
+    const response = NextResponse.json({ success: true, isNewLead });
 
     response.cookies.set(CHAPTER_ACCESS_COOKIE, token, {
       httpOnly: true,

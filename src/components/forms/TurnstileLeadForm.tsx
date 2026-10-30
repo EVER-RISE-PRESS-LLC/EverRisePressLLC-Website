@@ -7,6 +7,7 @@ import { trackEvent } from "@/components/providers/PostHogProvider";
 import { gtagEvent } from "@/lib/gtag";
 import ReactiveButton from "@/components/ui/ReactiveButton";
 import Link from "next/link";
+import { browserConversionAttribution } from "@/lib/conversion-attribution";
 
 interface TurnstileLeadFormProps {
   bookSlug: string;
@@ -47,21 +48,22 @@ export default function TurnstileLeadForm({
         const response = await fetch("/api/lead", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ email, bookSlug, turnstileToken: token }),
+          body: JSON.stringify({ email, bookSlug, turnstileToken: token, attribution: browserConversionAttribution() }),
         });
 
-        const data = (await response.json()) as { error?: string; success?: boolean };
+        const data = (await response.json()) as { error?: string; success?: boolean; isNewLead?: boolean };
 
         if (!response.ok) {
           throw new Error(data.error || "Something went wrong.");
         }
 
         if (data.success) {
-          const props = { book_slug: bookSlug, partner_slug: partnerSlug ?? null };
+          const props = { book_slug: bookSlug, partner_slug: partnerSlug ?? null, is_new_lead: data.isNewLead === true, ...browserConversionAttribution() };
           trackEvent("chapter_unlock_success", props);
-          gtagEvent("generate_lead", {
+          if (data.isNewLead) gtagEvent("generate_lead", {
             book_slug: bookSlug,
             partner_slug: partnerSlug ?? undefined,
+            ...browserConversionAttribution(),
           });
           onSuccess();
         } else {
