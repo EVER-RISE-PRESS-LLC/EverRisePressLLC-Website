@@ -14,6 +14,8 @@ import SiteFooter from "@/components/SiteFooter";
 import ReactiveButton from "@/components/ui/ReactiveButton";
 import { AUTHOR_SITE } from "@/lib/publisher";
 import { FINANCIAL_HEART_ATTACK_SLUG, FORMAT_LABELS, uniqueEditions } from "@/lib/book-editorial";
+import { getPublishedArticles } from "@/lib/blog/catalog";
+import BookReadingLinks from "@/components/marketing/BookReadingLinks";
 import { ArrowRight, ArrowUpRight } from "lucide-react";
 
 export const dynamic = "force-dynamic";
@@ -70,6 +72,7 @@ export default async function AuthorPage({ params }: { params: Promise<{ slug: s
   );
 
   const socialLinks = author.socialLinks as Record<string, string> | null;
+  const readingResources = author.slug === "lamont-mcleod" ? await getPublishedArticles() : [];
 
   const seoAuthorData: AuthorSeoData = {
     slug: author.slug,
@@ -137,6 +140,8 @@ export default async function AuthorPage({ params }: { params: Promise<{ slug: s
           </div>
         </div>
       </section>}
+
+      {readingResources.length > 0 && <section className="rhythm-section" aria-labelledby="author-reading-title"><div className="mx-auto max-w-3xl px-6"><h2 id="author-reading-title" className="font-heading text-3xl font-semibold md:text-4xl">Read alongside the book</h2><p className="mt-5 text-lg leading-relaxed text-text-body">Explore the book’s scenes, try a private exercise, or bring questions to your reading group. The articles and printable resources are free without signup.</p><BookReadingLinks articles={readingResources} /></div></section>}
 
       <section className="rhythm-section" aria-labelledby="start-reading-title">
         <div className="mx-auto max-w-3xl px-6">

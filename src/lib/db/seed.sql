@@ -81,7 +81,7 @@ VALUES
     4.99,
     'USD',
     'KOBO',
-    'http://click.linksynergy.com/deeplink?murl=http%3A%2F%2Fwww.kobo.com%2Fsearch%3Fquery%3D9781835567173&id=YBM6Ddr8uSs&mid=37217',
+    'https://click.linksynergy.com/deeplink?murl=https%3A%2F%2Fwww.kobo.com%2Fus%2Fen%2Febook%2Fhow-to-have-a-financial-heart-attack-a-new-standard-for-wealth-and-responsibility&id=YBM6Ddr8uSs&mid=37217',
     CURRENT_TIMESTAMP
   ),
   (
@@ -92,6 +92,6 @@ VALUES
     12.99,
     'USD',
     'INGRAMSPARK',
-    'https://bookshop.org/search?keywords=9781835566930',
+    'https://bookshop.org/p/books/how-to-have-a-financial-heart-attack-a-new-standard-for-wealth-and-responsibility-lamont-d-mcleod/88ef718f56eda25c?ean=9781835566930',
     CURRENT_TIMESTAMP
   );

@@ -11,6 +11,7 @@ import SiteFooter from "@/components/SiteFooter";
 import ReactiveButton from "@/components/ui/ReactiveButton";
 import { ArrowUpRight } from "lucide-react";
 import { FINANCIAL_HEART_ATTACK_SLUG } from "@/lib/book-editorial";
+import { trackRetailerClick } from "@/lib/retailer-click";
 
 interface GatedReaderClientProps {
   bookSlug: string;
@@ -108,7 +109,7 @@ export default function GatedReaderClient({
                 <p className="mt-6 max-w-xl text-lg leading-relaxed">{bookSlug === FINANCIAL_HEART_ATTACK_SLUG ? "Follow McLeod through early jobs, borrowed money, and life in Atlanta in the remaining fourteen chapters." : "You have reached the end of the free preview. Explore the full book to keep reading."}</p>
                 <div className="mt-8 max-w-xl">
                   {ebookOffer ? <>
-                    <ReactiveButton href={ebookOffer.purchaseUrl} external surface="light" size="lg" className="press-purchase-button w-full">Get the Full Book for {ebookOffer.price}<ArrowUpRight className="size-5" aria-hidden /></ReactiveButton>
+                    <ReactiveButton href={ebookOffer.purchaseUrl} external surface="light" size="lg" className="press-purchase-button w-full" onClick={() => trackRetailerClick({ bookSlug, distributor: "APPLE_BOOKS", formatType: "EBOOK" })}>Get the Full Book for {ebookOffer.price}<ArrowUpRight className="size-5" aria-hidden /></ReactiveButton>
                     <p className="mt-3 text-sm leading-relaxed">eBook on Apple Books · US price. Final price may vary by country.</p>
                   </> : <ReactiveButton href={`/books/${bookSlug}#editions`} surface="light" size="lg" className="press-purchase-button w-full">Get the full book<ArrowUpRight className="size-5" aria-hidden /></ReactiveButton>}
                   <Link href={`/books/${bookSlug}#editions`} className="mt-5 inline-flex min-h-11 items-center text-base font-semibold underline hover:no-underline">See all formats and retailers</Link>
@@ -121,7 +122,7 @@ export default function GatedReaderClient({
         <main id="page-content" tabIndex={-1} className="rhythm-top pb-20 md:pb-24" data-nav-surface="light">
           <div className="max-w-4xl mx-auto px-6">
             <div className="grid md:grid-cols-5 gap-10 md:gap-16 items-start">
-              <div className="md:col-span-2 flex flex-col items-center md:items-start">
+              <div className="order-2 md:order-none md:col-span-2 flex flex-col items-center md:items-start">
                 <div className="relative w-56 md:w-full aspect-2/3 rounded-lg shadow-2xl shadow-gold/10 overflow-hidden border border-gold/20 mb-6">
                   <Image
                     src={bookCoverUrl}
@@ -137,16 +138,11 @@ export default function GatedReaderClient({
                 </p>
               </div>
 
-              <div className="md:col-span-3">
-                <p className="text-gold font-sans text-xs uppercase tracking-[0.2em] mb-3">
-                  Chapter 1
-                </p>
+              <div className="order-1 md:order-none md:col-span-3">
                 <h1 className="font-heading text-3xl md:text-4xl font-bold text-charcoal mb-3 leading-tight">
                   {chapterTitle}
                 </h1>
-                {bookSubtitle && (
-                  <p className="text-text-muted italic mb-6">{bookSubtitle}</p>
-                )}
+                <p className="text-text-muted mb-6">Chapter 1 of <Link href={`/books/${bookSlug}`} className="underline hover:text-gold-deep">{bookTitle}</Link>{bookSubtitle && <span className="sr-only">: {bookSubtitle}</span>} by <Link href={`/authors/${authorSlug}`} className="underline hover:text-gold-deep">{authorName}</Link>.</p>
                 <p className="text-text-body text-lg leading-relaxed mb-8">
                   Read how a weekly allowance and trips to the candy store began McLeod&apos;s story.
                   Enter your email and complete the verification to open the free chapter on this site.
@@ -166,13 +162,13 @@ export default function GatedReaderClient({
                   </p>
                   <ul className="list-disc space-y-2 pl-5 text-text-body text-sm marker:text-gold-deep">
                     <li>
-                      The $10 weekly allowance that taught you money is infinite
+                      McLeod&apos;s $10 weekly allowance for chores
                     </li>
                     <li>
-                      Penny candy, quarters, and the muscle memory of spending everything
+                      Sunday trips to the penny candy store and arcade
                     </li>
                     <li>
-                      Why Friday money became your most dangerous pattern
+                      His memory of spending the allowance and waiting for Friday
                     </li>
                   </ul>
                 </div>

@@ -186,7 +186,7 @@ npm run db:migrate:remote # Apply to remote D1
   - Reworked book/author search and editing, added a visual Chapter 1 editor, made book/retailer saves atomic, and clarified reader history and destructive actions. Improved reader filters/CSV export and partner-link management.
   - Current operating guide: [Publish an article](docs/blog-publishing.md). Detailed findings: [Catalog and images](docs/admin-catalog-audit.md), [Readers and referrals](docs/admin-readers-referrals-audit.md), and [Workspace shell](docs/admin-shell-audit.md).
   - Release validation: 43 tests and 74 isolated D1/API assertions pass. OpenNext/TypeScript and lint pass with one pre-existing warning. Desktop, mobile, tablet, dark mode and 90–150% workspace checks passed; independent Impeccable review returned ship. Production release evidence is recorded separately.
-- [ ] **Remaining content and measurement work** — publish two reviewed articles and a discussion guide, improve measured performance and evaluate GSC after recrawling. See the dated plan; these are not automated runs.
+- [ ] **Remaining content and measurement work** — continue the four researched article assignments and resource improvements, then review performance and GSC after recrawling. The payday, calendar and discussion-guide articles are already published. See the dated plan; these are not automated runs.
 
 ### Interface and sharing refinement
 
@@ -195,7 +195,7 @@ npm run db:migrate:remote # Apply to remote D1
 - [x] **Production verification** — deployed Worker `74a0e681-cffb-4f1e-8bdb-11fbcb55f756`; build, TypeScript, lint, live SEO smoke checks and social crawler image checks passed. Compressed Worker: 2,044.83 KiB.
 - Direction, generation prompt and validation notes: [Visual refinement](docs/visual-refinement.md).
 
-**Last Updated:** 2026-10-27
+**Last Updated:** 2026-10-31
 **Progress:** 8/10 milestones complete (Milestone 6 deferred)  
 **Domain:** `https://everrisepress.com` (live, canonical — site URL via `NEXT_PUBLIC_SITE_URL`)  
 **Next:** Milestone 10 - Polish, Privacy & Launch
@@ -204,3 +204,9 @@ npm run db:migrate:remote # Apply to remote D1
 ### Current Cloudflare deployment
 
 The active deployment path is vinext, following Cloudflare’s current Next.js guide. Build with `npm run build` and deploy with `npm run deploy`. Workers Builds uses those same commands, root `/`, the existing build token and no new build variables. `.node-version` and `packageManager` pin the build tools. The existing Worker and D1 database are retained; no R2, Images transformation, KV, Durable Object or paid cache binding is configured. See [Deployment runbook](docs/cloudflare-vinext-deployment.md).
+
+### Phase two book discovery and conversion
+
+- [x] **Day 3 page and reader-path improvements** (Completed: 2026-10-31) — clarified on-site sample access, added the Book 1 continuation detail and useful reading-resource links on the homepage, book, author and press pages. The mobile sample shows the form before its large cover. The author sharing card uses the verified portrait and cover artwork.
+- [x] **Retailer verification and measurement** — checked the US Apple, Kobo and Bookshop records; replaced the Kobo ISBN search with its specific HTTPS book destination while retaining the referral identifier, and replaced the paperback store search with its exact matching listing. The end-of-chapter Apple purchase action now uses the same consent-aware retailer measurement as the chooser.
+- [x] **Validation** — 35 public tests, 25 admin tests and 74 isolated D1 assertions pass. TypeScript, build and local SEO/blog checks pass; lint has one existing ScrollStack warning and no errors. Signed local fixtures verify locked, unlocked and tampered sample access without creating production leads. See the dated release record in [SEO work log](docs/seo-dev-doc.md).

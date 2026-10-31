@@ -310,7 +310,7 @@ export const seoRegistry: Record<SeoPageType, RegistryEntry> = {
       return {
         title: `${BRAND_NAME} | Books on Money and Spending Habits`,
         description:
-          "Explore How To Have a Financial Heart Attack by Lamont D. McLeod. Read about the book, meet the author, and try Chapter 1 free with email signup.",
+          "Explore How To Have a Financial Heart Attack, meet Lamont D. McLeod, and find free reading guides. Try Chapter 1 with email signup.",
         canonicalPath: "/",
         imageUrl: `${SITE_URL}/images/og/everrise-home-20261022.jpg`,
         imageAlt: "How To Have a Financial Heart Attack book cover with author Lamont D. McLeod. Read Chapter 1 free with email signup.",
@@ -488,14 +488,14 @@ export const seoRegistry: Record<SeoPageType, RegistryEntry> = {
     metadata(data) {
       const author = data as AuthorSeoData;
       const description = author.slug === "lamont-mcleod"
-        ? "Meet Lamont D. McLeod, author of How To Have a Financial Heart Attack. Explore his background, book, and free first-chapter preview."
+        ? "Meet the author of How To Have a Financial Heart Attack. Read his background, explore the book, and try Chapter 1 free with email signup."
         : `Explore ${author.name}'s background, author profile, and books on EverRise Press.`;
       return {
-        title: author.name,
+        title: author.slug === "lamont-mcleod" ? `${author.name} | Author` : author.name,
         description,
         canonicalPath: `/authors/${author.slug}`,
-        imageUrl: `${SITE_URL}/images/og/everrise-default.png`,
-        imageAlt: BRAND_NAME,
+        imageUrl: `${SITE_URL}/images/og/${author.slug === "lamont-mcleod" ? "everrise-home-20261022.jpg" : "everrise-default.png"}`,
+        imageAlt: author.slug === "lamont-mcleod" ? "Lamont D. McLeod beside the cover of How To Have a Financial Heart Attack. Chapter 1 is free with email signup." : BRAND_NAME,
         ogType: "profile",
         ogTitle: author.name,
       };

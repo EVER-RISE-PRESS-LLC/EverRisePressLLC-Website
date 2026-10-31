@@ -8,7 +8,8 @@ import { eq } from "drizzle-orm";
 import { buildMetadata } from "@/lib/seo/metadata";
 import type { BookSeoData } from "@/lib/seo/registry";
 import { cleanDashes } from "@/lib/utils";
-import { BOOK_CONTENT_REVIEW_DATE, FINANCIAL_HEART_ATTACK_SLUG, financialHeartAttackEditorial, FORMAT_LABELS, uniqueEditions } from "@/lib/book-editorial";
+import { BOOK_CONTENT_REVIEW_DATE, BOOK_READER_FIT_REVIEW_DATE, FINANCIAL_HEART_ATTACK_SLUG, financialHeartAttackEditorial, FORMAT_LABELS, uniqueEditions } from "@/lib/book-editorial";
+import BookReadingLinks from "@/components/marketing/BookReadingLinks";
 import SeoJsonLd from "@/components/seo/SeoJsonLd";
 import MultiRetailerModal from "@/components/marketing/MultiRetailerModal";
 import Navbar from "@/components/Navbar";
@@ -81,6 +82,7 @@ export default async function BookPage({ params }: { params: Promise<{ slug: str
           <Link href="#about-book" className="inline-flex min-h-11 items-center underline hover:text-gold-deep">About the book</Link>
           {editorial && <><Link href="#sample" className="inline-flex min-h-11 items-center underline hover:text-gold-deep">First chapter</Link><Link href="#chapters" className="inline-flex min-h-11 items-center underline hover:text-gold-deep">Chapter guide</Link></>}
           <Link href="#editions" className="inline-flex min-h-11 items-center underline hover:text-gold-deep">Editions &amp; ISBNs</Link>
+          {relatedArticles.length > 0 && <Link href="#book-related-reading" className="inline-flex min-h-11 items-center underline hover:text-gold-deep">Free reading resources</Link>}
         </div>
       </nav>
 
@@ -95,6 +97,8 @@ export default async function BookPage({ params }: { params: Promise<{ slug: str
           {editorial && <aside className="border-t border-charcoal/20 pt-7 lg:pt-8" aria-labelledby="reader-fit-title">
             <h3 id="reader-fit-title" className="font-heading text-2xl font-semibold">Is this your kind of read?</h3>
             <p className="mt-4 text-base leading-relaxed text-text-body">{editorial.audience}</p>
+            <p className="mt-4 text-base leading-relaxed text-text-body">{editorial.scopeNote}</p>
+            {relatedArticles.length > 0 && <Link href="#book-related-reading" className="mt-4 inline-flex min-h-11 items-center font-semibold underline hover:text-gold-deep">Find a worksheet or discussion guide</Link>}
             <Link href={previewPath} className="mt-6 inline-flex min-h-11 items-center gap-2 font-semibold underline hover:text-gold-deep">Try the first chapter<ArrowRight className="size-4" aria-hidden /></Link>
           </aside>}
         </div>
@@ -143,7 +147,7 @@ export default async function BookPage({ params }: { params: Promise<{ slug: str
           {editorial && <p className="mt-6 text-base leading-relaxed text-text-body">The <a href="https://books.apple.com/us/book/how-to-have-a-financial-heart-attack-a-new/id6793190934" className="underline hover:text-gold-deep">Apple Books record</a> credits HMD Publishing. EverRise Press uses publishing and distribution services through HMD. <Link href="/about" className="underline hover:text-gold-deep">Read about the publisher and contact the press</Link>.</p>}
           <p className="mt-4 text-base leading-relaxed text-text-body">Choose a retailer to check its current price, availability, and delivery options. Purchases take place on the retailer&apos;s website.</p>
           {editions.length > 0 && <div className="mt-7"><MultiRetailerModal formats={formats} bookTitle={book.title} bookSlug={book.slug} coverImageUrl={book.coverImageUrl} triggerText="Choose a retailer" surface="light" /></div>}
-          {editorial && <p className="mt-6 text-sm text-text-muted">Chapter titles and edition details checked <time dateTime={BOOK_CONTENT_REVIEW_DATE}>October 24, 2026</time>.</p>}
+          {editorial && <p className="mt-6 text-sm text-text-muted">Chapter titles and edition details checked <time dateTime={BOOK_CONTENT_REVIEW_DATE}>October 31, 2026</time>.</p>}
         </div>
       </section>
 
@@ -156,7 +160,7 @@ export default async function BookPage({ params }: { params: Promise<{ slug: str
           </details>)}</div>
         </div>
       </section>}
-      {relatedArticles.length > 0 && <section className="press-section border-t border-charcoal/15" aria-labelledby="book-related-reading"><div className="press-container"><h2 id="book-related-reading" className="font-heading text-3xl font-semibold">Read, plan and discuss</h2><p className="mt-4 max-w-prose text-base leading-relaxed text-text-body">Explore the stories in the book, work through a cash-flow example, or bring a discussion guide to your reading group.</p><ul className="mt-6 space-y-2">{relatedArticles.map(article => <li key={article.slug}><Link href={`/blog/${article.slug}`} className="inline-flex min-h-11 items-center gap-3 text-lg underline underline-offset-4 hover:text-gold-deep">{article.title}<ArrowRight className="size-4 shrink-0" aria-hidden /></Link></li>)}</ul></div></section>}
+      {relatedArticles.length > 0 && <section className="press-section border-t border-charcoal/15" aria-labelledby="book-related-reading"><div className="press-container"><h2 id="book-related-reading" className="font-heading text-3xl font-semibold">Read, plan and discuss</h2><p className="mt-4 max-w-prose text-base leading-relaxed text-text-body">Choose an exercise, a calendar or questions for your reading group. These resources are free to use without email signup. The first-chapter sample uses a separate email signup.</p><BookReadingLinks articles={relatedArticles} /><p className="mt-8 text-sm text-text-muted">Reader fit and reading links reviewed <time dateTime={BOOK_READER_FIT_REVIEW_DATE}>October 31, 2026</time>.</p></div></section>}
       <SiteFooter extraLinks={[{ label: "The Book", href: `/books/${book.slug}` }]} />
     </main>
   );

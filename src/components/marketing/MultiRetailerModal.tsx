@@ -4,9 +4,7 @@ import { useState } from "react";
 import Image from "next/image";
 import { Dialog } from "radix-ui";
 import ReactiveButton from "@/components/ui/ReactiveButton";
-import { gtagEvent } from "@/lib/gtag";
-import { browserConsent } from "@/lib/privacy-consent";
-import { browserConversionAttribution } from "@/lib/conversion-attribution";
+import { trackRetailerClick } from "@/lib/retailer-click";
 import { FORMAT_LABELS } from "@/lib/book-editorial";
 import { ArrowUpRight, X, ArrowRight } from "lucide-react";
 
@@ -45,7 +43,7 @@ const RETAILER_META: Record<string, RetailerMeta> = {
   },
   DRAFT2DIGITAL: {
     name: "Books2Read",
-    tagline: "Universal link, all retailers",
+    tagline: "Find linked eBook stores",
     logo: "/images/retailers/books2read.png",
     logoAlt: "Books2Read",
   },
@@ -93,31 +91,7 @@ export default function MultiRetailerModal({
 }: MultiRetailerModalProps) {
   const [isOpen, setIsOpen] = useState(false);
 
-  function trackRetailerClick(format: BookFormat) {
-    if (!browserConsent().analytics) return;
-    gtagEvent("retailer_redirect_click", {
-      book_slug: bookSlug,
-      retailer: format.distributor,
-      format_type: format.formatType,
-      ...browserConversionAttribution(),
-    });
-    if (!bookSlug) return;
-    try {
-      fetch("/api/retailer-click", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          bookSlug,
-          retailer: format.distributor,
-          formatType: format.formatType,
-          attribution: browserConversionAttribution(),
-        }),
-        keepalive: true,
-      }).catch(() => {});
-    } catch {
-      // tracking must never block navigation
-    }
-  }
+  const track = (format: BookFormat) => trackRetailerClick({ bookSlug, distributor: format.distributor, formatType: format.formatType });
 
   if (formats.length === 0) return null;
 
@@ -128,7 +102,7 @@ export default function MultiRetailerModal({
         external
         variant="outline"
         surface={surface}
-        onClick={() => trackRetailerClick(formats[0])}
+        onClick={() => track(formats[0])}
       >
         View at {RETAILER_META[formats[0].distributor]?.name ?? "the retailer"}
         <ArrowUpRight className="size-4" />
@@ -165,9 +139,12 @@ export default function MultiRetailerModal({
               <div className="space-y-2">
                 {group.items.map(format => {
                   const meta = RETAILER_META[format.distributor] || {name:format.distributor,tagline:"",logo:"",logoAlt:format.distributor};
-                  return <a key={format.id} href={format.purchaseUrl} target="_blank" rel="noopener noreferrer" onClick={() => trackRetailerClick(format)} className="flex items-center gap-3 rounded-md border border-charcoal/20 bg-white p-3 text-charcoal transition-colors hover:border-gold-deep hover:bg-cream">
+                  let destination = format.purchaseUrl;
+                  try { destination = decodeURIComponent(destination); } catch { /* Keep the literal URL. */ }
+                  const isSearch = /(?:\/search|[?&](?:keywords|query)=)/i.test(destination);
+                  return <a key={format.id} href={format.purchaseUrl} target="_blank" rel="noopener noreferrer" onClick={() => track(format)} className="flex items-center gap-3 rounded-md border border-charcoal/20 bg-white p-3 text-charcoal transition-colors hover:border-gold-deep hover:bg-cream">
                     {meta.logo && <Image src={meta.logo} alt={meta.logoAlt} width={64} height={40} className="h-10 w-16 shrink-0 object-contain"/>}
-                    <span className="min-w-0 flex-1"><span className="block text-sm font-bold">{meta.name}</span><span className="mt-1 block text-xs text-text-muted">{meta.tagline}</span></span>
+                    <span className="min-w-0 flex-1"><span className="block text-sm font-bold">{isSearch ? `Search ${meta.name}` : meta.name}</span><span className="mt-1 block text-xs text-text-muted">{isSearch ? `Search ${format.isbn ? `ISBN ${format.isbn}` : "the retailer"}. Confirm a matching listing before ordering.` : meta.tagline}</span></span>
                     <ArrowRight size={16} className="shrink-0" aria-hidden/>
                   </a>;
                 })}

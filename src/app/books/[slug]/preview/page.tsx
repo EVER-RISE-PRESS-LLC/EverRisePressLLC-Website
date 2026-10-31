@@ -45,7 +45,7 @@ export default async function BookPreviewPage({ params }: { params: Promise<{ sl
     .limit(1)
     .then((rows) => rows[0]);
 
-  // The priced CTA names the specific US eBook listing checked on 2026-10-24.
+  // The priced CTA names the specific US eBook listing checked on 2026-10-31.
   const [appleEbook] = await db.select().from(bookFormats).where(and(
     eq(bookFormats.bookId, book.id),
     eq(bookFormats.formatType, "EBOOK"),

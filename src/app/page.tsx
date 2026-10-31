@@ -41,7 +41,7 @@ export default async function Home() {
               <ReactiveButton href={`${BOOK_PATH}/preview`} size="lg">Read Chapter 1 Free<ArrowRight size={18}/></ReactiveButton>
               <Link href="#the-book" className="press-text-link">Explore the book<ArrowRight size={17}/></Link>
             </div>
-            <p className="press-hero-note">Free with email signup. Start reading, then decide.</p>
+            <p className="press-hero-note">Free with email signup. The chapter opens on this site.</p>
           </div>
           {book && <div className="press-hero-book">
             <Image src={book.coverImageUrl} alt={`${book.title} cover`} width={400} height={600} sizes="(max-width: 767px) 230px, 340px" priority className="press-book-jacket"/>
@@ -79,6 +79,7 @@ export default async function Home() {
               <ReactiveButton href={`${BOOK_PATH}/preview`} surface="light">Read Chapter 1 Free<ArrowRight size={17}/></ReactiveButton>
               {formats.length > 0 && <ReactiveButton href={`/books/${book.slug}#editions`} variant="outline" surface="light">Compare editions</ReactiveButton>}
             </div>
+            {recentArticles.length > 0 && <p className="mt-6 max-w-prose text-base leading-relaxed text-text-body">Reading with a group or looking for a worksheet? <Link href={`${BOOK_PATH}#book-related-reading`} className="underline hover:text-gold-deep">Find the free discussion guide, spending check and cash flow calendar</Link>. These resources need no signup.</p>}
           </div>
         </div>
       </section>}
