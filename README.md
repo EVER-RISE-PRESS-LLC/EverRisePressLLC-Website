@@ -17,6 +17,7 @@ The site helps readers learn about the book, open Chapter 1 and choose a retaile
 - **Database:** Cloudflare D1 (SQLite) + Drizzle ORM
 - **Assets and images:** Existing Cloudflare static assets plus bounded D1 image storage and immutable media responses; no R2 bucket or paid image transformations
 - **Publishing:** D1 article drafts and published versions, a Tiptap visual editor, and the existing authenticated ADMIN/EDITOR workspace
+- **Agent access:** Scoped image/article publishing API and `npm run publish:agent -- …`; credentials are separate from browser sessions. See [the direct publishing guide](docs/agent-publishing.md).
 - **Email behavior:** Signup unlocks Chapter 1 on the website. Newsletter/email-series delivery remains deferred; Mailchimp is not an active sending integration.
 - **Analytics:** PostHog, GA4, Meta CAPI
 
@@ -43,6 +44,12 @@ npm run db:migrate:remote # Apply to remote D1
 ```
 
 ## Build Progress
+
+- [x] **Direct agent publishing implementation** (4 November 2026)
+  - Added a versioned API for images, drafts, validation, publication and visibility with its own expiring, revocable credentials and recorded identity.
+  - Added the command client, optional local image optimization with XMP preservation, duplicate-upload reuse and credential administration; routine work no longer needs Chrome or raw database writes.
+  - Preserved staff login/editing, content validation, revision conflicts, image reference protection, quotas and truthful publication dates. Access excludes reader data and staff-account administration.
+  - Passed 79 isolated agent assertions, 25 actual HTTP/client checks, credential rotation/revocation checks and all existing admin/public suites. Production release verification is recorded in `docs/seo-dev-doc.md`.
 
 - [x] **Milestone 1: Project Scaffold & Infrastructure** (Completed: 2026-08-19)
   - Next.js 16 + TypeScript + Tailwind CSS

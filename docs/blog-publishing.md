@@ -1,5 +1,7 @@
 # Publish an article
 
+Agents should use the [direct publishing API and client](agent-publishing.md) for routine uploads, drafts and publication. It applies the same editorial and revision checks with a separate recorded agent identity. The guide below remains the human staff workflow; Chrome is available for visual/print review when needed.
+
 Write and publish articles from the EverRise Press staff workspace at `/admin/articles`. You can format text, upload images, save private drafts and preview the page before it goes live. You can publish from this page without editing code or rebuilding the site.
 
 ## Start a draft
@@ -92,6 +94,6 @@ D1 is the live article and image store. The editor saves drafts separately from 
 
 The older `src/content/blog/articles.json` file holds the two original editorial briefs. It is seed input, not the live editing source. The repository is public; files committed there can be read on GitHub. Keep staff-only notes in the workspace.
 
-New environments need the committed D1 migrations, including the article/media tables and publication-history migration. The release record documents the explicit import of existing briefs and deployment checks. Developers should run the article tests, catalog/media tests, reader/referral tests, lint, TypeScript and the existing OpenNext build before a release.
+New environments need the committed D1 migrations, including the article/media tables, publication-history migration and agent-publishing migration. The release record documents the explicit import of existing briefs and deployment checks. Developers should run the agent, article, catalog/media, reader/referral and public tests, lint, TypeScript and the vinext build before a release.
 
 The first file-based blog foundation and its earlier checks are recorded in README and the dated SEO work log. They describe the earlier implementation; this guide describes the visual D1 publishing workflow that replaces it.

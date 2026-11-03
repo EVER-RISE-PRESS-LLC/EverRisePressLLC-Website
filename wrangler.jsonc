@@ -8,6 +8,11 @@
 		"nodejs_compat",
 		"global_fetch_strictly_public"
 	],
+	"observability": {
+		"enabled": true,
+		"logs": { "enabled": true, "head_sampling_rate": 0.1 },
+		"traces": { "enabled": true, "head_sampling_rate": 0.01 }
+	},
 	"vars": {
 		"NEXT_PUBLIC_SITE_URL": "https://everrisepress.com",
 		"NEXT_PUBLIC_TURNSTILE_SITE_KEY": "0x4AAAAAAEWC4iu22r4MiMkL",

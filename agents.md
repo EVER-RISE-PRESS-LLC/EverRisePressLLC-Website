@@ -1,5 +1,9 @@
 # AGENTS.md - Everise LLC Development Blueprint
 
+## Agent publishing workflow — 4 November 2026
+
+Use `npm run publish:agent -- …` for routine image uploads and article list/get/create/save/check/publish operations. Read `docs/agent-publishing.md` for the exact workflow. Use the configured credential through the client; never print it, copy Chrome cookies, or use raw D1 writes for routine editorial work. After the owner requests publication, complete the review and publish the exact saved revision through the API. Preserve bylines, first publication dates, private drafts and live snapshots. Browser automation is reserved for visual/print checks or services without suitable direct access; use the Ever rise Chrome profile for `everrisepressdev@gmail.com` when needed. Do not ask the owner to foreground Chrome for API operations. Credential creation/rotation/revocation is separate administration through the existing `everrise` Cloudflare profile. Keep credentials outside this public repository.
+
 ## 1. Project Overview & Objectives
 - **Organization:** Everise LLC (Founder & Lead Author: Lamont McLeod)
 - **Primary Goal:** High-converting, SEO-first, and GEO-first (Generative Engine Optimization) digital publishing website.

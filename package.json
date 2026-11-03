@@ -3,6 +3,9 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
+    "publish:agent": "node scripts/everrise.mjs",
+    "agent:credentials": "node scripts/agent-credentials.mjs",
+    "test:agent": "node scripts/agent-publishing.test.mjs",
     "build": "vite build",
     "dev": "vite dev",
     "start": "wrangler dev --config dist/server/wrangler.json",
@@ -82,7 +85,8 @@
     "vite": "8.3.0",
     "@vitejs/plugin-react": "5.2.0",
     "@vitejs/plugin-rsc": "0.5.38",
-    "@cloudflare/vite-plugin": "1.65.0"
+    "@cloudflare/vite-plugin": "1.65.0",
+    "sharp": "0.35.5"
   },
   "overrides": {
     "posthog-js": {
