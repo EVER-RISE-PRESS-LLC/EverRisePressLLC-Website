@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { articleDraftSchema, articleSchema, articleSlugSchema, publishedArticles, type BlogArticle, type StoredArticle } from "./model.ts";
+import { articleDraftSchema, articleSchema, articleSlugSchema, releasedArticles, type BlogArticle, type StoredArticle } from "./model.ts";
 
 type ArticleRow = { id: string; slug: string; document: string; published_document: string | null; published_at: string | null; revision: number; archived_at: string | null; created_at: string; updated_at: string };
 export type ArticleAction = "save" | "publish" | "unpublish" | "archive" | "restore";
@@ -66,16 +66,38 @@ export async function readStoredArticle(db: D1Database, slug: string, includeArc
 export async function readStoredArticleById(db: D1Database, id: string, includeArchived = false): Promise<StoredArticle | undefined> {
   const row = await readRow(db, id, "id", includeArchived); return row ? storedArticleFromRow(row) : undefined;
 }
+
+// Reuse the validation result for identical published bytes.
+// D1 still decides which snapshots exist on every read. A publish, archive or
+// restore therefore takes effect immediately, even across Worker isolates.
+const validatedSnapshots = new Map<string, BlogArticle>();
+const maxCachedSnapshots = 24;
+const maxCachedSnapshotLength = 250_000;
+
 export async function readPublishedArticles(db: D1Database): Promise<BlogArticle[]> {
   const rows = await db.prepare("SELECT published_document FROM articles WHERE archived_at IS NULL AND published_document IS NOT NULL").all<{ published_document: string }>();
   const documents: BlogArticle[] = [];
-  for (const row of rows.results) {
+  for (const { published_document: snapshot } of rows.results) {
     try {
-      const parsed = articleSchema.safeParse(JSON.parse(row.published_document));
-      if (parsed.success) documents.push({ ...parsed.data, editorialNotes: "" });
+      const cached = validatedSnapshots.get(snapshot);
+      if (cached) {
+        documents.push(cached);
+        continue;
+      }
+      const parsed = articleSchema.safeParse(JSON.parse(snapshot));
+      if (!parsed.success) continue;
+      const article = { ...parsed.data, editorialNotes: "" };
+      documents.push(article);
+      if (snapshot.length <= maxCachedSnapshotLength) {
+        if (validatedSnapshots.size >= maxCachedSnapshots) {
+          const oldest = validatedSnapshots.keys().next();
+          if (!oldest.done) validatedSnapshots.delete(oldest.value);
+        }
+        validatedSnapshots.set(snapshot, article);
+      }
     } catch { /* A malformed record must never become a public draft fallback. */ }
   }
-  return publishedArticles(documents);
+  return releasedArticles(documents);
 }
 
 export async function createStoredArticle(db: D1Database, input: unknown, now = new Date().toISOString()): Promise<StoredArticle> {

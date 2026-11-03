@@ -90,6 +90,7 @@ test("archive and restore retain both snapshots and restore the previous visibil
   try {
     let article = await createStoredArticle(db, completeDocument(), timeline(0));
     article = await mutateStoredArticle(db, article.id, { action: "publish", revision: article.revision, reviewConfirmed: true }, reviewer, timeline(1));
+    assert.equal((await readPublishedArticles(db))[0].title, article.title);
     article = await mutateStoredArticle(db, article.id, { action: "save", revision: article.revision, document: { ...completeDocument(), title: "Private pending revision" } }, reviewer, timeline(2));
     article = await mutateStoredArticle(db, article.id, { action: "archive", revision: article.revision }, reviewer, timeline(3));
     assert.ok(article.archivedAt); assert.equal(article.isLive, false); assert.equal((await listStoredArticles(db)).length, 0);

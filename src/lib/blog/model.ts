@@ -115,11 +115,15 @@ export function parseArticleCatalog(value: unknown): BlogArticle[] {
   return articles;
 }
 
-/** Public routes read the published snapshot, never the saved draft. */
-export function publishedArticles(articles: BlogArticle[], now = Date.now()): BlogArticle[] {
-  return articles.filter(article => articleSchema.safeParse(article).success && article.status === "published" && article.author.confirmed && article.review && article.publishedAt && article.updatedAt
+/** Apply visibility and time checks to documents already parsed by articleSchema. */
+export function releasedArticles(articles: BlogArticle[], now = Date.now()): BlogArticle[] {
+  return articles.filter(article => article.status === "published" && article.author.confirmed && article.review && article.publishedAt && article.updatedAt
     && [article.publishedAt, article.updatedAt, article.review.at].every(date => Date.parse(date) <= now))
     .sort((a, b) => Date.parse(b.publishedAt!) - Date.parse(a.publishedAt!) || a.slug.localeCompare(b.slug));
+}
+
+export function publishedArticles(articles: BlogArticle[], now = Date.now()): BlogArticle[] {
+  return releasedArticles(articles.filter(article => articleSchema.safeParse(article).success), now);
 }
 
 export function articleBodyText(article: Pick<BlogArticle, "blocks">): string {
