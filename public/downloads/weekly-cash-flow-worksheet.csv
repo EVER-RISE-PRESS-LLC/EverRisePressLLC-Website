@@ -1,20 +1,23 @@
-Week,Date range,Opening balance,New income,Payments,Ending balance
+﻿Week,Date range,Opening balance,New income,Payments,Ending balance
 Week 1,,,,,
 Week 2,,,,,
 Week 3,,,,,
 Week 4,,,,,
 Week 5,,,,,
-
-Date,Purpose,Income,Payment
-,,,
-,,,
-,,,
-,,,
-,,,
-,,,
-,,,
-,,,
-,,,
-,,,
-
-Instructions,"Manual worksheet: opening + income - payments = ending. Carry ending into next opening. Check daily timing. Negative = unfunded payment. Keep completed copy private.",,
+,,,,,
+Date and order,Purpose,Income,Payment,Projected running balance,Confirmed or estimated
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+Opening cash for dated ledger,,Currency,,,
+Instructions,Manual only: opening + new income - payments = projected balance. Update after each dated entry. Neither this CSV nor the printable calculates for you.,,,,
+Timing and uncertainty,"Confirm same-day order; if unknown, test payment first. Mark income and payments confirmed or estimated. Check again without estimated income. Negative = unfunded payment, not an available overdraft.",,,,
+Weekly summary,"Keep all five weekly rows. Do not count the summary again in the dated ledger. Blank means not entered, not zero. Add rows as needed. Keep completed copy private.",,,,
