@@ -45,11 +45,11 @@ npm run db:migrate:remote # Apply to remote D1
 
 ## Build Progress
 
-- [x] **Direct agent publishing implementation** (4 November 2026)
+- [x] **Direct agent publishing, deployed and configured** (4 November 2026)
   - Added a versioned API for images, drafts, validation, publication and visibility with its own expiring, revocable credentials and recorded identity.
   - Added the command client, optional local image optimization with XMP preservation, duplicate-upload reuse and credential administration; routine work no longer needs Chrome or raw database writes.
   - Preserved staff login/editing, content validation, revision conflicts, image reference protection, quotas and truthful publication dates. Access excludes reader data and staff-account administration.
-  - Passed 79 isolated agent assertions, 25 actual HTTP/client checks, credential rotation/revocation checks and all existing admin/public suites. Production release verification is recorded in `docs/seo-dev-doc.md`.
+  - Passed 79 isolated agent assertions, 25 actual HTTP/client checks, 21 live API checks, credential rotation/revocation checks and all existing admin/public suites. The live image upload and unchanged-article publication preserved all five public snapshots and original dates. Release evidence is recorded in `docs/seo-dev-doc.md`.
 
 - [x] **Milestone 1: Project Scaffold & Infrastructure** (Completed: 2026-08-19)
   - Next.js 16 + TypeScript + Tailwind CSS
