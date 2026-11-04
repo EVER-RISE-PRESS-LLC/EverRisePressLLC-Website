@@ -202,7 +202,7 @@ npm run db:migrate:remote # Apply to remote D1
 - [x] **Production verification** — deployed Worker `74a0e681-cffb-4f1e-8bdb-11fbcb55f756`; build, TypeScript, lint, live SEO smoke checks and social crawler image checks passed. Compressed Worker: 2,044.83 KiB.
 - Direction, generation prompt and validation notes: [Visual refinement](docs/visual-refinement.md).
 
-**Last Updated:** 2026-10-31
+**Last Updated:** 2026-11-05
 **Progress:** 8/10 milestones complete (Milestone 6 deferred)  
 **Domain:** `https://everrisepress.com` (live, canonical — site URL via `NEXT_PUBLIC_SITE_URL`)  
 **Next:** Milestone 10 - Polish, Privacy & Launch
@@ -222,3 +222,5 @@ The active deployment path is vinext, following Cloudflare’s current Next.js g
 - [x] **Day 5 housing graphics and cash flow worksheets** (Prepared: 2026-11-03) — five original graphics and matching printable and manual CSV ledgers. The two-page A4 and US Letter proofs pass. Both calendar tables use the existing accessible scroll layout, and the visual review returned ship.
 - [x] **Day 5 housing article and calendar publication** (Completed: 2026-11-03) — published the Chapter 12 housing comparison, two daily balance examples, and book club and payday links. Live checks passed for five articles and 16 internal destinations; original dates and bylines were retained.
 - [x] **Day 6 format comparison, group reading and discovery review** (Completed: 2026-11-04) — added the [EverRise publishing skill](.agents/skills/everrise-publishing/SKILL.md), uploaded three images and published the comparison and club guide update through the API. Inspected 12 URLs, verified current breadcrumbs and checked the six-article release after reducing repeated catalog validation.
+- [x] **Day 7 moving-out article and connected reading paths** (Completed: 2026-11-05) — published the original moving-cost inventory, three graphics and contextual updates to the calendar, housing comparison and club guide through the API. Desktop and 393-pixel Chrome review passed. The release check covers 14 public pages, 358 internal link records, 21 destinations and 26 local images; the new article has eight incoming reading paths.
+- [x] **Day 8 coverage research and distribution materials** (Completed: 2026-11-05) — expanded the original three prospects to 20, prepared six tailored drafts, checked five identity records and supplied exact update wording. The owner pack contains four social posts, two six-slide carousel scripts, six checked campaign links and an editable response workbook. Outreach and external posting remain unsent. See the dated [SEO work log](docs/seo-dev-doc.md) and [discovery record](docs/discovery-and-outreach.md).

@@ -1,6 +1,6 @@
 # Discovery and outreach preparation
 
-Prepared 29 October 2026. Research and reusable drafts only: no email, form, review request, book shipment, paid service or new account has been submitted. The owner authorized website publication, but has not instructed us to contact these organizations. These are potential audiences for the book, not promised placements or backlinks. Confirm current submission rules before sending.
+Prepared 29 October 2026 and expanded 5 November 2026. Research and reusable drafts only: no email, form, review request, book shipment, paid service or new account has been submitted. The owner authorized website publication, but has not instructed us to contact these organizations. These are potential audiences for the book, not promised placements or backlinks. Confirm current submission rules before sending.
 
 ## Ready-to-share publisher resources
 
@@ -9,10 +9,12 @@ Prepared 29 October 2026. Research and reusable drafts only: no email, form, rev
 - [Publisher book club guide](https://everrisepress.com/blog/financial-heart-attack-book-club-guide): ten manuscript-based prompts, chapter references and printable sheet.
 - [Weekly cash flow calendar](https://everrisepress.com/blog/weekly-cash-flow-calendar): explicitly fictional example, two graphics, printable worksheet and CSV.
 - [Payday reading notes](https://everrisepress.com/blog/payday-spending-patterns).
+- [Moving-out cost inventory](https://everrisepress.com/blog/moving-out-budget-beyond-rent): upfront, recurring and irregular costs, sources, dates, unknowns and a fictional example.
+- [Housing comparison](https://everrisepress.com/blog/roommates-or-living-alone) and [money-book format comparison](https://everrisepress.com/blog/money-memoir-or-budgeting-workbook).
 
 The book is a personal account of money choices, work and advice. Do not pitch the author as a licensed financial adviser or promise reader financial outcomes. New prompts are publisher material, not an interview or author quotations. Ask about image permissions rather than promising unrestricted reuse.
 
-## Three researched prospects
+## Original three researched prospects
 
 | Prospect and verified primary route | Why it may fit | Check before contacting |
 | --- | --- | --- |
@@ -79,3 +81,32 @@ privacy@everrisepress.com
 ## Follow-up record for the owner
 
 Record date sent, recipient route, resource offered, response and next action. Follow each organization’s published rules. A single relevant enquiry is preferable to mass submissions; do not buy links, request a guaranteed positive review, or offer a benefit for a favorable rating. No automatic sending or follow-up schedule has been created.
+
+## Day 8 expansion — 5 November 2026
+
+The owner workspace now contains the complete 20-prospect research pack and editable response workbook, continuing the original three records. It includes six tailored drafts, five identity-record checks with exact update wording, four social posts and two carousel scripts. Every record remains Not sent. The workbook's Research tab records fit, contribution, contact route, eligibility, costs, owner facts and primary-source links; Tracker holds assignments, actual sent dates, replies and next actions.
+
+| ID | Prospect and verified source | Next step |
+| --- | --- | --- |
+| P01 | [High Point Public Library](https://www.highpointnc.gov/1167/Contact) | Review tailored Readers Services enquiry. |
+| P02 | [Fulton County Library](https://www.fulcolibrary.org/policies/collection-development-policy/local-author-submission-form/) | Confirm current residency and library-card eligibility. |
+| P03 | [Independent Book Review](https://independentbookreview.com/submission-guidelines/) | Review free-route draft and approved attachments. |
+| P04 | [Midwest Book Review](https://midwestbookreview.com/get_rev.htm) | Confirm finished print copies and shipping. |
+| P05 | [Readers’ Favorite](https://readersfavorite.com/book-reviews.htm) | Confirm file rights and required book fields. |
+| P06 | [BookLife](https://booklife.com/about-us/booklife-faqs.html) | Check an existing author account for a basic listing. |
+| P07 | [LibraryThing Early Reviewers](https://www.librarything.com/ner_tos_giveaway.php) | Check eligibility and review-copy fulfilment before a future batch. |
+| P08 | [NC Writers’ Network Book Buzz](https://www.ncwriters.org/news/book-buzz/submit-to-book-buzz/) | Confirm existing membership. |
+| P09 | [Regal Sisterhood Book Club](https://www.regalsisterhood.com/book-review-submission/) | Confirm the printed review-copy commitment. |
+| P10 | [Bookmarks Community Showcase](https://bookmarksnc.org/Authors) | Establish regional ties and programme terms. |
+| P11 | [Onslow County Public Library](https://www.onslowcountync.gov/FormCenter/Library-11/Local-Author-Collection-186) | Confirm regional-interest eligibility and donation terms. |
+| P12 | [The Resilient Author](https://www.theresilientauthor.com/be-a-guest) | Review tailored interview pitch with Lamont. |
+| P13 | [The Authors Show](https://wnbnetworkwest.com/contact/author_sign_up) | Confirm author interest and form terms. |
+| P14 | [Journey to Launch](https://journeytolaunch.com/contact/) | Review tailored pitch and supply personal form answers. |
+| P15 | [Frugal Friends](https://www.frugalfriendspodcast.com/contact-us/) | Confirm topic fit through its general contact route. |
+| P16 | [Stacking Benjamins](https://www.stackingbenjamins.com/contact/) | Confirm editorial fit. |
+| P17 | [Johns Hopkins Student Financial Support](https://sfs.jhu.edu/contact-student-financial-support/) | Ask who handles outside-resource suggestions. |
+| P18 | [Northwestern Financial Wellness](https://www.northwestern.edu/financial-wellness/financial-planning/living-off-campus/common-expenses.html) | Review tailored resource enquiry. |
+| P19 | [URI Commuter Affairs](https://web.uri.edu/commuter-housing/contact-us/) | Ask whether outside reading resources are considered. |
+| P20 | [Georgia Center for the Book](https://georgiacenterforthebook.org/contact) | Review tailored programme enquiry and author availability. |
+
+General university contacts are routing enquiries, not confirmed resource-placement programmes. Current [BookLife review rules](https://booklife.com/about-us/review-submission-guidelines.html) charge for PW review consideration; it must not be described as free. The detailed pack distinguishes listing fees, membership costs, optional paid services and donated copies. Sending and external posting require a separate owner instruction.
