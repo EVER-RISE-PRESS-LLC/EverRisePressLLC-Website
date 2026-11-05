@@ -21,7 +21,7 @@ const bundled = await build({
     name: "catalog-must-be-explicit",
     setup(builder) {
       builder.onResolve({ filter: /^@\/lib\/blog\/catalog$/ }, () => ({ path: "catalog", namespace: "test" }));
-      builder.onLoad({ filter: /.*/, namespace: "test" }, () => ({ contents: 'export async function getPublishedArticles() { throw new Error("Unexpected catalog read from pure SEO builder"); }' }));
+      builder.onLoad({ filter: /.*/, namespace: "test" }, () => ({ contents: 'export async function getPublishedArticleSummaries() { throw new Error("Unexpected catalog read from pure SEO builder"); }' }));
       builder.onResolve({ filter: /^@opennextjs\/cloudflare$/ }, () => ({ path: "cloudflare", namespace: "next-config-test" }));
       builder.onLoad({ filter: /.*/, namespace: "next-config-test" }, () => ({ contents: 'export function initOpenNextCloudflareForDev() {}' }));
     },

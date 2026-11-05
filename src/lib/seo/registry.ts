@@ -1,5 +1,5 @@
-import { getPublishedArticles } from "@/lib/blog/catalog";
-import type { BlogArticle } from "@/lib/blog/model";
+import { getPublishedArticleSummaries } from "@/lib/blog/catalog";
+import type { ArticleSummary } from "@/lib/blog/model";
 import type { GraphEntity } from "@jdevalk/seo-graph-core";
 import {
   buildArticle,
@@ -586,18 +586,18 @@ export const seoRegistry: Record<SeoPageType, RegistryEntry> = {
 
   blog: {
     buildPieces(data) {
-      const articles = (data as { articles: BlogArticle[] }).articles;
+      const articles = (data as { articles: ArticleSummary[] }).articles;
       if (!articles.length) return [];
       const url = `${SITE_URL}/blog`;
       return [blogPiece(articles), buildWebPage({ url, name: "EverRise Press Blog", isPartOf: { "@id": seoIds.website }, mainEntity: { "@id": seoIds.blog }, breadcrumb: { "@id": seoIds.breadcrumb(url) }, inLanguage: "en-US" }, seoIds.factory, "CollectionPage"), breadcrumbListPiece(url, this.buildBreadcrumbs(data))];
     },
     buildBreadcrumbs() { return [HOME_CRUMB, { name: "Blog", url: `${SITE_URL}/blog` }]; },
     metadata(data) {
-      const articles = (data as { articles: BlogArticle[] }).articles;
+      const articles = (data as { articles: ArticleSummary[] }).articles;
       return { title: "Blog: Money, Books and Reading", description: "Read articles from EverRise Press about spending habits, books, and personal experience. Explore sources, reading ideas, and the stories behind the book.", canonicalPath: "/blog", noindex: !articles.length };
     },
     sitemapEntries: async () => {
-      const articles = await getPublishedArticles();
+      const articles = await getPublishedArticleSummaries();
       return articles.length ? [{ path: "/blog", lastModified: new Date(Math.max(...articles.map(article => Date.parse(article.updatedAt!)))).toISOString(), changeFrequency: "weekly", priority: 0.6 }] : [];
     },
   },
@@ -636,9 +636,9 @@ export const seoRegistry: Record<SeoPageType, RegistryEntry> = {
       const article = data as ArticleSeoData;
       return { title: article.title, description: article.description, canonicalPath: `/blog/${article.slug}`, imageUrl: new URL(article.imageUrl ?? "/images/og/everrise-default.png", SITE_URL).href, imageWidth: article.imageUrl ? article.imageWidth : 1200, imageHeight: article.imageUrl ? article.imageHeight : 630, imageAlt: article.imageAlt, ogType: "article", ogTitle: article.title, publishedTime: article.publishedAt, modifiedTime: article.updatedAt ?? undefined, author: { name: article.author.name, url: new URL(article.author.url, SITE_URL).href } };
     },
-    sitemapEntries: async () => (await getPublishedArticles()).map(article => ({ path: `/blog/${article.slug}`, lastModified: article.updatedAt!, changeFrequency: "monthly", priority: 0.7 })),
+    sitemapEntries: async () => (await getPublishedArticleSummaries()).map(article => ({ path: `/blog/${article.slug}`, lastModified: article.updatedAt!, changeFrequency: "monthly", priority: 0.7 })),
     llmsSection: async () => {
-      const articles = await getPublishedArticles();
+      const articles = await getPublishedArticleSummaries();
       return articles.length ? `## Articles\n\n- [Reading resources](${SITE_URL}/blog)\n${articles.map(article => `- [Read article](${SITE_URL}/blog/${article.slug}): ${article.title} — ${article.description}`).join("\n")}` : null;
     },
   },

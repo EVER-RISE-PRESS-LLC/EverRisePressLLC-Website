@@ -10,7 +10,7 @@ import { books, bookFormats } from "@/lib/db/schema";
 import { eq } from "drizzle-orm";
 import { AUTHOR_SITE, BOOK_PATH, PUBLISHER_CONTACT } from "@/lib/publisher";
 import { BOOK_CONTENT_REVIEW_DATE, FORMAT_LABELS, uniqueEditions } from "@/lib/book-editorial";
-import { getPublishedArticles } from "@/lib/blog/catalog";
+import { getPublishedArticleSummaries } from "@/lib/blog/catalog";
 import BookReadingLinks from "@/components/marketing/BookReadingLinks";
 
 export const dynamic = "force-dynamic";
@@ -19,7 +19,7 @@ export default async function PressPage() {
   const db = await getDatabase();
   const [book] = await db.select().from(books).where(eq(books.slug, "how-to-have-a-financial-heart-attack")).limit(1);
   const formats = book ? uniqueEditions(await db.select().from(bookFormats).where(eq(bookFormats.bookId, book.id))) : [];
-  const readingResources = await getPublishedArticles();
+  const readingResources = await getPublishedArticleSummaries();
   const discussionGuide = readingResources.find(article => article.slug === "financial-heart-attack-book-club-guide");
   return <main id="page-content" tabIndex={-1} className="bg-cream text-charcoal"><Navbar /><SeoJsonLd type="press" />
     <article className="mx-auto max-w-5xl px-6 pb-24 pt-28 md:pt-36">

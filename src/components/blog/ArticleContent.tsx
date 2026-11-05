@@ -1,5 +1,5 @@
 import Link from "next/link";
-import type { ArticleBlock, BlogArticle } from "@/lib/blog/model";
+import type { ArticleBlock, BlogArticle, ArticleSummary } from "@/lib/blog/model";
 import { articleWordCount } from "@/lib/blog/model";
 import { BOOK_PATH } from "@/lib/publisher";
 import ReactiveButton from "@/components/ui/ReactiveButton";
@@ -23,7 +23,7 @@ function Block({ block }: { block: ArticleBlock }) {
   }
 }
 
-export default function ArticleContent({ article, related = [], preview = false }: { article: BlogArticle; related?: BlogArticle[]; preview?: boolean }) {
+export default function ArticleContent({ article, related = [], preview = false }: { article: BlogArticle; related?: ArticleSummary[]; preview?: boolean }) {
   const headings = article.blocks.filter(block => block.type === "heading");
   const minutes = Math.max(1, Math.ceil(articleWordCount(article) / 200));
   return <article className="press-article bg-cream text-charcoal">

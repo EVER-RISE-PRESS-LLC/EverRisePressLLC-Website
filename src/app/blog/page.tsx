@@ -5,15 +5,15 @@ import SiteFooter from "@/components/SiteFooter";
 import ReactiveButton from "@/components/ui/ReactiveButton";
 import ArticleList from "@/components/blog/ArticleList";
 import SeoJsonLd from "@/components/seo/SeoJsonLd";
-import { getPublishedArticles } from "@/lib/blog/catalog";
+import { getPublishedArticleSummaries } from "@/lib/blog/catalog";
 import { buildMetadata } from "@/lib/seo/metadata";
 import { BOOK_PATH } from "@/lib/publisher";
 
 export const dynamic = "force-dynamic";
-export async function generateMetadata(): Promise<Metadata> { return buildMetadata("blog", { articles: await getPublishedArticles() }); }
+export async function generateMetadata(): Promise<Metadata> { return buildMetadata("blog", { articles: await getPublishedArticleSummaries() }); }
 
 export default async function BlogPage() {
-  const articles = await getPublishedArticles();
+  const articles = await getPublishedArticleSummaries();
   return <main id="page-content" tabIndex={-1} className="bg-cream text-charcoal">
     <Navbar />
     {articles.length > 0 && <SeoJsonLd type="blog" data={{ articles }} />}

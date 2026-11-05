@@ -3,7 +3,7 @@ import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import { DatabaseSync } from "node:sqlite";
 import { createEmptyArticle, articleSchema, articleWordCount } from "../src/lib/blog/model.ts";
-import { ArticleStoreError, createStoredArticle, listStoredArticles, mutateStoredArticle, readPublishedArticles, readStoredArticle } from "../src/lib/blog/store.ts";
+import { ArticleStoreError, createStoredArticle, listStoredArticles, mutateStoredArticle, readPublishedArticles, readPublishedArticle, readPublishedSummaries, readStoredArticle } from "../src/lib/blog/store.ts";
 import { cleanContentHtml, contentPlainText } from "../src/lib/content-html.ts";
 
 function fixtureDatabase() {
@@ -180,4 +180,47 @@ test("unchanged and private-note publication preserve public modification and re
     assert.equal(article.publishedAt, originalPublishedAt); assert.equal(article.updatedAt, timeline(4));
     assert.equal(article.review.by, nextReviewer.name); assert.equal(article.review.at, timeline(4));
   } finally { db.close(); }
+});
+
+
+test("public summaries omit bodies and drafts while single-article reads retain sanitization and immediate visibility", async () => {
+  const db = fixtureDatabase();
+  try {
+    let article = await createStoredArticle(db, completeDocument(), timeline(0));
+    assert.deepEqual(await readPublishedSummaries(db), []);
+    article = await mutateStoredArticle(db, article.id, { action: "publish", revision: article.revision, reviewConfirmed: true }, reviewer, timeline(1));
+    const summaries = await readPublishedSummaries(db);
+    assert.equal(summaries[0].title, article.title);
+    for (const key of ["blocks", "sources", "editorialNotes", "relatedSlugs"]) assert.equal(key in summaries[0], false);
+    article = await mutateStoredArticle(db, article.id, { action: "save", revision: article.revision, document: { ...completeDocument(), title: "Private replacement" } }, reviewer, timeline(2));
+    assert.equal((await readPublishedSummaries(db))[0].title, summaries[0].title);
+    assert.equal((await readPublishedArticle(db, article.slug)).title, summaries[0].title);
+    assert.equal(await readPublishedArticle(db, "missing-article"), undefined);
+    article = await mutateStoredArticle(db, article.id, { action: "archive", revision: article.revision }, reviewer, timeline(3));
+    assert.deepEqual(await readPublishedSummaries(db), []);
+    assert.equal(await readPublishedArticle(db, article.slug), undefined);
+    article = await mutateStoredArticle(db, article.id, { action: "restore", revision: article.revision }, reviewer, timeline(4));
+    assert.equal((await readPublishedSummaries(db)).length, 1);
+    const stored = JSON.parse(db.sqlite.prepare("SELECT published_document FROM articles WHERE id = ?").get(article.id).published_document);
+    stored.blocks[0].html += '<script>alert(1)</script><img src="x" onerror="alert(1)">';
+    db.sqlite.prepare("UPDATE articles SET published_document = ? WHERE id = ?").run(JSON.stringify(stored), article.id);
+    assert.doesNotMatch((await readPublishedArticle(db, article.slug)).blocks[0].html, /script|onerror/);
+    stored.author.url = "javascript:alert(1)";
+    db.sqlite.prepare("UPDATE articles SET published_document = ? WHERE id = ?").run(JSON.stringify(stored), article.id);
+    assert.deepEqual(await readPublishedSummaries(db), []);
+    db.sqlite.prepare("UPDATE articles SET published_document = ? WHERE id = ?").run("{malformed", article.id);
+    assert.deepEqual(await readPublishedSummaries(db), []);
+    assert.equal(await readPublishedArticle(db, article.slug), undefined);
+  } finally { db.close(); }
+});
+
+test("HTML memoization preserves sanitization for repeated and changed input after eviction", () => {
+  const unsafe = '<p>Safe text</p><script>alert(1)</script><a href="javascript:alert(2)">link</a>';
+  const expected = cleanContentHtml(unsafe);
+  assert.doesNotMatch(expected, /script|javascript:/);
+  assert.equal(cleanContentHtml(unsafe), expected);
+  assert.equal(contentPlainText(unsafe), "Safe text link");
+  for (let i = 0; i < 140; i++) cleanContentHtml(`<p>Entry ${i}</p>`);
+  assert.equal(cleanContentHtml(unsafe), expected);
+  assert.doesNotMatch(cleanContentHtml(unsafe + '<img src="https://example.com/a" onerror="alert(3)">'), /onerror/);
 });

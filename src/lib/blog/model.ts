@@ -89,6 +89,19 @@ export const articleSchema = articleDraftSchema.superRefine((article, ctx) => {
   }
 });
 
+/** Public lists read only metadata from the reviewed snapshot, never draft bodies. */
+export const articleSummarySchema = articleDraftSchema.omit({ blocks: true, sources: true, relatedSlugs: true, editorialNotes: true }).superRefine((article, ctx) => {
+  if (article.status !== "published" || !slugPattern.test(article.slug)
+    || !article.title || article.title.length > 90 || article.description.length < 70 || article.description.length > 200
+    || !article.section || !article.author.confirmed || !article.author.name || !isSafeArticleLink(article.author.url)
+    || !isSafeArticleImage(article.imageUrl) || !article.imageAlt || !article.publishedAt || !article.updatedAt || !article.review
+    || Date.parse(article.updatedAt) < Date.parse(article.publishedAt)
+    || Date.parse(article.review.at) < Date.parse(article.updatedAt)) {
+    ctx.addIssue({ code: "custom", message: "Invalid published article metadata" });
+  }
+});
+export type ArticleSummary = z.infer<typeof articleSummarySchema>;
+
 export type BlogArticle = z.infer<typeof articleDraftSchema>;
 export type ArticleBlock = BlogArticle["blocks"][number];
 export type StoredArticle = BlogArticle & {
@@ -116,7 +129,7 @@ export function parseArticleCatalog(value: unknown): BlogArticle[] {
 }
 
 /** Apply visibility and time checks to documents already parsed by articleSchema. */
-export function releasedArticles(articles: BlogArticle[], now = Date.now()): BlogArticle[] {
+export function releasedArticles<T extends ArticleSummary>(articles: T[], now = Date.now()): T[] {
   return articles.filter(article => article.status === "published" && article.author.confirmed && article.review && article.publishedAt && article.updatedAt
     && [article.publishedAt, article.updatedAt, article.review.at].every(date => Date.parse(date) <= now))
     .sort((a, b) => Date.parse(b.publishedAt!) - Date.parse(a.publishedAt!) || a.slug.localeCompare(b.slug));

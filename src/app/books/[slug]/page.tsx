@@ -16,7 +16,7 @@ import Navbar from "@/components/Navbar";
 import SiteFooter from "@/components/SiteFooter";
 import ReactiveButton from "@/components/ui/ReactiveButton";
 import { ArrowRight, ChevronDown } from "lucide-react";
-import { getPublishedArticles } from "@/lib/blog/catalog";
+import { getPublishedArticleSummaries } from "@/lib/blog/catalog";
 
 export const dynamic = "force-dynamic";
 
@@ -40,7 +40,7 @@ export default async function BookPage({ params }: { params: Promise<{ slug: str
   ]);
   const editorial = book.slug === FINANCIAL_HEART_ATTACK_SLUG ? financialHeartAttackEditorial : null;
   const editions = uniqueEditions(formats);
-  const relatedArticles = editorial ? await getPublishedArticles() : [];
+  const relatedArticles = editorial ? await getPublishedArticleSummaries() : [];
   const previewPath = `/books/${book.slug}/preview`;
   const publicationDate = book.publishedAt && !Number.isNaN(Date.parse(book.publishedAt))
     ? new Intl.DateTimeFormat("en-US", { month: "long", day: "numeric", year: "numeric", timeZone: "UTC" }).format(new Date(book.publishedAt))

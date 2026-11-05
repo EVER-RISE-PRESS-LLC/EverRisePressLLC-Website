@@ -8,7 +8,7 @@ import PostHogProvider from "@/components/providers/PostHogProvider";
 import MetaPixelProvider from "@/components/providers/MetaPixelProvider";
 import { buildMetadata } from "@/lib/seo/metadata";
 import { BlogAvailabilityProvider } from "@/components/blog/BlogAvailability";
-import { getPublishedArticles } from "@/lib/blog/catalog";
+import { getPublishedArticleSummaries } from "@/lib/blog/catalog";
 import { SITE_URL } from "@/lib/seo/ids";
 
 const spectral = Spectral({
@@ -34,7 +34,7 @@ export const metadata: Metadata = {
 };
 
 export default async function RootLayout({ children }: LayoutProps<"/">) {
-  const publishedArticles = await getPublishedArticles();
+  const publishedArticles = await getPublishedArticleSummaries();
   return (
     <html
       lang="en"

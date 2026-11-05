@@ -1,7 +1,7 @@
 import "server-only";
 import { cache } from "react";
 import { getCloudflareContext } from "@/lib/cloudflare-context";
-import { listStoredArticles, readPublishedArticles, readStoredArticle, readStoredArticleById } from "./store";
+import { listStoredArticles, readPublishedArticles, readPublishedArticle, readPublishedSummaries, readStoredArticle, readStoredArticleById } from "./store";
 
 const database = cache(async () => (await getCloudflareContext({ async: true })).env.DB);
 
@@ -10,4 +10,5 @@ export const getAllArticles = cache(async (includeArchived = false) => listStore
 export const getArticle = cache(async (slug: string, includeArchived = false) => readStoredArticle(await database(), slug, includeArchived));
 export const getArticleById = cache(async (id: string, includeArchived = false) => readStoredArticleById(await database(), id, includeArchived));
 export const getPublishedArticles = cache(async () => readPublishedArticles(await database()));
-export const getPublishedArticle = cache(async (slug: string) => (await getPublishedArticles()).find(article => article.slug === slug));
+export const getPublishedArticleSummaries = cache(async () => readPublishedSummaries(await database()));
+export const getPublishedArticle = cache(async (slug: string) => readPublishedArticle(await database(), slug));

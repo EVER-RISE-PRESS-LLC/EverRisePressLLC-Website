@@ -14,7 +14,7 @@ import SiteFooter from "@/components/SiteFooter";
 import ReactiveButton from "@/components/ui/ReactiveButton";
 import { AUTHOR_SITE } from "@/lib/publisher";
 import { FINANCIAL_HEART_ATTACK_SLUG, FORMAT_LABELS, uniqueEditions } from "@/lib/book-editorial";
-import { getPublishedArticles } from "@/lib/blog/catalog";
+import { getPublishedArticleSummaries } from "@/lib/blog/catalog";
 import BookReadingLinks from "@/components/marketing/BookReadingLinks";
 import { ArrowRight, ArrowUpRight } from "lucide-react";
 
@@ -72,7 +72,7 @@ export default async function AuthorPage({ params }: { params: Promise<{ slug: s
   );
 
   const socialLinks = author.socialLinks as Record<string, string> | null;
-  const readingResources = author.slug === "lamont-mcleod" ? await getPublishedArticles() : [];
+  const readingResources = author.slug === "lamont-mcleod" ? await getPublishedArticleSummaries() : [];
 
   const seoAuthorData: AuthorSeoData = {
     slug: author.slug,

@@ -4,7 +4,7 @@ import Navbar from "@/components/Navbar";
 import SiteFooter from "@/components/SiteFooter";
 import ArticleContent from "@/components/blog/ArticleContent";
 import SeoJsonLd from "@/components/seo/SeoJsonLd";
-import { getPublishedArticle, getPublishedArticles } from "@/lib/blog/catalog";
+import { getPublishedArticle, getPublishedArticleSummaries } from "@/lib/blog/catalog";
 import { articleToSeo } from "@/lib/blog/seo";
 import { buildMetadata } from "@/lib/seo/metadata";
 
@@ -17,8 +17,8 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
 }
 export default async function BlogArticlePage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
-  const articles = await getPublishedArticles();
-  const article = articles.find((item) => item.slug === slug);
+  const articles = await getPublishedArticleSummaries();
+  const article = await getPublishedArticle(slug);
   if (!article) notFound();
   const related = articles.filter(item => article.relatedSlugs.includes(item.slug));
   return <main id="page-content" tabIndex={-1} className="bg-cream pt-20 text-charcoal"><Navbar /><SeoJsonLd type="article" data={articleToSeo(article)} /><ArticleContent article={article} related={related} /><SiteFooter /></main>;

@@ -12,7 +12,7 @@ import SiteFooter from "@/components/SiteFooter";
 import ReactiveButton from "@/components/ui/ReactiveButton";
 import BookStories from "@/components/marketing/BookStories";
 import ArticleList from "@/components/blog/ArticleList";
-import { getPublishedArticles } from "@/lib/blog/catalog";
+import { getPublishedArticleSummaries } from "@/lib/blog/catalog";
 import { ArrowRight } from "lucide-react";
 
 export const dynamic = "force-dynamic";
@@ -20,7 +20,7 @@ export const metadata: Metadata = buildMetadata("home");
 const BOOK_PATH = "/books/how-to-have-a-financial-heart-attack";
 
 export default async function Home() {
-  const recentArticles = (await getPublishedArticles()).slice(0, 3);
+  const recentArticles = (await getPublishedArticleSummaries()).slice(0, 3);
   const db = await getDatabase();
   const [[book], [author]] = await Promise.all([
     db.select().from(books).where(eq(books.slug, "how-to-have-a-financial-heart-attack")).limit(1),

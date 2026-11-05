@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { articleDraftSchema, articleSchema, articleSlugSchema, releasedArticles, type BlogArticle, type StoredArticle } from "./model.ts";
+import { articleDraftSchema, articleSchema, articleSummarySchema, articleSlugSchema, releasedArticles, type BlogArticle, type ArticleSummary, type StoredArticle } from "./model.ts";
 
 type ArticleRow = { id: string; slug: string; document: string; published_document: string | null; published_at: string | null; revision: number; archived_at: string | null; created_at: string; updated_at: string };
 export type ArticleAction = "save" | "publish" | "unpublish" | "archive" | "restore";
@@ -74,10 +74,33 @@ const validatedSnapshots = new Map<string, BlogArticle>();
 const maxCachedSnapshots = 24;
 const maxCachedSnapshotLength = 250_000;
 
+export async function readPublishedSummaries(db: D1Database): Promise<ArticleSummary[]> {
+  // Strip large bodies inside D1: listing pages do not need to parse or sanitize them.
+  // Visibility is checked on every query, so unpublishing never waits for a cache TTL.
+  const rows = await db.prepare("SELECT CASE WHEN json_valid(published_document) THEN json_remove(published_document, '$.blocks', '$.sources', '$.relatedSlugs', '$.editorialNotes') END AS summary FROM articles WHERE archived_at IS NULL AND published_document IS NOT NULL").all<{ summary: string | null }>();
+  const summaries: ArticleSummary[] = [];
+  for (const row of rows.results) {
+    try {
+      const parsed = articleSummarySchema.safeParse(JSON.parse(row.summary ?? "null"));
+      if (parsed.success) summaries.push(parsed.data);
+    } catch { /* Malformed metadata must never fall back to a saved draft. */ }
+  }
+  return releasedArticles(summaries);
+}
+
+export async function readPublishedArticle(db: D1Database, slug: string): Promise<BlogArticle | undefined> {
+  const rows = await db.prepare("SELECT published_document FROM articles WHERE slug = ? AND archived_at IS NULL AND published_document IS NOT NULL").bind(slug).all<{ published_document: string }>();
+  return parsePublishedRows(rows.results)[0];
+}
+
 export async function readPublishedArticles(db: D1Database): Promise<BlogArticle[]> {
   const rows = await db.prepare("SELECT published_document FROM articles WHERE archived_at IS NULL AND published_document IS NOT NULL").all<{ published_document: string }>();
+  return parsePublishedRows(rows.results);
+}
+
+function parsePublishedRows(rows: { published_document: string }[]): BlogArticle[] {
   const documents: BlogArticle[] = [];
-  for (const { published_document: snapshot } of rows.results) {
+  for (const { published_document: snapshot } of rows) {
     try {
       const cached = validatedSnapshots.get(snapshot);
       if (cached) {

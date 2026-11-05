@@ -1,4 +1,4 @@
-import { getPublishedArticles } from "@/lib/blog/catalog";
+import { getPublishedArticleSummaries } from "@/lib/blog/catalog";
 import { articleToSeo } from "@/lib/blog/seo";
 import { assembleGraph, type GraphEntity } from "@jdevalk/seo-graph-core";
 import type { Database } from "@/lib/db";
@@ -88,7 +88,7 @@ async function fetchAuthors(db: Database): Promise<AuthorSeoData[]> {
 
 /** Site-wide entities for published sections only. */
 export async function getSitePieces(): Promise<GraphEntity[]> {
-  const articles = await getPublishedArticles();
+  const articles = await getPublishedArticleSummaries();
   return [organizationPiece(), websitePiece(), ...(articles.length ? [blogPiece(articles)] : [])];
 }
 
@@ -118,7 +118,7 @@ export async function getPersonPieces(): Promise<GraphEntity[]> {
 
 /** Published articles only; private briefs never reach a public endpoint. */
 export async function getArticlePieces(): Promise<GraphEntity[]> {
-  const articles = await getPublishedArticles();
+  const articles = await getPublishedArticleSummaries();
   return [organizationPiece(), websitePiece(), ...(articles.length ? [blogPiece(articles)] : []), ...articles.flatMap(article => seoRegistry.article.buildPieces(articleToSeo(article), seoIds))];
 }
 
@@ -128,7 +128,7 @@ export async function getCorpusPieces(): Promise<GraphEntity[]> {
   const [bookData, authorData, articles] = await Promise.all([
     fetchBooks(db),
     fetchAuthors(db),
-    getPublishedArticles(),
+    getPublishedArticleSummaries(),
   ]);
 
   return [

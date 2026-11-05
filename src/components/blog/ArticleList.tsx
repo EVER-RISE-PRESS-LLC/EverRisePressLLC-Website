@@ -1,12 +1,12 @@
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
-import type { BlogArticle } from "@/lib/blog/model";
+import type { ArticleSummary } from "@/lib/blog/model";
 
 export function formatArticleDate(value: string) {
   return new Intl.DateTimeFormat("en-US", { month: "long", day: "numeric", year: "numeric", timeZone: "UTC" }).format(new Date(value));
 }
 
-export default function ArticleList({ articles, priorityFirst = false }: { articles: BlogArticle[]; priorityFirst?: boolean }) {
+export default function ArticleList({ articles, priorityFirst = false }: { articles: ArticleSummary[]; priorityFirst?: boolean }) {
   return <div className="grid gap-x-7 gap-y-12 md:grid-cols-2 lg:grid-cols-3">{articles.map((article, index) => <article key={article.slug} className="flex min-w-0 flex-col border-b border-charcoal/20 pb-7">
     <Link href={`/blog/${article.slug}`} aria-labelledby={`card-${article.slug}`} className="group flex flex-1 flex-col rounded-md outline-offset-8 focus-visible:outline-2 focus-visible:outline-gold-deep">
       <div className="mb-6 aspect-[1200/630] overflow-hidden rounded-xl bg-charcoal">
