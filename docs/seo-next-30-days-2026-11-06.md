@@ -4,7 +4,7 @@ Prepared 6 November 2026, Asia/Dhaka. Work queue for 7 November–6 December; th
 
 | Review date | Owner | Action | Completion evidence |
 | --- | --- | --- | --- |
-| 2026-11-08 | Codex / site engineering | Trace the homepage 5.8s LCP outlier | Run a fresh three-run mobile set and inspect cover render delay, dependency chain and long tasks; make a speed change only with a controlled before/after result. |
+| 2026-11-08 | Codex / site engineering | Review CPU reliability and remaining mobile variability | Review errors since the November 6 repair; inspect remaining cover render delay, dependency chain and article long tasks. Use the saved nine-run post-release baseline and make further changes only with matched evidence. |
 | 2026-11-09 | Codex / SEO | Inspect social and AI discovery files | Confirm labelled llms links, robots access, seven public article entries and no draft leakage. |
 | 2026-11-10 | EverRise owner | Resolve outreach eligibility | Confirm author availability, residency, review-copy rights and any allowed spending for the six prepared drafts. |
 | 2026-11-11 | Codex / editorial | Refresh six outreach drafts | Use owner answers to finalize the exact recipient, offer and submission conditions. Keep unsent until explicitly instructed. |
