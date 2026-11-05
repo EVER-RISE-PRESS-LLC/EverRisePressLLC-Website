@@ -202,7 +202,7 @@ npm run db:migrate:remote # Apply to remote D1
 - [x] **Production verification** — deployed Worker `74a0e681-cffb-4f1e-8bdb-11fbcb55f756`; build, TypeScript, lint, live SEO smoke checks and social crawler image checks passed. Compressed Worker: 2,044.83 KiB.
 - Direction, generation prompt and validation notes: [Visual refinement](docs/visual-refinement.md).
 
-**Last Updated:** 2026-11-05
+**Last Updated:** 2026-11-06
 **Progress:** 8/10 milestones complete (Milestone 6 deferred)  
 **Domain:** `https://everrisepress.com` (live, canonical — site URL via `NEXT_PUBLIC_SITE_URL`)  
 **Next:** Milestone 10 - Polish, Privacy & Launch
@@ -226,3 +226,5 @@ The active deployment path is vinext, following Cloudflare’s current Next.js g
 - [x] **Day 8 coverage research and distribution materials** (Completed: 2026-11-05) — expanded the original three prospects to 20, prepared six tailored drafts, checked five identity records and supplied exact update wording. The owner pack contains four social posts, two six-slide carousel scripts, six checked campaign links and an editable response workbook. Outreach and external posting remain unsent. See the dated [SEO work log](docs/seo-dev-doc.md) and [discovery record](docs/discovery-and-outreach.md).
 
 - [x] **Day 9 discovery-file repair prepared** (2026-11-06) — converted plain discovery URLs to Markdown links after Lighthouse reported no recognizable links. Build, TypeScript, 35 public tests and deployment packaging pass; production verification and the Days 9–10 report are in progress.
+
+- [x] **Days 9–10 measurement and continuation pack** (2026-11-06) — nine mobile lab runs, six repeated ChatGPT questions, 13 Search Console inspections, observed PostHog event totals, full initial public crawl and signed local reader checks. The [30-day queue](docs/seo-next-30-days-2026-11-06.md) assigns 18 actions and all article review dates. Discovery-file production verification is still in progress; no speed or sales gain is claimed.
