@@ -283,7 +283,7 @@ export const seoRegistry: Record<SeoPageType, RegistryEntry> = {
     buildBreadcrumbs() { return [HOME_CRUMB, { name: "Press & book information", url: `${SITE_URL}/press` }]; },
     metadata() { return { title: "Press & Book Information", description: "Find verified book details, author information, cover and portrait files, and the publisher contact for coverage of How To Have a Financial Heart Attack.", canonicalPath: "/press", imageUrl: `${SITE_URL}/images/og/everrise-home-20261022.jpg`, imageAlt: "How To Have a Financial Heart Attack by Lamont D. McLeod, published on the EverRise Press website." }; },
     sitemapEntries: async () => [{ path: "/press", changeFrequency: "monthly", priority: 0.5 }],
-    llmsSection: async () => `## Press and book information\n\nVerified edition details, author information, downloadable cover and portrait, and publisher contact: ${SITE_URL}/press`,
+    llmsSection: async () => `## Press and book information\n\n- [Press and book information](${SITE_URL}/press): Verified edition details, author information, downloadable cover and portrait, and publisher contact.`,
   },
   home: {
     buildPieces() {
@@ -441,9 +441,9 @@ export const seoRegistry: Record<SeoPageType, RegistryEntry> = {
           return [
             `### ${book.title}${book.subtitle ? ` — ${book.subtitle}` : ""}`,
             `- Slug: ${book.slug}`,
-            `- URL: ${SITE_URL}/books/${book.slug}`,
+            `- [Official book page](${SITE_URL}/books/${book.slug})`,
             `- Formats: ${formatsSummary || "Coming soon"}`,
-            `- Free sample with email signup: ${SITE_URL}/books/${book.slug}/preview`,
+            `- [Free sample with email signup](${SITE_URL}/books/${book.slug}/preview)`,
             ...(book.slug === FINANCIAL_HEART_ATTACK_SLUG ? ["- Edition publisher credit: HMD Publishing. EverRise Press uses publishing and distribution services through HMD."] : []),
             `- About: ${synopsis}`,
           ].join("\n");
@@ -519,7 +519,7 @@ export const seoRegistry: Record<SeoPageType, RegistryEntry> = {
       const authorLines = authorRows
         .map(
           (author) =>
-            `### ${author.name}${author.title ? `, ${author.title}` : ""}\n- URL: ${SITE_URL}/authors/${author.slug}`
+            `### ${author.name}${author.title ? `, ${author.title}` : ""}\n- [Official author profile](${SITE_URL}/authors/${author.slug})`
         )
         .join("\n\n");
 
@@ -546,7 +546,7 @@ export const seoRegistry: Record<SeoPageType, RegistryEntry> = {
       };
     },
     sitemapEntries: async () => [{ path: "/about", lastModified: TRUST_REVIEW_DATE, changeFrequency: "monthly", priority: 0.5 }],
-    llmsSection: async () => `## Publisher and contact\n- About: ${SITE_URL}/about\n- Contact: ${PUBLISHER_CONTACT}\n- Privacy: ${SITE_URL}/privacy`,
+    llmsSection: async () => `## Publisher and contact\n- [About and contact](${SITE_URL}/about)\n- Contact: ${PUBLISHER_CONTACT}\n- [Privacy policy](${SITE_URL}/privacy)`,
   },
 
   privacy: {
@@ -639,7 +639,7 @@ export const seoRegistry: Record<SeoPageType, RegistryEntry> = {
     sitemapEntries: async () => (await getPublishedArticles()).map(article => ({ path: `/blog/${article.slug}`, lastModified: article.updatedAt!, changeFrequency: "monthly", priority: 0.7 })),
     llmsSection: async () => {
       const articles = await getPublishedArticles();
-      return articles.length ? `## Articles\n\n- Blog: ${SITE_URL}/blog\n${articles.map(article => `- ${article.title}: ${SITE_URL}/blog/${article.slug} — ${article.description}`).join("\n")}` : null;
+      return articles.length ? `## Articles\n\n- [Reading resources](${SITE_URL}/blog)\n${articles.map(article => `- [Read article](${SITE_URL}/blog/${article.slug}): ${article.title} — ${article.description}`).join("\n")}` : null;
     },
   },
 };

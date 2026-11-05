@@ -27,16 +27,16 @@ export async function GET() {
   ]);
 
   const entityLines = [
-    `- Knowledge graph (all entities, one fetch): ${SITE_URL}/schema.json`,
-    `- Schemamap (schema endpoint discovery): ${SITE_URL}/schemamap.xml`,
-    `- API catalog (RFC 9727): ${SITE_URL}/.well-known/api-catalog`,
-    `- Organization: ${SITE_URL}/#organization`,
-    `- WebSite: ${SITE_URL}/#website`,
+    `- [Knowledge graph](${SITE_URL}/schema.json): All entities in one response.`,
+    `- [Schemamap](${SITE_URL}/schemamap.xml): Schema endpoint discovery.`,
+    `- [API catalog](${SITE_URL}/.well-known/api-catalog): RFC 9727 discovery.`,
+    `- [Organization](${SITE_URL}/#organization)`,
+    `- [Website](${SITE_URL}/#website)`,
     ...bookRows.map(
-      (book) => `- Book "${book.title}": ${SITE_URL}/books/${book.slug}#book`
+      (book) => `- [Book details](${SITE_URL}/books/${book.slug}#book): ${book.title}`
     ),
     ...authorRows.map(
-      (author) => `- Person "${author.name}": ${SITE_URL}/authors/${author.slug}#person`
+      (author) => `- [Author profile](${SITE_URL}/authors/${author.slug}#person): ${author.name}`
     ),
   ];
 
@@ -50,8 +50,8 @@ ${sections.join("\n\n")}
 
 - Publisher: EverRise Press LLC
 - Founder: Lamont D. McLeod
-- Homepage: ${SITE_URL}
-- Privacy policy: ${SITE_URL}/privacy
+- [Homepage](${SITE_URL})
+- [Privacy policy](${SITE_URL}/privacy)
 
 ## Schema
 
