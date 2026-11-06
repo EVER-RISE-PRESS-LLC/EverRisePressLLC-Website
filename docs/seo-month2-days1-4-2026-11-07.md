@@ -1,13 +1,13 @@
 # Month two: Days 1–4 review
 
-7 November 2026, Asia/Dhaka. Days 1–3 completed early; Day 4 public requirements checked, owner eligibility facts pending. No outreach sent.
+7 November 2026, Asia/Dhaka. Days 1–4 completed early; Day 4 qualification updated with owner-confirmed facts. No outreach sent.
 
 ## Day 1: priorities
 
 1. Keep the November 12 indexing review: comparison and moving-cost articles need discovery follow-up. November 6 measurements are a baseline, not fresh growth evidence.
 2. Maintain reliability checks after the CPU repair; current short-window checks pass.
 3. Investigate homepage render-blocking CSS/fonts before another speed change. Current Lighthouse estimates 290ms render-blocking savings and 78KiB image opportunity; these estimates are not demonstrated savings. Four font files and a stylesheet preload appear in the response. Trace tools are unavailable, so no causal script-removal claim is made.
-4. Resolve author availability, review-copy rights and budget to unlock qualified outreach. Prioritize the lived-experience author interview and free review consideration where owner facts permit.
+4. Prioritize discussion-based interviews, podcasts and library events using the owner-confirmed Johns Creek, Georgia location. Exclude review-copy submissions under the current policy.
 5. Retain November 26 article reviews; avoid rewriting based on a tiny search sample.
 
 ## Day 2: reliability and mobile
@@ -32,13 +32,13 @@ The live sitemap contains 14 pages, including seven articles. llms.txt contains 
 
 | Prospect | Verified route and conditions | Next dependency |
 | --- | --- | --- |
-| [High Point Readers Services](https://www.highpointnc.gov/1167/Contact) | Readers Services number and library email route exist. This is a routing enquiry, not guaranteed collection acceptance. | Author interest; residency only if a local programme subsequently requires it. |
-| [Independent Book Review](https://independentbookreview.com/submission-guidelines/) | Submission form requests author, genre, publication date, description and cover; file route supports books under 20MB. | Confirm approved review file and distribution rights; retain free-consideration scope. |
-| [The Resilient Author](https://www.theresilientauthor.com/be-a-guest) | Published lived-experience authors may apply; no appearance fee; editorial selection. | Author consent, availability and approved personal story. |
-| [Journey to Launch](https://journeytolaunch.com/contact/) | Guest requests must use its inquiry form; personal listening/history questions are included. | Author's truthful personal answers and availability. |
+| [High Point Readers Services](https://www.highpointnc.gov/1167/Contact) | Readers Services number and library email route exist. This is a routing enquiry, not guaranteed collection acceptance. | Secondary discussion enquiry. Johns Creek residency does not establish North Carolina local-author eligibility. |
+| [Independent Book Review](https://independentbookreview.com/submission-guidelines/) | Submission form requests author, genre, publication date, description and cover; file route supports books under 20MB. | Hold review submission: EverRise does not supply review copies. A general discussion is possible, but no alternative review arrangement is confirmed. |
+| [The Resilient Author](https://www.theresilientauthor.com/be-a-guest) | Published lived-experience authors may apply; no appearance fee; editorial selection. | Priority interview prospect. Owner confirms interest; propose an exploratory discussion, with dates to be agreed. |
+| [Journey to Launch](https://journeytolaunch.com/contact/) | Guest requests must use its inquiry form; personal listening/history questions are included. | Eligible for pitch preparation. Personal listening/history answers and specific dates remain to be supplied when needed. |
 | [Northwestern Financial Wellness](https://www.northwestern.edu/financial-wellness/financial-planning/living-off-campus/common-expenses.html) | Relevant costs resource remains live. No confirmed external-placement programme. | Keep a routing enquiry; do not claim resource acceptance. |
-| [Georgia Center for the Book](https://georgiacenterforthebook.org/contact) | Executive and programming contacts are published. Contact access does not establish event eligibility. | Author interest, location, availability and travel limits. |
+| [Georgia Center for the Book](https://georgiacenterforthebook.org/contact) | Executive and programming contacts are published. Contact access does not establish event eligibility. | Priority Georgia programme enquiry: Johns Creek location and interest confirmed. Agree dates, format and any travel terms during discussion. |
 
-Owner question remains pending: current city/state, interview/event interest and availability, permission to supply review copies, and maximum review-copy/shipping budget. Public research cannot establish these private facts. All six messages remain unsent; no payment, shipment or appearance was committed.
+Owner confirmation, 7 November: Lamont lives in Johns Creek, Georgia, and is interested in interviews, library events and podcasts. He is open to discussing opportunities. EverRise does not supply review copies. No specific dates, travel commitments or spending budget were supplied; do not promise them. Review-copy/shipping budget is unnecessary for the selected discussion-only approach. Day 4 qualification is complete; individual booking details belong to later discussions. All six messages remain unsent; no payment, shipment or appearance was committed.
 
 Evidence: owner workspace folder `seo-month2-days1-4-2026-11-07/evidence`, including raw performance report URLs, discovery responses, privacy probes and the Cloudflare observation. Existing November 6 search/conversion data was reviewed without presenting it as a new measurement.

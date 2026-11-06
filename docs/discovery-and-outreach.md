@@ -110,3 +110,7 @@ The owner workspace now contains the complete 20-prospect research pack and edit
 | P20 | [Georgia Center for the Book](https://georgiacenterforthebook.org/contact) | Review tailored programme enquiry and author availability. |
 
 General university contacts are routing enquiries, not confirmed resource-placement programmes. Current [BookLife review rules](https://booklife.com/about-us/review-submission-guidelines.html) charge for PW review consideration; it must not be described as free. The detailed pack distinguishes listing fees, membership costs, optional paid services and donated copies. Sending and external posting require a separate owner instruction.
+
+## Owner qualification update — 7 November 2026
+
+Lamont is based in Johns Creek, Georgia and welcomes discussions about interviews, library events and podcasts. EverRise does not supply review copies. This supersedes earlier draft offers or prerequisites involving review copies: hold those submissions and prioritize discussion-based enquiries, especially Georgia programmes and lived-experience author interviews. Specific dates, travel and spending are uncommitted. Existing messages remain unsent. See the [Day 4 qualification record](seo-month2-days1-4-2026-11-07.md).
