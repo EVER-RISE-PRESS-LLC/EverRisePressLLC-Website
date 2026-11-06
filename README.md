@@ -228,3 +228,7 @@ The active deployment path is vinext, following Cloudflare’s current Next.js g
 - [x] **Days 9–10 completed: measurement, reliability and discovery** (2026-11-06) — deployed the published-summary CPU repair and labelled llms.txt links after staged checks. The final crawl passes 14 public pages, 358 internal links, 21 destinations, 26 images and three rounds of eight critical routes. Nine post-release mobile runs have median scores 97/99/93 for home/book/article, zero CLS and passing discovery audits. Reader protection and publication isolation pass. The [SEO work log](docs/seo-dev-doc.md) records GSC, AI and conversion limitations; the [30-day queue](docs/seo-next-30-days-2026-11-06.md) assigns 18 actions and all seven article review calendars.
 
 - [x] **Month two Days 1–4 review** (2026-11-07) — prioritized work, checked 27 route responses, three mobile reports, discovery files and reader privacy. [Review record](docs/seo-month2-days1-4-2026-11-07.md). Day 4 qualification is complete: discussion-based outreach prioritized using confirmed location and interest; no review copies offered.
+
+## Publishing-plan reset — 7 November 2026
+
+The owner replaced the maintenance-led queue with the [30-day publishing plan](docs/seo-next-30-days-2026-11-06.md): 24 new articles, six new pages, four resources, upgrades to seven existing articles and a tailored distribution pack. New Day 1 is November 8. Previous work remains complete; new production is planned, not yet delivered.

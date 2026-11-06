@@ -457,3 +457,7 @@ Nine additional post-release mobile runs use the same three pages, Lighthouse 13
 ## Month two Days 1–4 — 7 November 2026
 
 [Review record](seo-month2-days1-4-2026-11-07.md): Days 1–3 complete. Cloudflare shows 243 successes and zero errors in its one-hour window. Six outreach routes rechecked. Owner subsequently confirmed Johns Creek, Georgia and interest in interviews, library events and podcasts, with no review copies supplied. Day 4 qualification is complete; specific dates and financial commitments remain for later discussions. Nothing sent.
+
+## Publishing-plan reset — 7 November 2026
+
+The owner replaced the maintenance-led queue with the [30-day publishing plan](seo-next-30-days-2026-11-06.md): 24 new articles, six new pages, four resources, upgrades to seven existing articles and a tailored distribution pack. New Day 1 is November 8. Previous work remains complete; new production is planned, not yet delivered.
