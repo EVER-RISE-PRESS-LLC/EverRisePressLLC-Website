@@ -82,7 +82,7 @@ export interface ArticleSeoData {
 /* Registry contract                                                  */
 /* ------------------------------------------------------------------ */
 
-export type SeoPageType = "home" | "book" | "author" | "about" | "privacy" | "blog" | "article" | "press";
+export type SeoPageType = "home" | "book" | "author" | "about" | "privacy" | "blog" | "article" | "press" | "cashFlowTopic";
 
 export interface SeoCrumbs {
   name: string;
@@ -275,6 +275,16 @@ export function buildBookPiece(book: BookSeoData): GraphEntity {
 /* ------------------------------------------------------------------ */
 
 export const seoRegistry: Record<SeoPageType, RegistryEntry> = {
+  cashFlowTopic: {
+    buildPieces() {
+      const url = `${SITE_URL}/topics/cash-flow-and-spending`;
+      return [buildWebPage({ url, name: "Cash Flow and Spending Resources", isPartOf: { "@id": seoIds.website }, breadcrumb: { "@id": seoIds.breadcrumb(url) }, inLanguage: "en-US" }, seoIds.factory), breadcrumbListPiece(url, this.buildBreadcrumbs({}))];
+    },
+    buildBreadcrumbs() { return [HOME_CRUMB, { name: "Cash flow and spending", url: `${SITE_URL}/topics/cash-flow-and-spending` }]; },
+    metadata() { return { title: "Cash Flow and Spending Resources", description: "Choose a bill calendar, spending record or payday reflection. Find free worksheets and worked examples for tracking payment dates and everyday costs.", canonicalPath: "/topics/cash-flow-and-spending", imageUrl: `${SITE_URL}/images/og/everrise-home-20261022.jpg`, imageAlt: "How To Have a Financial Heart Attack by Lamont D. McLeod, published on the EverRise Press website." }; },
+    sitemapEntries: async () => [{ path: "/topics/cash-flow-and-spending", changeFrequency: "monthly", priority: 0.5 }],
+    llmsSection: async () => `## Cash flow and spending resources\n\n- [Cash flow and spending resources](${SITE_URL}/topics/cash-flow-and-spending): Free payment calendars, spending records and reflection exercises.`,
+  },
   press: {
     buildPieces() {
       const url = `${SITE_URL}/press`;
@@ -654,4 +664,5 @@ export const seoPageTypes: SeoPageType[] = [
   "blog",
   "article",
   "press",
+  "cashFlowTopic",
 ];
