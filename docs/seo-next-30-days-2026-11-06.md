@@ -80,7 +80,7 @@ The lead deliverable is due that day. Each article day also includes images as n
 
 | Day / date | Publish or deliver | Additional visibility work |
 | --- | --- | --- |
-| 1 · 2026-11-08 | P1 cash-flow topic page + A01 | Create R1; link from existing calendar and payday article. |
+| 1 · 2026-11-08 | **Done early Nov 7:** P1 + A01 | R1, both contextual article updates and social draft complete. [Release record](seo-growth-day1-2026-11-07.md). |
 | 2 · 2026-11-09 | A02 + A03 | Add three contextual links; prepare two social posts. |
 | 3 · 2026-11-10 | A04 | Expand P1 pathways; prepare carousel 1. |
 | 4 · 2026-11-11 | A05 + A06 | Link both from appropriate existing resources; finish cash-flow distribution set. |
@@ -153,3 +153,7 @@ Dates use first publication in Asia/Dhaka, verified against the public article s
 | [Payday Spending Habits: Notice the Pattern](https://everrisepress.com/blog/payday-spending-patterns) | 2026-10-29 | 2026-11-26 | 2026-12-24 | 2027-01-27 |
 
 Review evidence: indexed status/crawl date, canonical, complete-window impressions and clicks, public landing paths, chapter access, retailer exits, source freshness and reader usefulness. Small samples are descriptive; no guaranteed ranking or sales target is implied.
+
+## Growth-plan delivery update — 7 November
+
+Day 1 completed early on request: A01, P1, R1, two existing-article link updates and one social draft. [URLs and release evidence](seo-growth-day1-2026-11-07.md). Article reviews: 2026-12-05, 2027-01-02, 2027-02-05. Remaining production days retain their planned dates until the owner requests execution.

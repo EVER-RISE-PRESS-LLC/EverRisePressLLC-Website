@@ -231,4 +231,4 @@ The active deployment path is vinext, following Cloudflare’s current Next.js g
 
 ## Publishing-plan reset — 7 November 2026
 
-The owner replaced the maintenance-led queue with the [30-day publishing plan](docs/seo-next-30-days-2026-11-06.md): 24 new articles, six new pages, four resources, upgrades to seven existing articles and a tailored distribution pack. New Day 1 is November 8. Previous work remains complete; new production is planned, not yet delivered.
+The owner replaced the maintenance-led queue with the [30-day publishing plan](docs/seo-next-30-days-2026-11-06.md): 24 new articles, six new pages, four resources, upgrades to seven existing articles and a tailored distribution pack. Day 1 was completed early on November 7: a new biweekly bill-calendar article, cash-flow topic page, two-page printable, two contextual article updates and a social draft. [Day 1 release record](docs/seo-growth-day1-2026-11-07.md). Remaining production is scheduled, not yet delivered.

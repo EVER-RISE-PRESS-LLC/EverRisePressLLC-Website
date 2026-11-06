@@ -461,3 +461,8 @@ Nine additional post-release mobile runs use the same three pages, Lighthouse 13
 ## Publishing-plan reset — 7 November 2026
 
 The owner replaced the maintenance-led queue with the [30-day publishing plan](seo-next-30-days-2026-11-06.md): 24 new articles, six new pages, four resources, upgrades to seven existing articles and a tailored distribution pack. New Day 1 is November 8. Previous work remains complete; new production is planned, not yet delivered.
+
+
+## Growth plan Day 1 — 7 November 2026
+
+Published A01 biweekly bill calendar, P1 cash-flow topic page and R1 two-page payment planner; updated weekly calendar and payday article with contextual links. Original cover uploaded and all three article revisions published through the API. Chrome Ever rise verified desktop, 390px article layout and two-page A4/Letter printing. Production build, types, 35 public tests and live eight-article checks pass. [Full release, provenance, social draft and review dates](seo-growth-day1-2026-11-07.md). New indexing is not yet established.
