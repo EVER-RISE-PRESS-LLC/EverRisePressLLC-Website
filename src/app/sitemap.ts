@@ -15,6 +15,7 @@ const SITEMAP_TYPE_ORDER: SeoPageType[] = [
   "about",
   "press",
   "cashFlowTopic",
+  "movingOutTopic",
   "privacy",
   "book",
   "author",

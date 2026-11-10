@@ -82,7 +82,7 @@ export interface ArticleSeoData {
 /* Registry contract                                                  */
 /* ------------------------------------------------------------------ */
 
-export type SeoPageType = "home" | "book" | "author" | "about" | "privacy" | "blog" | "article" | "press" | "cashFlowTopic";
+export type SeoPageType = "home" | "book" | "author" | "about" | "privacy" | "blog" | "article" | "press" | "cashFlowTopic" | "movingOutTopic";
 
 export interface SeoCrumbs {
   name: string;
@@ -284,6 +284,16 @@ export const seoRegistry: Record<SeoPageType, RegistryEntry> = {
     metadata() { return { title: "Cash Flow and Spending Resources", description: "Choose a bill calendar, spending record or payday reflection. Find free worksheets and worked examples for tracking payment dates and everyday costs.", canonicalPath: "/topics/cash-flow-and-spending", imageUrl: `${SITE_URL}/images/og/everrise-home-20261022.jpg`, imageAlt: "How To Have a Financial Heart Attack by Lamont D. McLeod, published on the EverRise Press website." }; },
     sitemapEntries: async () => [{ path: "/topics/cash-flow-and-spending", changeFrequency: "monthly", priority: 0.5 }],
     llmsSection: async () => `## Cash flow and spending resources\n\n- [Cash flow and spending resources](${SITE_URL}/topics/cash-flow-and-spending): Free payment calendars, spending records and reflection exercises.`,
+  },
+  movingOutTopic: {
+    buildPieces() {
+      const url = `${SITE_URL}/topics/moving-out`;
+      return [buildWebPage({ url, name: "Moving Out Resources", isPartOf: { "@id": seoIds.website }, breadcrumb: { "@id": seoIds.breadcrumb(url) }, inLanguage: "en-US" }, seoIds.factory), breadcrumbListPiece(url, this.buildBreadcrumbs({}))];
+    },
+    buildBreadcrumbs() { return [HOME_CRUMB, { name: "Moving out", url: `${SITE_URL}/topics/moving-out` }]; },
+    metadata() { return { title: "Moving Out Resources", description: "Route from upfront moving costs to utility setup and shared-expense questions. Free worked checklists and examples for a first apartment move.", canonicalPath: "/topics/moving-out", imageUrl: `${SITE_URL}/images/og/everrise-home-20261022.jpg`, imageAlt: "How To Have a Financial Heart Attack by Lamont D. McLeod, published on the EverRise Press website." }; },
+    sitemapEntries: async () => [{ path: "/topics/moving-out", changeFrequency: "monthly", priority: 0.5 }],
+    llmsSection: async () => `## Moving out resources\n\n- [Moving out resources](${SITE_URL}/topics/moving-out): Free checklists for upfront moving costs, utility setup and shared-expense questions.`,
   },
   press: {
     buildPieces() {
@@ -665,4 +675,5 @@ export const seoPageTypes: SeoPageType[] = [
   "article",
   "press",
   "cashFlowTopic",
+  "movingOutTopic",
 ];
