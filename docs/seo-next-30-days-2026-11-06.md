@@ -85,9 +85,9 @@ The lead deliverable is due that day. Each article day also includes images as n
 | 3 · 2026-11-10 | **Done 2026-11-10:** A04 | P1 pathways expanded (3 new sections); carousel 1 complete. |
 | 4 · 2026-11-11 | **Done 2026-11-10:** A05 + A06 | Both linked from existing resources; cash-flow distribution set (A01–A06) complete. |
 | 5 · 2026-11-12 | **Done 2026-11-10:** P2 moving-out topic page + A07 | Existing moving and housing articles connected to P2 and A07. |
-| 6 · 2026-11-13 | A08 | Prepare two tailored library discussion pitches. |
-| 7 · 2026-11-14 | A09 + R2 | Connect ledger from housing article and A08. |
-| 8 · 2026-11-15 | A10 | Prepare carousel 2 with the essentials matrix. |
+| 6 · 2026-11-13 | **Done 2026-11-13:** A08 | Two library discussion pitches drafted, unsent. [Release record](seo-growth-shared-costs-2026-11-13.md). |
+| 7 · 2026-11-14 | **Done 2026-11-13:** A09 + R2 | Ledger connected from the housing article, A08 and P2. |
+| 8 · 2026-11-15 | **Done 2026-11-13:** A10 | Carousel 2 with the essentials matrix complete. |
 | 9 · 2026-11-16 | A11 | Create original quote-comparison table; cite current official moving guidance. |
 | 10 · 2026-11-17 | A12 | Complete moving topic navigation and two resource-enquiry pitches. |
 | 11 · 2026-11-18 | P3 book-club topic page + A13 | Link from the existing title-specific club guide. |
@@ -161,3 +161,7 @@ Day 1 completed early on request: A01, P1, R1, two existing-article link updates
 ## Growth-plan delivery update — 10 November
 
 Days 2–5 completed together on request: A02, A03, A04, A05, A06, A07, the P2 moving-out topic page, three new P1 pathways, eight contextual link updates and six social drafts plus carousel 1. [URLs and release evidence](seo-growth-days2-5-2026-11-10.md) · [distribution assets](seo-growth-days2-5-distribution-assets.md). Article reviews (28/56/90 days from November 10): 2026-12-08, 2027-01-05, 2027-02-08. Days 6–30 retain their planned dates until the owner requests execution.
+
+## Growth-plan delivery update — 13 November
+
+A08, A09, R2 and A10 completed together on request, with four contextual link updates, the ledger attached to P2, three social drafts, carousel 2 and two unsent library discussion pitches. [URLs and release evidence](seo-growth-shared-costs-2026-11-13.md) · [distribution assets](seo-growth-shared-costs-distribution-assets.md). Article reviews (28/56/90 days from November 13): 2026-12-11, 2027-01-08, 2027-02-11. Remaining items retain their planned dates until the owner requests execution.
